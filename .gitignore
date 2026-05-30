@@ -5,3 +5,4 @@ db/tradevista.db-wal
 .env
 .DS_Store
 *.log
+.claude/
