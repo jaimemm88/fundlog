@@ -129,10 +129,12 @@ const migrations = [
   ['funding',           'user_id INTEGER DEFAULT 1'],
   ['goals',             'user_id INTEGER DEFAULT 1'],
   ['economic_calendar', 'user_id INTEGER DEFAULT 1'],
+  ['economic_calendar', 'notes TEXT DEFAULT ""'],
   ['risk_settings',     'user_id INTEGER DEFAULT 1'],
   ['accounts',          'metaapi_id TEXT DEFAULT ""'],
   ['accounts',          'metaapi_state TEXT DEFAULT ""'],
   ['trades',            'external_id TEXT DEFAULT ""'],
+  ['accounts',          'profit_target REAL DEFAULT 0'],
 ];
 for (const [table, col] of migrations) {
   try { db.exec(`ALTER TABLE ${table} ADD COLUMN ${col}`); } catch {}
