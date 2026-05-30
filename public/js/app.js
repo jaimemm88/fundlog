@@ -9,12 +9,19 @@ const App = {
     Theme.init();
     UI.initInteractions();
     MarketSession.init();
+    // Pedir permiso para notificaciones del navegador
+    if ('Notification' in window && Notification.permission === 'default') {
+      setTimeout(() => Notification.requestPermission(), 3000);
+    }
     await App.loadAccounts();
     App._setupNav();
     App._setupTradeModal();
     App._setupFilters();
     App._setupMisc();
     App.navigate('resumen');
+    // Comprobar alertas de riesgo al arrancar y cada 5 minutos
+    App.checkRiskAlerts();
+    setInterval(App.checkRiskAlerts, 5 * 60 * 1000);
   },
 
   // ── Accounts selector ───────────────────────────────────────────────────────
@@ -116,6 +123,66 @@ const App = {
   },
 
   reload() { App._loadSection(App.activeSection); },
+
+  async checkRiskAlerts() {
+    try {
+      const aid = App.activeAccountId;
+      const [settings, stats] = await Promise.all([
+        API.risk.get(aid ? { account_id: aid } : {}),
+        API.analysis.stats(aid ? { account_id: aid } : {}),
+      ]);
+
+      const totalDD  = stats.max_drawdown || 0;
+      const ddLimit  = settings.max_total_drawdown || 5;
+      const ddPct    = ddLimit > 0 ? (totalDD / ddLimit) * 100 : 0;
+
+      // P&L de hoy
+      const today    = new Date().toISOString().split('T')[0];
+      const todayStats = await API.analysis.stats(
+        aid ? { account_id: aid, from: today, to: today }
+            : { from: today, to: today }
+      );
+      const todayLoss  = Math.abs(Math.min(0, todayStats.total_pnl || 0));
+      const balance    = App.activeAccount?.balance || App._accounts.reduce((s,a) => s+a.balance, 0) || 10000;
+      const dailyLimit = settings.max_daily_loss || (balance * settings.max_daily_drawdown / 100);
+      const dailyPct   = dailyLimit > 0 ? (todayLoss / dailyLimit) * 100 : 0;
+
+      const banner  = document.getElementById('riskAlertBanner');
+      const textEl  = document.getElementById('riskAlertText');
+      const badge   = document.getElementById('riskNavBadge');
+
+      let msg   = '';
+      let level = '';
+
+      if (ddPct >= 100) {
+        msg = `🚨 Drawdown total superado (${totalDD.toFixed(1)}% / ${ddLimit}% límite) — PARA de operar`;
+        level = 'danger';
+      } else if (ddPct >= 80) {
+        msg = `⚠️ Drawdown al ${ddPct.toFixed(0)}% del límite (${totalDD.toFixed(1)}% / ${ddLimit}%)`;
+        level = 'warning';
+      } else if (dailyPct >= 100) {
+        msg = `🚨 Pérdida diaria superada — PARA de operar hoy`;
+        level = 'danger';
+      } else if (dailyPct >= 80) {
+        msg = `⚠️ Pérdida diaria al ${dailyPct.toFixed(0)}% del límite`;
+        level = 'warning';
+      }
+
+      if (msg) {
+        banner.className  = `risk-alert-banner ${level}`;
+        textEl.textContent = msg;
+        banner.style.display = 'flex';
+        badge.style.display  = 'flex';
+        // Notificación del navegador si tiene permiso
+        if (level === 'danger' && Notification.permission === 'granted') {
+          new Notification('FundLog — Alerta de Riesgo', { body: msg, icon: '/favicon.svg' });
+        }
+      } else {
+        banner.style.display = 'none';
+        badge.style.display  = 'none';
+      }
+    } catch(e) { /* silencioso */ }
+  },
 
   // ── Trade Modal ─────────────────────────────────────────────────────────────
   _setupTradeModal() {

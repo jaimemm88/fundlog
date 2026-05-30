@@ -119,7 +119,10 @@
       <span class="nav-label">Herramientas</span>
     </div>
     <div class="nav-item" data-section="riesgo" data-tip="Gestión de Riesgo">
-      <div class="nav-ic nav-ic--red"><i class="ti ti-shield-check"></i></div>
+      <div class="nav-ic nav-ic--red" style="position:relative;">
+        <i class="ti ti-shield-check"></i>
+        <span class="risk-nav-badge" id="riskNavBadge" style="display:none;">!</span>
+      </div>
       <span class="nav-label">Gestión de Riesgo</span>
     </div>
 
@@ -168,6 +171,11 @@
         <span class="session-clock" id="sessionClock"></span>
       </div>
       <select class="account-select" id="accountSelect"></select>
+      <div id="riskAlertBanner" style="display:none;" class="risk-alert-banner">
+        <i class="ti ti-alert-triangle"></i>
+        <span id="riskAlertText"></span>
+        <button onclick="document.getElementById('riskAlertBanner').style.display='none'" class="risk-alert-close"><i class="ti ti-x"></i></button>
+      </div>
       <button class="btn-icon" id="btnThemeToggle" title="Cambiar tema">
         <i class="ti ti-sun" id="themeIcon"></i>
       </button>
