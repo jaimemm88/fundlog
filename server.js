@@ -20,12 +20,10 @@ app.use('/api/economic-calendar', auth, require('./routes/economic-calendar'));
 app.use('/api/risk',              auth, require('./routes/risk'));
 
 // Login page — cualquier ruta no-API sirve el index o login
-app.get('/login', (req, res) =>
-  res.sendFile(path.join(__dirname, 'public', 'login.html'))
-);
-app.get('*', (req, res) =>
-  res.sendFile(path.join(__dirname, 'public', 'index.html'))
-);
+app.get('/',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/app',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('*',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
