@@ -60,11 +60,9 @@ const App = {
       document.getElementById('sidebar').classList.toggle('open');
     });
     document.getElementById('btnLogout')?.addEventListener('click', () => {
-      if (confirm('¿Cerrar sesión?')) {
-        localStorage.removeItem('tv_token');
-        localStorage.removeItem('tv_user');
-        window.location.href = '/login';
-      }
+      localStorage.removeItem('tv_token');
+      localStorage.removeItem('tv_user');
+      window.location.href = '/login';
     });
 
     document.getElementById('btnAddAccount').addEventListener('click', () => App.navigate('cuentas'));
