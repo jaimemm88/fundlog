@@ -87,7 +87,7 @@ const App = {
       estrategias: 'Estrategias', analisis: 'Análisis', cuentas: 'Cuentas',
       portfolio: 'Portfolio', funding: 'Movimientos', 'cal-eco': 'Cal. Económico',
       progress: 'Progress Tracker', herramientas: 'Herramientas',
-      riesgo: 'Gestión de Riesgo', ajustes: 'Ajustes',
+      riesgo: 'Gestión de Riesgo', ajustes: 'Ajustes', diario: 'Diario de Trading',
     };
     document.getElementById('breadcrumb').textContent = labels[section] || section;
 
@@ -110,6 +110,7 @@ const App = {
       case 'progress':     Progress.load(aid); break;
       case 'herramientas': Tools.load(); break;
       case 'riesgo':       Risk.load(aid); break;
+      case 'diario':       Journal.load(); break;
       case 'ajustes':      Settings.load(); break;
     }
   },

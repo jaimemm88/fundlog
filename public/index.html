@@ -106,6 +106,11 @@
       <span class="nav-label">Progress Tracker</span>
     </div>
 
+    <div class="nav-item" data-section="diario" data-tip="Diario de Trading">
+      <div class="nav-ic nav-ic--amber"><i class="ti ti-notebook"></i></div>
+      <span class="nav-label">Diario</span>
+    </div>
+
     <div class="sb-divider"></div>
     <div class="sb-group-label">Herramientas</div>
 
@@ -556,6 +561,102 @@
             <input class="tv-input" id="goal-deadline" type="date">
           </div>
           <button class="btn-primary" id="btnSaveGoal"><i class="ti ti-check"></i> Crear objetivo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIARIO DE TRADING -->
+    <div class="content-area" id="sec-diario">
+      <div class="page-header">
+        <div class="page-title">Diario de Trading</div>
+        <div class="page-sub">Reflexiones diarias para mejorar como trader</div>
+      </div>
+
+      <div class="two-col">
+        <!-- EDITOR -->
+        <div class="card journal-editor">
+          <div class="journal-date-nav">
+            <button class="btn-icon" id="journalPrevDay"><i class="ti ti-chevron-left"></i></button>
+            <input type="date" class="journal-date-input" id="journalDate">
+            <button class="btn-icon" id="journalNextDay"><i class="ti ti-chevron-right"></i></button>
+            <button class="btn-secondary" id="journalToday" style="margin-left:6px;padding:5px 12px;font-size:11.5px;">Hoy</button>
+          </div>
+
+          <!-- Estado mental -->
+          <div class="journal-section">
+            <div class="tv-label">¿Cómo te encuentras hoy?</div>
+            <div class="mood-selector" id="moodSelector">
+              <div class="mood-opt" data-mood="😴" title="Sin energía">😴<span>Sin energía</span></div>
+              <div class="mood-opt" data-mood="😐" title="Normal">😐<span>Normal</span></div>
+              <div class="mood-opt" data-mood="🎯" title="Enfocado">🎯<span>Enfocado</span></div>
+              <div class="mood-opt" data-mood="🔥" title="En racha">🔥<span>En racha</span></div>
+              <div class="mood-opt" data-mood="😤" title="Frustrado">😤<span>Frustrado</span></div>
+            </div>
+          </div>
+
+          <!-- Condiciones del mercado -->
+          <div class="journal-section">
+            <div class="tv-label">Condiciones del mercado</div>
+            <div class="market-selector" id="marketSelector">
+              <div class="market-opt" data-market="Tendencial">📈 Tendencial</div>
+              <div class="market-opt" data-market="Lateral">↔️ Lateral</div>
+              <div class="market-opt" data-market="Volátil">⚡ Volátil</div>
+              <div class="market-opt" data-market="Noticias">📰 Noticias</div>
+              <div class="market-opt" data-market="Sin sesión">🚫 Sin sesión</div>
+            </div>
+          </div>
+
+          <!-- Reglas seguidas -->
+          <div class="journal-section">
+            <div class="journal-rules-row">
+              <div>
+                <div style="font-size:13px;font-weight:600;">¿Has seguido tus reglas de trading?</div>
+                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">Honestidad ante todo</div>
+              </div>
+              <div class="rules-toggle" id="rulesToggle">
+                <button class="rules-btn active" data-val="1">✅ Sí</button>
+                <button class="rules-btn" data-val="0">❌ No</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Textareas -->
+          <div class="journal-section">
+            <div class="tv-label">¿Qué fue bien hoy?</div>
+            <textarea class="tv-input journal-ta" id="journalWentWell" rows="2" placeholder="Operaciones ejecutadas perfectamente, disciplina en el stop loss..."></textarea>
+          </div>
+          <div class="journal-section">
+            <div class="tv-label">¿Qué mejorarías?</div>
+            <textarea class="tv-input journal-ta" id="journalWentWrong" rows="2" placeholder="Entré demasiado pronto, no esperé la confirmación..."></textarea>
+          </div>
+          <div class="journal-section">
+            <div class="tv-label">Lección del día</div>
+            <textarea class="tv-input journal-ta" id="journalLessons" rows="2" placeholder="La paciencia es clave. No operar en las primeras horas de Tokio..."></textarea>
+          </div>
+          <div class="journal-section">
+            <div class="tv-label">Notas adicionales</div>
+            <textarea class="tv-input journal-ta" id="journalNotes" rows="2" placeholder="Cualquier otra observación..."></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="btn-primary" id="btnSaveJournal"><i class="ti ti-device-floppy"></i> Guardar entrada</button>
+            <button class="btn-secondary" id="btnDeleteJournal" style="display:none;"><i class="ti ti-trash"></i> Eliminar</button>
+            <span id="journalSavedMsg" style="font-size:12px;color:var(--green-mid);display:none;">✓ Guardado</span>
+          </div>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <!-- Stats rápidas del mes -->
+          <div class="card">
+            <div class="card-title"><i class="ti ti-chart-pie"></i> Este mes</div>
+            <div id="journalMonthStats"></div>
+          </div>
+          <!-- Entradas recientes -->
+          <div class="card">
+            <div class="card-title"><i class="ti ti-clock"></i> Entradas recientes</div>
+            <div id="journalHistory"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1058,6 +1159,7 @@
 <script src="/js/tools.js"></script>
 <script src="/js/risk.js"></script>
 <script src="/js/session.js"></script>
+<script src="/js/journal.js"></script>
 <script src="/js/import.js"></script>
 <script src="/js/settings.js"></script>
 <script src="/js/app.js"></script>

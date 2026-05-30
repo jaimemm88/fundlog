@@ -18,6 +18,7 @@ app.use('/api/goals',             auth, require('./routes/goals'));
 app.use('/api/analysis',          auth, require('./routes/analysis'));
 app.use('/api/economic-calendar', auth, require('./routes/economic-calendar'));
 app.use('/api/risk',              auth, require('./routes/risk'));
+app.use('/api/journal',           auth, require('./routes/journal'));
 
 // Login page — cualquier ruta no-API sirve el index o login
 app.get('/',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));

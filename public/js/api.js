@@ -84,6 +84,13 @@ const API = {
     update: (id,d) => API.put(`/api/economic-calendar/${id}`, d),
     delete: (id)   => API.delete(`/api/economic-calendar/${id}`),
   },
+  // Journal
+  journal: {
+    list:   (p)    => API.get('/api/journal', p),
+    getDay: (date) => API.get(`/api/journal/${date}`),
+    save:   (data) => API.post('/api/journal', data),
+    delete: (date) => API.delete(`/api/journal/${date}`),
+  },
   // Risk
   risk: {
     get:  (p)    => API.get('/api/risk', p),
