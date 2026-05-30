@@ -160,7 +160,7 @@ const App = {
       <div style="background:#172030;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:48px 40px;max-width:460px;width:90%;text-align:center;">
         <div style="font-size:42px;margin-bottom:16px;">🔒</div>
         <h2 style="font-size:24px;font-weight:800;color:#EFF6FF;margin-bottom:10px;letter-spacing:-0.03em;">Tu prueba ha terminado</h2>
-        <p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:28px;">Activa tu plan Pro para seguir usando FundLog sin límites. Acceso completo por solo <strong style="color:#85B7EB;">€9/mes</strong>.</p>
+        <p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:28px;">Activa tu plan para seguir usando FundLog sin límites. Acceso completo por solo <strong style="color:#85B7EB;">€13,99/mes</strong>.</p>
         <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;margin-bottom:28px;text-align:left;">
           <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Incluye todo</div>
           ${['Operaciones ilimitadas','Análisis avanzado completo','Calendario económico','Diario de trading','Alertas de riesgo','Importar CSV de MetaTrader'].map(f => `<div style="font-size:13px;color:#EFF6FF;padding:4px 0;display:flex;align-items:center;gap:8px;"><span style="color:#1D9E75;">✓</span> ${f}</div>`).join('')}
