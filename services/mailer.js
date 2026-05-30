@@ -62,12 +62,14 @@ async function sendTradeReminder(user, daysMissed = 1) {
     appUrl,
   });
 
-  await resend.emails.send({
+  const r1 = await resend.emails.send({
     from:    getFromAddress(),
     to:      user.email,
     subject: `${firstName}, ¿ya tienes tus operaciones de hoy? 📊`,
     html,
   });
+  console.log('📧 Resend reminder result:', JSON.stringify(r1));
+  if (r1.error) throw new Error(r1.error.message || JSON.stringify(r1.error));
 }
 
 // ── Email: bienvenida al registrarse ─────────────────────────────────────────
@@ -113,12 +115,14 @@ async function sendWelcomeEmail(user) {
     appUrl,
   });
 
-  await resend.emails.send({
+  const r2 = await resend.emails.send({
     from:    getFromAddress(),
     to:      user.email,
     subject: `Bienvenido a FundLog, ${firstName} 🎯`,
     html,
   });
+  console.log('📧 Resend welcome result:', JSON.stringify(r2));
+  if (r2.error) throw new Error(r2.error.message || JSON.stringify(r2.error));
 }
 
 // ── Template base ─────────────────────────────────────────────────────────────
