@@ -165,11 +165,25 @@ const App = {
           <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Incluye todo</div>
           ${['Operaciones ilimitadas','Análisis avanzado completo','Calendario económico','Diario de trading','Alertas de riesgo','Importar CSV de MetaTrader'].map(f => `<div style="font-size:13px;color:#EFF6FF;padding:4px 0;display:flex;align-items:center;gap:8px;"><span style="color:#1D9E75;">✓</span> ${f}</div>`).join('')}
         </div>
-        <a href="mailto:hola@fundlog.es?subject=Quiero activar mi plan Pro" style="display:block;background:linear-gradient(135deg,#1A3A6A,#2B72C8);color:#fff;padding:14px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px;box-shadow:0 4px 16px rgba(55,138,221,0.4);">→ Activar plan Pro — €9/mes</a>
+        <button onclick="App._goToCheckout(this)" style="display:block;width:100%;background:linear-gradient(135deg,#1A3A6A,#2B72C8);color:#fff;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:inherit;margin-bottom:12px;box-shadow:0 4px 16px rgba(55,138,221,0.4);">→ Activar plan Pro — €13,99/mes</button>
         <button onclick="document.getElementById('paywallOverlay').remove()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;font-family:inherit;">Cerrar y continuar (acceso limitado)</button>
       </div>
     `;
     document.body.appendChild(overlay);
+  },
+
+  async _goToCheckout(btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '⏳ Redirigiendo a pago...';
+    btn.disabled  = true;
+    try {
+      const res = await API.post('/api/stripe/checkout', {});
+      window.location.href = res.url;
+    } catch(e) {
+      UI.toast(e.message, 'error');
+      btn.innerHTML = orig;
+      btn.disabled  = false;
+    }
   },
 
   async checkRiskAlerts() {
@@ -275,6 +289,12 @@ const App = {
     document.getElementById('btnSaveFunding')?.addEventListener('click', () => Funding.save());
     document.getElementById('btnSaveGoal')?.addEventListener('click', () => Progress.save());
     document.getElementById('btnSaveRisk')?.addEventListener('click', () => Risk.save(App.activeAccountId));
+    document.getElementById('btnManageBilling')?.addEventListener('click', async () => {
+      try {
+        const res = await API.post('/api/stripe/portal', {});
+        window.location.href = res.url;
+      } catch(e) { UI.toast(e.message, 'error'); }
+    });
     document.getElementById('btnSaveProfile')?.addEventListener('click', () => Settings.saveProfile());
     document.getElementById('btnSavePwd')?.addEventListener('click', () => Settings.savePassword());
     document.getElementById('btnExportData')?.addEventListener('click', () => Settings.exportData());

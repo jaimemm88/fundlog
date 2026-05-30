@@ -19,6 +19,8 @@ app.use('/api/analysis',          auth, require('./routes/analysis'));
 app.use('/api/economic-calendar', auth, require('./routes/economic-calendar'));
 app.use('/api/risk',              auth, require('./routes/risk'));
 app.use('/api/journal',           auth, require('./routes/journal'));
+// Stripe webhook necesita raw body ANTES del json parser — se registra dentro de la ruta
+app.use('/api/stripe',                  require('./routes/stripe'));
 
 // Login page — cualquier ruta no-API sirve el index o login
 app.get('/',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
