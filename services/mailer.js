@@ -1,15 +1,17 @@
 // ─── Email Service (Resend) ───────────────────────────────────────────────────
+const { Resend }     = require('resend');
 const { getSetting } = require('./calendarSync');
 
 function getResend() {
   const key = process.env.RESEND_API_KEY || getSetting('RESEND_API_KEY');
-  if (!key) throw new Error('RESEND_API_KEY no configurada');
-  const { Resend } = require('resend');
+  console.log(`📧 RESEND_API_KEY presente: ${!!key} (${key ? key.substring(0,8)+'...' : 'no'})`);
+  if (!key) throw new Error('RESEND_API_KEY no configurada en Render');
   return new Resend(key);
 }
 
 function getFromAddress() {
-  return process.env.RESEND_FROM || getSetting('RESEND_FROM') || 'FundLog <noreply@fundlog.es>';
+  // Usar solo el email sin display name para evitar problemas
+  return process.env.RESEND_FROM || 'noreply@fundlog.es';
 }
 
 // ── Email: recordatorio de operaciones ───────────────────────────────────────
