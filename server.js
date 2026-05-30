@@ -4,7 +4,7 @@ const auth    = require('./middleware/auth');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 // Rutas públicas (sin auth)
 app.use('/api/auth', require('./routes/auth'));
