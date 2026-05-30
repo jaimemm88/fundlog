@@ -28,8 +28,12 @@ router.post('/register', async (req, res) => {
   // Email de bienvenida (async)
   try {
     const { sendWelcomeEmail } = require('../services/mailer');
-    sendWelcomeEmail(user).catch(() => {});
-  } catch(e) {}
+    sendWelcomeEmail(user)
+      .then(() => console.log(`📧 Bienvenida enviada a ${user.email}`))
+      .catch(e  => console.error(`📧 ERROR email bienvenida: ${e.message}`));
+  } catch(e) {
+    console.error(`📧 ERROR require mailer: ${e.message}`);
+  }
 });
 
 // ── Login ─────────────────────────────────────────────────────────────────────
@@ -81,14 +85,19 @@ router.put('/password', require('../middleware/auth'), async (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Test email ────────────────────────────────────────────────────────────────
+// ── Test email (con log detallado) ────────────────────────────────────────────
 router.post('/email-test', require('../middleware/auth'), async (req, res) => {
   try {
+    const key = process.env.RESEND_API_KEY;
+    const from = process.env.RESEND_FROM || 'FundLog <noreply@fundlog.es>';
+    console.log(`📧 Test — KEY configurada: ${!!key} | FROM: ${from}`);
+
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
     const { sendTradeReminder } = require('../services/mailer');
     await sendTradeReminder(user, 1);
-    res.json({ ok: true });
+    res.json({ ok: true, to: user.email, key_set: !!key });
   } catch(e) {
+    console.error(`📧 ERROR test: ${e.message}`);
     res.status(500).json({ error: e.message });
   }
 });
