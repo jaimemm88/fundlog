@@ -35,19 +35,18 @@ app.listen(PORT, () => {
 
 async function autoSyncCalendar() {
   try {
-    const { getSetting, syncFromFinnhub } = require('./services/calendarSync');
-    const apiKey = getSetting('FINNHUB_API_KEY');
-    if (!apiKey) return;
-    const lastSync = getSetting('LAST_ECO_SYNC');
-    if (lastSync && Date.now() - new Date(lastSync).getTime() < 6 * 60 * 60 * 1000) {
+    const { getSetting }      = require('./services/calendarSync');
+    const { syncForexFactory } = require('./services/ffCalendar');
+    const lastSync = getSetting('LAST_FF_SYNC');
+    if (lastSync && Date.now() - new Date(lastSync).getTime() < 12 * 60 * 60 * 1000) {
       console.log('📅 Cal. Económico: sincronización reciente, omitiendo.');
       return;
     }
-    console.log('📅 Sincronizando calendario económico...');
-    const result = await syncFromFinnhub(apiKey, 4);
-    console.log(`✅ Cal. Económico: ${result.inserted} nuevos, ${result.updated} actualizados.`);
+    console.log('📅 Sincronizando calendario económico (ForexFactory)...');
+    const result = await syncForexFactory();
+    console.log(`✅ Cal. Económico: ${result.total} eventos.`);
   } catch (e) {
     console.log(`⚠️  Cal. Económico: ${e.message}`);
   }
 }
-setInterval(autoSyncCalendar, 6 * 60 * 60 * 1000);
+setInterval(autoSyncCalendar, 12 * 60 * 60 * 1000);

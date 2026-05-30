@@ -30,10 +30,9 @@ router.post('/settings', (req, res) => {
 });
 
 router.post('/sync', async (req, res) => {
-  const apiKey = getSetting('FINNHUB_API_KEY');
-  if (!apiKey) return res.status(400).json({ error: 'No has configurado la API key de Finnhub' });
   try {
-    const result = await syncFromFinnhub(apiKey, 4);
+    const { syncForexFactory } = require('../services/ffCalendar');
+    const result = await syncForexFactory();
     res.json({ ok: true, ...result });
   } catch (e) {
     res.status(500).json({ error: e.message });

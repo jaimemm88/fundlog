@@ -467,27 +467,19 @@
         <div class="page-sub">Eventos macroeconómicos · Sincronizado con Finnhub</div>
       </div>
 
-      <!-- Panel de configuración Finnhub -->
+      <!-- Panel ForexFactory -->
       <div class="card eco-config-card" id="ecoConfigCard" style="margin-bottom:14px;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <div class="eco-config-icon">
-            <i class="ti ti-plug-connected"></i>
+          <div class="eco-config-icon" style="background:var(--green-light);">
+            <i class="ti ti-calendar-stats" style="color:var(--green);"></i>
           </div>
-          <div style="flex:1;min-width:200px;">
-            <div style="font-size:13px;font-weight:600;margin-bottom:2px;">Finnhub — API Key</div>
-            <div id="ecoSyncStatus" style="font-size:11.5px;color:var(--text-secondary);">Comprobando configuración...</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px;">ForexFactory Calendar</div>
+            <div id="ecoSyncStatus" style="font-size:11.5px;color:var(--text-secondary);">
+              <span class="eco-sync-ok">✓ Conectado · Sin API key necesaria · Datos en tiempo real</span>
+            </div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <input class="tv-input" id="ecoApiKeyInput" type="password"
-              placeholder="Pega tu API key de finnhub.io"
-              style="width:240px;font-family:'JetBrains Mono',monospace;font-size:11.5px;">
-            <button class="btn-primary" id="btnSaveApiKey" style="white-space:nowrap;">
-              <i class="ti ti-check"></i> Guardar key
-            </button>
-            <a href="https://finnhub.io/register" target="_blank" class="btn-secondary" style="white-space:nowrap;text-decoration:none;">
-              <i class="ti ti-external-link"></i> Obtener gratis
-            </a>
-          </div>
+          <span id="ecoLastSync" style="font-size:11px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;"></span>
         </div>
       </div>
 

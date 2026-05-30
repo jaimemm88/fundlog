@@ -11,6 +11,7 @@
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.10.0",
     "express": "^4.22.2",
+    "fast-xml-parser": "^5.8.0",
     "jsonwebtoken": "^9.0.3",
     "metaapi.cloud-sdk": "^29.3.3"
   },
