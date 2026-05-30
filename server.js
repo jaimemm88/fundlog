@@ -28,8 +28,15 @@ app.get('*',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'ind
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`\n🚀 TradeVista corriendo en http://localhost:${PORT}\n`);
+  console.log(`\n🚀 FundLog corriendo en http://localhost:${PORT}\n`);
   autoSyncCalendar();
+  // Iniciar scheduler de emails
+  try {
+    const { startScheduler } = require('./services/emailScheduler');
+    startScheduler();
+  } catch(e) {
+    console.log('⚠️ Email scheduler:', e.message);
+  }
 });
 
 async function autoSyncCalendar() {

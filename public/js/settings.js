@@ -2,15 +2,52 @@
 const Settings = {
 
   load() {
-    // Rellenar perfil con datos actuales
     const user = JSON.parse(localStorage.getItem('tv_user') || '{}');
     const nameEl  = document.getElementById('set-name');
     const emailEl = document.getElementById('set-email');
     if (nameEl)  nameEl.value  = user.name  || '';
     if (emailEl) emailEl.value = user.email || '';
-
-    // Sincronizar estado del toggle grande con el estado actual
     Theme.syncToggle();
+    Settings._loadEmailConfig();
+
+    document.getElementById('btnSaveEmailConfig')?.addEventListener('click', Settings.saveEmailConfig);
+    document.getElementById('btnTestEmail')?.addEventListener('click', Settings.sendTestEmail);
+  },
+
+  async _loadEmailConfig() {
+    try {
+      const cfg = await API.get('/api/auth/email-config');
+      const el  = document.getElementById('emailConfigStatus');
+      if (el) {
+        el.innerHTML = cfg.configured
+          ? `<span style="color:var(--green-mid);">✓ Conectado · Key: ${cfg.masked}</span>`
+          : `<span style="color:var(--amber);">⚠️ Sin configurar — regístrate gratis en <a href="https://resend.com" target="_blank" style="color:var(--accent);">resend.com</a></span>`;
+      }
+      if (cfg.from)    document.getElementById('set-resend-from').value = cfg.from;
+      if (cfg.app_url) document.getElementById('set-app-url').value     = cfg.app_url;
+    } catch(e) {}
+  },
+
+  async saveEmailConfig() {
+    const data = {
+      resend_api_key: document.getElementById('set-resend-key').value.trim(),
+      resend_from:    document.getElementById('set-resend-from').value.trim(),
+      app_url:        document.getElementById('set-app-url').value.trim(),
+    };
+    try {
+      await API.post('/api/auth/email-config', data);
+      UI.toast('Configuración de email guardada', 'success');
+      document.getElementById('set-resend-key').value = '';
+      Settings._loadEmailConfig();
+    } catch(e) { UI.toast(e.message, 'error'); }
+  },
+
+  async sendTestEmail() {
+    try {
+      const user = JSON.parse(localStorage.getItem('tv_user') || '{}');
+      await API.post('/api/auth/email-test', { email: user.email });
+      UI.toast('Email de prueba enviado a ' + user.email, 'success');
+    } catch(e) { UI.toast(e.message, 'error'); }
   },
 
   // ── Guardar perfil ──────────────────────────────────────────────────────────

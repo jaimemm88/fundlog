@@ -13,7 +13,9 @@
     "express": "^4.22.2",
     "fast-xml-parser": "^5.8.0",
     "jsonwebtoken": "^9.0.3",
-    "metaapi.cloud-sdk": "^29.3.3"
+    "metaapi.cloud-sdk": "^29.3.3",
+    "node-cron": "^4.2.1",
+    "resend": "^6.12.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

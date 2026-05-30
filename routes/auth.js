@@ -24,6 +24,12 @@ router.post('/register', async (req, res) => {
   const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(r.lastInsertRowid);
 
   res.json({ token: makeToken(user), user: { id: user.id, name: user.name, email: user.email } });
+
+  // Email de bienvenida (async)
+  try {
+    const { sendWelcomeEmail } = require('../services/mailer');
+    sendWelcomeEmail(user).catch(() => {});
+  } catch(e) {}
 });
 
 // ── Login ─────────────────────────────────────────────────────────────────────
@@ -73,6 +79,39 @@ router.put('/password', require('../middleware/auth'), async (req, res) => {
   const hash = await bcrypt.hash(new_password, 12);
   db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hash, req.user.id);
   res.json({ ok: true });
+});
+
+// ── Test email ────────────────────────────────────────────────────────────────
+router.post('/email-test', require('../middleware/auth'), async (req, res) => {
+  try {
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+    const { sendTradeReminder } = require('../services/mailer');
+    await sendTradeReminder(user, 1);
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Configurar API de emails ──────────────────────────────────────────────────
+router.post('/email-config', require('../middleware/auth'), (req, res) => {
+  const { resend_api_key, resend_from, app_url } = req.body;
+  const { setSetting } = require('../services/calendarSync');
+  if (resend_api_key) setSetting('RESEND_API_KEY', resend_api_key.trim());
+  if (resend_from)    setSetting('RESEND_FROM', resend_from.trim());
+  if (app_url)        setSetting('APP_URL', app_url.trim());
+  res.json({ ok: true });
+});
+
+router.get('/email-config', require('../middleware/auth'), (req, res) => {
+  const { getSetting } = require('../services/calendarSync');
+  const key = getSetting('RESEND_API_KEY');
+  res.json({
+    configured: !!key,
+    masked: key ? key.substring(0, 8) + '••••••••' : '',
+    from:   getSetting('RESEND_FROM') || '',
+    app_url:getSetting('APP_URL') || '',
+  });
 });
 
 module.exports = router;
