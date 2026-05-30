@@ -1,0 +1,38 @@
+<svg width="480" height="120" viewBox="0 0 480 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Icono -->
+  <rect width="120" height="120" rx="28" fill="url(#dGrad)"/>
+  <rect width="120" height="120" rx="28" fill="url(#dSheen)" opacity="0.35"/>
+  <path d="M22 91 L41 70 L62 81 L94 38"
+        stroke="rgba(255,255,255,0.88)" stroke-width="7.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="94" cy="38" r="15.5" fill="rgba(255,255,255,0.12)"/>
+  <circle cx="94" cy="38" r="10" fill="white"/>
+  <circle cx="94" cy="38" r="5.5" fill="#378ADD"/>
+  <rect x="22" y="100" width="76" height="4.5" rx="2.25" fill="rgba(255,255,255,0.2)"/>
+
+  <!-- Wordmark "Fund" en blanco -->
+  <text x="144" y="78"
+        font-family="'Sora', 'Inter', system-ui, sans-serif"
+        font-size="58" font-weight="700"
+        fill="#FFFFFF"
+        letter-spacing="-2">Fund</text>
+
+  <!-- Wordmark "Log" en azul claro -->
+  <text x="298" y="78"
+        font-family="'Sora', 'Inter', system-ui, sans-serif"
+        font-size="58" font-weight="700"
+        fill="#85B7EB"
+        letter-spacing="-2">Log</text>
+
+  <defs>
+    <linearGradient id="dGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#152C4A"/>
+      <stop offset="1" stop-color="#2B72C8"/>
+    </linearGradient>
+    <linearGradient id="dSheen" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0.18"/>
+      <stop offset="0.6" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

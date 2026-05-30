@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FundLog</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- LOGO -->
+  <div class="sb-logo">
+    <div class="sb-logo-svg">
+      <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="38" height="38" rx="10" fill="url(#logoGrad)"/>
+        <rect width="38" height="38" rx="10" fill="url(#logoSheen)" opacity="0.35"/>
+        <!-- Línea de tendencia alcista -->
+        <path d="M7 29 L13 22 L19.5 25.5 L29.5 12"
+              stroke="rgba(255,255,255,0.85)" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Punto de precio (peak) con halo -->
+        <circle cx="29.5" cy="12" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="29.5" cy="12" r="3.2" fill="white"/>
+        <circle cx="29.5" cy="12" r="1.6" fill="#378ADD"/>
+        <!-- Barra base -->
+        <rect x="7" y="31.5" width="24" height="1.5" rx="0.75" fill="rgba(255,255,255,0.2)"/>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#152C4A"/>
+            <stop offset="1" stop-color="#2B72C8"/>
+          </linearGradient>
+          <linearGradient id="logoSheen" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+            <stop stop-color="white" stop-opacity="0.18"/>
+            <stop offset="0.6" stop-color="white" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="sb-logo-wordmark">
+      <span class="sb-logo-trade">Fund</span><span class="sb-logo-vista">Log</span>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="sb-nav">
+
+    <div class="sb-group-label">Vista general</div>
+
+    <div class="nav-item active" data-section="resumen" data-tip="Resumen">
+      <div class="nav-ic nav-ic--blue"><i class="ti ti-layout-dashboard"></i></div>
+      <span class="nav-label">Resumen</span>
+    </div>
+    <div class="nav-item" data-section="calendario" data-tip="Calendario">
+      <div class="nav-ic nav-ic--blue"><i class="ti ti-calendar-month"></i></div>
+      <span class="nav-label">Calendario</span>
+    </div>
+    <div class="nav-item" data-section="operaciones" data-tip="Operaciones">
+      <div class="nav-ic nav-ic--blue"><i class="ti ti-arrows-exchange"></i></div>
+      <span class="nav-label">Operaciones</span>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-group-label">Estrategia</div>
+
+    <div class="nav-item" data-section="estrategias" data-tip="Estrategias">
+      <div class="nav-ic nav-ic--purple"><i class="ti ti-chess-knight"></i></div>
+      <span class="nav-label">Estrategias</span>
+    </div>
+    <div class="nav-item" data-section="analisis" data-tip="Análisis">
+      <div class="nav-ic nav-ic--purple"><i class="ti ti-chart-dots"></i></div>
+      <span class="nav-label">Análisis</span>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-group-label">Finanzas</div>
+
+    <div class="nav-item" data-section="cuentas" data-tip="Cuentas">
+      <div class="nav-ic nav-ic--green"><i class="ti ti-wallet"></i></div>
+      <span class="nav-label">Cuentas</span>
+    </div>
+    <div class="nav-item" data-section="portfolio" data-tip="Portfolio">
+      <div class="nav-ic nav-ic--green"><i class="ti ti-chart-donut"></i></div>
+      <span class="nav-label">Portfolio</span>
+    </div>
+    <div class="nav-item" data-section="funding" data-tip="Movimientos">
+      <div class="nav-ic nav-ic--green"><i class="ti ti-cash-banknote"></i></div>
+      <span class="nav-label">Movimientos</span>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-group-label">Mercado</div>
+
+    <div class="nav-item" data-section="cal-eco" data-tip="Cal. Económico">
+      <div class="nav-ic nav-ic--amber"><i class="ti ti-calendar-stats"></i></div>
+      <span class="nav-label">Cal. Económico</span>
+    </div>
+    <div class="nav-item" data-section="progress" data-tip="Progress Tracker">
+      <div class="nav-ic nav-ic--amber"><i class="ti ti-trophy"></i></div>
+      <span class="nav-label">Progress Tracker</span>
+    </div>
+
+    <div class="sb-divider"></div>
+    <div class="sb-group-label">Herramientas</div>
+
+    <div class="nav-item" data-section="herramientas" data-tip="Herramientas">
+      <div class="nav-ic nav-ic--red"><i class="ti ti-tool"></i></div>
+      <span class="nav-label">Herramientas</span>
+    </div>
+    <div class="nav-item" data-section="riesgo" data-tip="Gestión de Riesgo">
+      <div class="nav-ic nav-ic--red"><i class="ti ti-shield-check"></i></div>
+      <span class="nav-label">Gestión de Riesgo</span>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="sb-footer">
+    <div class="sb-add-btn" id="btnAddAccount" data-tip="Añadir cuenta">
+      <div class="nav-ic nav-ic--ghost"><i class="ti ti-circle-plus"></i></div>
+      <span class="nav-label">Añadir cuenta</span>
+    </div>
+    <div class="sb-user" id="userRow">
+      <div class="sb-avatar" id="sb-avatar-letter">J</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name" id="sb-user-name">Usuario</div>
+        <div class="sb-user-sub" id="activeAccountLabel">Cuenta Principal</div>
+      </div>
+    </div>
+    <div class="nav-item" data-section="ajustes" data-tip="Ajustes">
+      <div class="nav-ic nav-ic--ghost"><i class="ti ti-settings"></i></div>
+      <span class="nav-label" style="color:rgba(255,255,255,0.45);">Ajustes</span>
+    </div>
+    <div class="sb-logout" id="btnLogout" data-tip="Cerrar sesión">
+      <div class="nav-ic nav-ic--ghost"><i class="ti ti-logout"></i></div>
+      <span class="nav-label" style="color:rgba(255,255,255,0.35);">Cerrar sesión</span>
+    </div>
+  </div>
+
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="dot-bg"></div>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" id="hamburger"><i class="ti ti-menu-2"></i></button>
+      <div class="breadcrumb" id="breadcrumb">Resumen</div>
+    </div>
+    <div class="topbar-right">
+      <div class="session-pill" id="sessionPill">
+        <span class="session-dot" id="sessionDot"></span>
+        <span class="session-flag" id="sessionFlag"></span>
+        <span class="session-name" id="sessionName">—</span>
+        <span class="session-clock" id="sessionClock"></span>
+      </div>
+      <select class="account-select" id="accountSelect"></select>
+      <button class="btn-icon" id="btnThemeToggle" title="Cambiar tema">
+        <i class="ti ti-sun" id="themeIcon"></i>
+      </button>
+      <button class="btn-primary" id="btnNuevaOp">
+        <i class="ti ti-plus"></i> Nueva operación
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT AREAS -->
+  <div class="content-wrap">
+
+    <!-- RESUMEN -->
+    <div class="content-area active" id="sec-resumen">
+      <div class="page-header">
+        <div class="page-title">Resumen</div>
+        <div class="page-sub" id="resumen-sub">FundLog</div>
+      </div>
+      <div class="metrics-grid" id="resumen-metrics"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-arrows-exchange"></i> Últimas operaciones</div>
+          <div id="resumen-trades"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-bar"></i> P&L acumulado</div>
+          <canvas id="chartEquity" height="130"></canvas>
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:14px;">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chess-knight"></i> Estrategias activas</div>
+          <div id="resumen-strategies"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-target"></i> Objetivos del mes</div>
+          <div id="resumen-goals"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDARIO -->
+    <div class="content-area" id="sec-calendario">
+      <div class="page-header">
+        <div class="page-title">Calendario</div>
+        <div class="page-sub" id="cal-sub">Mayo 2026</div>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="cal-nav">
+          <button class="btn-icon" id="calPrev"><i class="ti ti-chevron-left"></i></button>
+          <span class="card-title" style="margin-bottom:0;" id="calTitle"></span>
+          <button class="btn-icon" id="calNext"><i class="ti ti-chevron-right"></i></button>
+        </div>
+        <div class="cal-header">
+          <div class="cal-day-name">Lun</div><div class="cal-day-name">Mar</div>
+          <div class="cal-day-name">Mié</div><div class="cal-day-name">Jue</div>
+          <div class="cal-day-name">Vie</div><div class="cal-day-name">Sáb</div>
+          <div class="cal-day-name">Dom</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-list"></i> Operaciones del día seleccionado</div>
+          <div id="cal-day-trades"><p class="empty-state">Selecciona un día del calendario</p></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-bar"></i> Resumen mensual</div>
+          <div id="cal-monthly-stats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPERACIONES -->
+    <div class="content-area" id="sec-operaciones">
+      <div class="page-header">
+        <div class="page-title">Operaciones</div>
+        <div class="page-sub">Historial completo</div>
+      </div>
+      <div class="metrics-grid" id="ops-metrics"></div>
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title" style="margin-bottom:0;"><i class="ti ti-list"></i> Historial</div>
+          <div class="filters">
+            <button class="btn-secondary" id="btnImportCSV"><i class="ti ti-file-import"></i> Importar CSV</button>
+            <select class="tv-select" id="opsFilterResult">
+              <option value="">Todos</option>
+              <option value="win">Ganancias</option>
+              <option value="loss">Pérdidas</option>
+            </select>
+            <select class="tv-select" id="opsFilterPair">
+              <option value="">Todos los pares</option>
+            </select>
+            <input type="month" class="tv-input-sm" id="opsFilterMonth">
+            <button class="btn-icon" id="opsClearFilters" title="Limpiar filtros"><i class="ti ti-x"></i></button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;margin-top:14px;">
+          <table class="tv-table" id="tradesTable">
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Par</th><th>Tipo</th><th>Entrada</th>
+                <th>Salida</th><th>Tamaño</th><th>Estrategia</th>
+                <th>Sesión</th><th>P&L</th><th>Resultado</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="tradesBody"></tbody>
+          </table>
+        </div>
+        <div id="tradesEmpty" class="empty-state" style="display:none;">No hay operaciones con estos filtros</div>
+      </div>
+    </div>
+
+    <!-- ESTRATEGIAS -->
+    <div class="content-area" id="sec-estrategias">
+      <div class="page-header">
+        <div class="page-title">Estrategias</div>
+        <div class="page-sub">Gestión y seguimiento</div>
+      </div>
+      <div class="three-col" id="strategies-grid"></div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-title"><i class="ti ti-plus"></i> Nueva estrategia</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-row"><div class="tv-label">Nombre</div><input class="tv-input" id="strat-name" placeholder="Ej: Trend Following EUR"></div>
+          <div class="form-row"><div class="tv-label">Mercado</div><input class="tv-input" id="strat-market" placeholder="Ej: Forex, Crypto, Índices"></div>
+          <div class="form-row"><div class="tv-label">Timeframe</div><input class="tv-input" id="strat-tf" placeholder="Ej: H1, M15, D1"></div>
+          <div class="form-row"><div class="tv-label">Objetivo R:R</div><input class="tv-input" id="strat-rr" placeholder="Ej: 1:2"></div>
+        </div>
+        <div class="form-row"><div class="tv-label">Descripción</div><textarea class="tv-input" id="strat-desc" rows="2" placeholder="Describe las reglas de entrada y salida..."></textarea></div>
+        <button class="btn-primary" id="btnSaveStrat"><i class="ti ti-check"></i> Guardar estrategia</button>
+      </div>
+    </div>
+
+    <!-- ANÁLISIS -->
+    <div class="content-area" id="sec-analisis">
+      <div class="page-header">
+        <div class="page-title">Análisis</div>
+        <div class="page-sub">Estadísticas avanzadas</div>
+      </div>
+      <div class="metrics-grid" id="analysis-metrics"></div>
+
+      <!-- Curva de equity con drawdown -->
+      <div class="card" style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div class="card-title" style="margin-bottom:0;"><i class="ti ti-trending-up"></i> Curva de equity + Drawdown</div>
+          <div style="display:flex;gap:16px;font-size:11px;">
+            <span style="display:flex;align-items:center;gap:5px;"><span style="width:12px;height:3px;background:#378ADD;border-radius:2px;display:inline-block;"></span>Equity</span>
+            <span style="display:flex;align-items:center;gap:5px;"><span style="width:12px;height:8px;background:rgba(216,90,48,0.25);border-radius:2px;display:inline-block;"></span>Drawdown</span>
+          </div>
+        </div>
+        <canvas id="chartEquityFull" height="110"></canvas>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-bar"></i> P&L por par de divisas</div>
+          <canvas id="chartByPair" height="200"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-clock"></i> Rendimiento por sesión</div>
+          <canvas id="chartBySession" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:14px;">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-calendar-week"></i> P&L por día de la semana</div>
+          <canvas id="chartByWeekday" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-histogram"></i> Distribución de P&L</div>
+          <canvas id="chartPnlDist" height="180"></canvas>
+        </div>
+      </div>
+
+      <!-- Heatmap mensual -->
+      <div class="card" style="margin-top:14px;">
+        <div class="card-title"><i class="ti ti-calendar-stats"></i> Heatmap de rendimiento mensual</div>
+        <div id="analysisHeatmap"></div>
+      </div>
+
+      <!-- Stats clave + por estrategia -->
+      <div class="two-col" style="margin-top:14px;">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-percentage"></i> Estadísticas clave</div>
+          <div id="analysis-key-stats"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chess-knight"></i> P&L por estrategia</div>
+          <canvas id="chartByStrategy" height="180"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUENTAS -->
+    <div class="content-area" id="sec-cuentas">
+      <div class="page-header">
+        <div class="page-title">Cuentas</div>
+        <div class="page-sub">Gestión de cuentas de trading</div>
+      </div>
+      <div class="three-col" id="accounts-grid"></div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-title"><i class="ti ti-plus"></i> Añadir nueva cuenta</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+          <div class="form-row"><div class="tv-label">Nombre</div><input class="tv-input" id="acc-name" placeholder="Cuenta Principal"></div>
+          <div class="form-row"><div class="tv-label">Broker</div><input class="tv-input" id="acc-broker" placeholder="IC Markets, FTMO..."></div>
+          <div class="form-row"><div class="tv-label">Plataforma</div><input class="tv-input" id="acc-platform" placeholder="MT4, MT5, cTrader..."></div>
+          <div class="form-row"><div class="tv-label">Balance inicial</div><input class="tv-input" id="acc-balance" type="number" placeholder="10000"></div>
+          <div class="form-row"><div class="tv-label">Divisa</div>
+            <select class="tv-input" id="acc-currency">
+              <option>USD</option><option>EUR</option><option>GBP</option><option>CHF</option>
+            </select>
+          </div>
+          <div class="form-row"><div class="tv-label">Tipo</div>
+            <select class="tv-input" id="acc-type">
+              <option value="fase1">Fase 1</option>
+              <option value="fase2">Fase 2</option>
+              <option value="funded">Funded</option>
+              <option value="propio">Capital Propio</option>
+            </select>
+          </div>
+          <div class="form-row" id="acc-target-row">
+            <div class="tv-label">Objetivo de beneficio (%)</div>
+            <input class="tv-input" id="acc-target" type="number" step="0.5" placeholder="Ej: 8 para Fase 1, 5 para Fase 2">
+          </div>
+        </div>
+        <button class="btn-primary" id="btnSaveAccount"><i class="ti ti-check"></i> Añadir cuenta</button>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="content-area" id="sec-portfolio">
+      <div class="page-header">
+        <div class="page-title">Portfolio</div>
+        <div class="page-sub">Distribución de activos y rendimiento</div>
+      </div>
+      <div class="metrics-grid" id="portfolio-metrics"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-chart-donut"></i> Distribución por tipo de cuenta</div>
+          <div style="max-width:320px;margin:0 auto;"><canvas id="chartPortfolioDoughnut"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-trending-up"></i> P&L mensual por cuenta</div>
+          <canvas id="chartPortfolioMonthly" height="200"></canvas>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-title"><i class="ti ti-list"></i> Detalle de cuentas</div>
+        <table class="tv-table">
+          <thead><tr><th>Cuenta</th><th>Broker</th><th>Tipo</th><th>Balance</th><th>P&L (ops)</th><th>Win Rate</th></tr></thead>
+          <tbody id="portfolioTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FUNDING -->
+    <div class="content-area" id="sec-funding">
+      <div class="page-header">
+        <div class="page-title">Movimientos</div>
+        <div class="page-sub">Control de depósitos, retiros y comisiones</div>
+      </div>
+      <div class="metrics-grid" id="funding-metrics"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-list"></i> Historial de movimientos</div>
+          <table class="tv-table">
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cuenta</th><th>Importe</th><th>Notas</th><th></th></tr></thead>
+            <tbody id="fundingBody"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-plus"></i> Registrar movimiento</div>
+          <div class="form-row"><div class="tv-label">Tipo</div>
+            <select class="tv-input" id="fund-type">
+              <option value="deposit">Depósito</option>
+              <option value="withdrawal">Retiro</option>
+              <option value="commission">Comisión</option>
+            </select>
+          </div>
+          <div class="form-row"><div class="tv-label">Cuenta</div>
+            <select class="tv-input" id="fund-account"></select>
+          </div>
+          <div class="form-row"><div class="tv-label">Importe ($)</div>
+            <input class="tv-input" id="fund-amount" type="number" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-row"><div class="tv-label">Fecha</div>
+            <input class="tv-input" id="fund-date" type="date">
+          </div>
+          <div class="form-row"><div class="tv-label">Notas</div>
+            <input class="tv-input" id="fund-notes" placeholder="Descripción opcional">
+          </div>
+          <button class="btn-primary" id="btnSaveFunding"><i class="ti ti-check"></i> Registrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDARIO ECONÓMICO -->
+    <div class="content-area" id="sec-cal-eco">
+      <div class="page-header">
+        <div class="page-title">Calendario Económico</div>
+        <div class="page-sub">Eventos macroeconómicos · Sincronizado con Finnhub</div>
+      </div>
+
+      <!-- Panel de configuración Finnhub -->
+      <div class="card eco-config-card" id="ecoConfigCard" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div class="eco-config-icon">
+            <i class="ti ti-plug-connected"></i>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:2px;">Finnhub — API Key</div>
+            <div id="ecoSyncStatus" style="font-size:11.5px;color:var(--text-secondary);">Comprobando configuración...</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input class="tv-input" id="ecoApiKeyInput" type="password"
+              placeholder="Pega tu API key de finnhub.io"
+              style="width:240px;font-family:'JetBrains Mono',monospace;font-size:11.5px;">
+            <button class="btn-primary" id="btnSaveApiKey" style="white-space:nowrap;">
+              <i class="ti ti-check"></i> Guardar key
+            </button>
+            <a href="https://finnhub.io/register" target="_blank" class="btn-secondary" style="white-space:nowrap;text-decoration:none;">
+              <i class="ti ti-external-link"></i> Obtener gratis
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de filtros y sync -->
+      <div class="card-title-row" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="ecoLastSync" style="font-size:11px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;"></span>
+        </div>
+        <div class="filters">
+          <select class="tv-select" id="ecoFilterCurrency">
+            <option value="">Todas las monedas</option>
+            <option value="USD">🇺🇸 USD</option>
+            <option value="EUR">🇪🇺 EUR</option>
+            <option value="GBP">🇬🇧 GBP</option>
+            <option value="JPY">🇯🇵 JPY</option>
+            <option value="CAD">🇨🇦 CAD</option>
+            <option value="AUD">🇦🇺 AUD</option>
+            <option value="CHF">🇨🇭 CHF</option>
+            <option value="NZD">🇳🇿 NZD</option>
+            <option value="CNY">🇨🇳 CNY</option>
+          </select>
+          <select class="tv-select" id="ecoFilterImpact">
+            <option value="">Todos los impactos</option>
+            <option value="high" selected>🔴 Alto impacto</option>
+            <option value="medium">🟡 Medio impacto</option>
+            <option value="low">🟢 Bajo impacto</option>
+          </select>
+          <button class="btn-primary" id="btnSyncEco" style="background:var(--green);">
+            <i class="ti ti-refresh"></i> Sincronizar
+          </button>
+          <button class="btn-secondary" id="btnAddEcoEvent">
+            <i class="ti ti-plus"></i> Añadir manual
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="ecoCalendar"></div>
+      </div>
+    </div>
+
+    <!-- PROGRESS TRACKER -->
+    <div class="content-area" id="sec-progress">
+      <div class="page-header">
+        <div class="page-title">Progress Tracker</div>
+        <div class="page-sub">Seguimiento de objetivos y metas</div>
+      </div>
+      <div class="metrics-grid" id="progress-metrics"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-trophy"></i> Objetivos activos</div>
+          <div id="goals-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-plus"></i> Nuevo objetivo</div>
+          <div class="form-row"><div class="tv-label">Nombre del objetivo</div>
+            <input class="tv-input" id="goal-name" placeholder="Ej: Alcanzar $1.000 de P&L">
+          </div>
+          <div class="form-row"><div class="tv-label">Métrica</div>
+            <select class="tv-input" id="goal-metric">
+              <option value="pnl">P&L (€)</option>
+              <option value="winrate">Win Rate (%)</option>
+              <option value="drawdown">Drawdown máx. (%)</option>
+              <option value="trades">Número de operaciones</option>
+            </select>
+          </div>
+          <div class="form-row"><div class="tv-label">Valor objetivo</div>
+            <input class="tv-input" id="goal-target" type="number" placeholder="0">
+          </div>
+          <div class="form-row"><div class="tv-label">Valor actual</div>
+            <input class="tv-input" id="goal-current" type="number" placeholder="0">
+          </div>
+          <div class="form-row"><div class="tv-label">Fecha límite</div>
+            <input class="tv-input" id="goal-deadline" type="date">
+          </div>
+          <button class="btn-primary" id="btnSaveGoal"><i class="ti ti-check"></i> Crear objetivo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERRAMIENTAS -->
+    <div class="content-area" id="sec-herramientas">
+      <div class="page-header">
+        <div class="page-title">Herramientas</div>
+        <div class="page-sub">Calculadoras y utilidades para trading</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;">
+        <div class="tool-card" data-goto="riesgo">
+          <div class="tool-icon"><i class="ti ti-shield-check"></i></div>
+          <div class="tool-name">Gestión de Riesgo</div>
+          <div class="tool-desc">Calcula el tamaño de posición óptimo según tu riesgo por operación.</div>
+        </div>
+        <div class="tool-card" id="toolPipCard">
+          <div class="tool-icon" style="background:#FAEEDA;"><i class="ti ti-calculator" style="color:#BA7517;"></i></div>
+          <div class="tool-name">Calculadora Pip</div>
+          <div class="tool-desc">Convierte pips a valor monetario en cualquier par de divisas.</div>
+        </div>
+        <div class="tool-card" id="toolRRCard">
+          <div class="tool-icon" style="background:#EEEDFE;"><i class="ti ti-percentage" style="color:#534AB7;"></i></div>
+          <div class="tool-name">Calculadora R:R</div>
+          <div class="tool-desc">Visualiza y ajusta el ratio riesgo/recompensa de tus operaciones.</div>
+        </div>
+        <div class="tool-card" id="toolExpCard">
+          <div class="tool-icon" style="background:#E1F5EE;"><i class="ti ti-math-function" style="color:#0F6E56;"></i></div>
+          <div class="tool-name">Expectativa Matemática</div>
+          <div class="tool-desc">Calcula la expectativa de tu sistema de trading.</div>
+        </div>
+        <div class="tool-card" id="toolDDCard">
+          <div class="tool-icon" style="background:#FCEBEB;"><i class="ti ti-trending-down" style="color:#A32D2D;"></i></div>
+          <div class="tool-name">Recuperación de Drawdown</div>
+          <div class="tool-desc">Cuánto necesitas ganar para recuperar un drawdown dado.</div>
+        </div>
+      </div>
+
+      <!-- Calculadora tamaño posición -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title"><i class="ti ti-calculator"></i> Calculadora de tamaño de posición</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;align-items:end;">
+          <div><div class="tv-label">Balance ($)</div><input class="tv-input" id="tool-balance" type="number" value="10000" oninput="Tools.calcPosition()"></div>
+          <div><div class="tv-label">Riesgo (%)</div><input class="tv-input" id="tool-risk" type="number" value="1" step="0.1" oninput="Tools.calcPosition()"></div>
+          <div><div class="tv-label">Stop Loss (pips)</div><input class="tv-input" id="tool-sl" type="number" value="20" oninput="Tools.calcPosition()"></div>
+          <div><div class="tv-label">Valor pip ($/pip/lot)</div><input class="tv-input" id="tool-pipval" type="number" value="10" oninput="Tools.calcPosition()"></div>
+        </div>
+        <div class="calc-result">
+          <div><div class="tv-label">Importe en riesgo</div><div class="calc-val" id="tool-amount">€100.00</div></div>
+          <div><div class="tv-label">Tamaño de posición</div><div class="calc-val accent" id="tool-size">0.50 lotes</div></div>
+          <div><div class="tv-label">Stop en €</div><div class="calc-val" id="tool-stop-eur">€100.00</div></div>
+        </div>
+      </div>
+
+      <!-- Calculadora Pip -->
+      <div class="card" style="margin-bottom:14px;" id="pipCalcCard">
+        <div class="card-title"><i class="ti ti-calculator"></i> Calculadora de valor de pip</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;align-items:end;">
+          <div><div class="tv-label">Par</div>
+            <select class="tv-input" id="pip-pair" onchange="Tools.calcPip()">
+              <option value="10">EUR/USD · GBP/USD · AUD/USD (10 €/pip/lot)</option>
+              <option value="7.5">USD/JPY (≈7.5 €/pip/lot)</option>
+              <option value="12.5">GBP/JPY (≈12.5 €/pip/lot)</option>
+              <option value="10">XAU/USD (10 $/pip/lot)</option>
+            </select>
+          </div>
+          <div><div class="tv-label">Pips</div><input class="tv-input" id="pip-pips" type="number" value="20" oninput="Tools.calcPip()"></div>
+          <div><div class="tv-label">Tamaño (lotes)</div><input class="tv-input" id="pip-lots" type="number" value="0.5" step="0.01" oninput="Tools.calcPip()"></div>
+          <div><div class="tv-label">Resultado</div><div class="calc-val accent" id="pip-result">€100.00</div></div>
+        </div>
+      </div>
+
+      <!-- Calculadora R:R -->
+      <div class="card" style="margin-bottom:14px;" id="rrCalcCard">
+        <div class="card-title"><i class="ti ti-percentage"></i> Calculadora de Ratio R:R</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:14px;align-items:end;">
+          <div><div class="tv-label">Precio entrada</div><input class="tv-input" id="rr-entry" type="number" step="0.0001" value="1.0800" oninput="Tools.calcRR()"></div>
+          <div><div class="tv-label">Stop Loss</div><input class="tv-input" id="rr-sl" type="number" step="0.0001" value="1.0770" oninput="Tools.calcRR()"></div>
+          <div><div class="tv-label">Take Profit</div><input class="tv-input" id="rr-tp" type="number" step="0.0001" value="1.0860" oninput="Tools.calcRR()"></div>
+          <div><div class="tv-label">Ratio R:R</div><div class="calc-val accent" id="rr-ratio">1:2.00</div></div>
+          <div><div class="tv-label">Win rate mínimo</div><div class="calc-val" id="rr-minwr">33.3%</div></div>
+        </div>
+      </div>
+
+      <!-- Expectativa -->
+      <div class="two-col">
+        <div class="card" id="expCalcCard">
+          <div class="card-title"><i class="ti ti-math-function"></i> Expectativa matemática</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;">
+            <div><div class="tv-label">Win rate (%)</div><input class="tv-input" id="exp-wr" type="number" value="60" oninput="Tools.calcExpectancy()"></div>
+            <div><div class="tv-label">Ganancia media ($)</div><input class="tv-input" id="exp-win" type="number" value="150" oninput="Tools.calcExpectancy()"></div>
+            <div><div class="tv-label">Pérdida media ($)</div><input class="tv-input" id="exp-loss" type="number" value="80" oninput="Tools.calcExpectancy()"></div>
+            <div><div class="tv-label">Expectativa por op.</div><div class="calc-val accent" id="exp-result">€58.00</div></div>
+          </div>
+        </div>
+        <div class="card" id="ddCalcCard">
+          <div class="card-title"><i class="ti ti-trending-down"></i> Recuperación de drawdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;">
+            <div><div class="tv-label">Drawdown (%)</div><input class="tv-input" id="dd-pct" type="number" value="20" oninput="Tools.calcDDRecovery()"></div>
+            <div><div class="tv-label">Capital actual ($)</div><input class="tv-input" id="dd-capital" type="number" value="8000" oninput="Tools.calcDDRecovery()"></div>
+            <div><div class="tv-label">Necesitas ganar</div><div class="calc-val neg" id="dd-result">25.00%</div></div>
+            <div><div class="tv-label">Capital a recuperar</div><div class="calc-val" id="dd-amount">€2,000</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GESTIÓN DE RIESGO -->
+    <div class="content-area" id="sec-riesgo">
+      <div class="page-header">
+        <div class="page-title">Gestión de Riesgo</div>
+        <div class="page-sub">Parámetros y límites de riesgo</div>
+      </div>
+      <div class="metrics-grid" id="risk-metrics"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-settings"></i> Configuración de riesgo</div>
+          <div class="form-row"><div class="tv-label">Riesgo máximo por operación (%)</div><input class="tv-input" id="risk-per-trade" type="number" step="0.5"></div>
+          <div class="form-row"><div class="tv-label">Drawdown máximo diario (%)</div><input class="tv-input" id="risk-daily-dd" type="number" step="0.5"></div>
+          <div class="form-row"><div class="tv-label">Drawdown máximo total (%)</div><input class="tv-input" id="risk-total-dd" type="number" step="0.5"></div>
+          <div class="form-row"><div class="tv-label">Máximo de operaciones simultáneas</div><input class="tv-input" id="risk-max-trades" type="number"></div>
+          <div class="form-row"><div class="tv-label">Pérdida máxima diaria ($)</div><input class="tv-input" id="risk-max-loss" type="number"></div>
+          <button class="btn-primary" id="btnSaveRisk"><i class="ti ti-check"></i> Guardar configuración</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="ti ti-activity"></i> Estado de riesgo actual</div>
+          <div id="risk-status"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- AJUSTES -->
+    <div class="content-area" id="sec-ajustes">
+      <div class="page-header">
+        <div class="page-title">Ajustes</div>
+        <div class="page-sub">Personalización y configuración de tu cuenta</div>
+      </div>
+
+      <div class="settings-grid">
+
+        <!-- Perfil -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-card-icon" style="background:var(--accent-bg);">
+              <i class="ti ti-user" style="color:var(--accent);"></i>
+            </div>
+            <div>
+              <div class="settings-card-title">Perfil</div>
+              <div class="settings-card-sub">Tu nombre e email de acceso</div>
+            </div>
+          </div>
+          <div class="form-row"><div class="tv-label">Nombre</div><input class="tv-input" id="set-name" placeholder="Tu nombre"></div>
+          <div class="form-row"><div class="tv-label">Email</div><input class="tv-input" id="set-email" type="email" placeholder="tu@email.com"></div>
+          <button class="btn-primary" id="btnSaveProfile"><i class="ti ti-check"></i> Guardar perfil</button>
+        </div>
+
+        <!-- Seguridad -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-card-icon" style="background:#E1F5EE;">
+              <i class="ti ti-lock" style="color:var(--green);"></i>
+            </div>
+            <div>
+              <div class="settings-card-title">Seguridad</div>
+              <div class="settings-card-sub">Cambia tu contraseña de acceso</div>
+            </div>
+          </div>
+          <div class="form-row"><div class="tv-label">Contraseña actual</div><input class="tv-input" id="set-pwd-current" type="password" placeholder="••••••••"></div>
+          <div class="form-row"><div class="tv-label">Nueva contraseña</div><input class="tv-input" id="set-pwd-new" type="password" placeholder="Mínimo 6 caracteres"></div>
+          <div class="form-row"><div class="tv-label">Repetir nueva contraseña</div><input class="tv-input" id="set-pwd-confirm" type="password" placeholder="Repite la nueva contraseña"></div>
+          <button class="btn-primary" id="btnSavePwd"><i class="ti ti-lock-check"></i> Cambiar contraseña</button>
+        </div>
+
+        <!-- Apariencia -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-card-icon" style="background:#EEEDFE;">
+              <i class="ti ti-palette" style="color:var(--purple);"></i>
+            </div>
+            <div>
+              <div class="settings-card-title">Apariencia</div>
+              <div class="settings-card-sub">Personaliza el aspecto visual</div>
+            </div>
+          </div>
+          <div class="settings-toggle-row">
+            <div>
+              <div style="font-size:13px;font-weight:600;">Modo oscuro</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">Cambia el tema de claro a oscuro</div>
+            </div>
+            <button class="theme-toggle-btn" id="btnThemeToggleBig">
+              <span class="theme-toggle-track">
+                <span class="theme-toggle-thumb"></span>
+              </span>
+              <span class="theme-toggle-label" id="themeLabelBig">Claro</span>
+            </button>
+          </div>
+          <div class="settings-toggle-row" style="margin-top:14px;">
+            <div>
+              <div style="font-size:13px;font-weight:600;">Idioma</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">Idioma de la interfaz</div>
+            </div>
+            <select class="tv-input" style="width:auto;">
+              <option>🇪🇸 Español</option>
+              <option>🇬🇧 English</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Privacidad y datos -->
+        <div class="card settings-card">
+          <div class="settings-card-header">
+            <div class="settings-card-icon" style="background:var(--amber-light);">
+              <i class="ti ti-shield" style="color:var(--amber);"></i>
+            </div>
+            <div>
+              <div class="settings-card-title">Privacidad y datos</div>
+              <div class="settings-card-sub">Gestiona tus datos personales</div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div>
+              <div style="font-size:13px;font-weight:600;">Exportar mis datos</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Descarga un CSV con todas tus operaciones</div>
+            </div>
+            <button class="btn-secondary" id="btnExportData"><i class="ti ti-download"></i> Exportar</button>
+          </div>
+          <div class="stat-row">
+            <div>
+              <div style="font-size:13px;font-weight:600;">Sesiones activas</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Tu sesión actual en este dispositivo</div>
+            </div>
+            <span class="pill win">Activa</span>
+          </div>
+          <div class="stat-row" style="border-bottom:none;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--red);">Eliminar cuenta</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Esta acción es irreversible</div>
+            </div>
+            <button class="btn-danger" id="btnDeleteAccount" style="padding:7px 14px;font-size:12px;">Eliminar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content-wrap -->
+</div><!-- /main -->
+
+<!-- MODAL IMPORTAR CSV -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Importar operaciones desde CSV</h3>
+      <button class="modal-close" onclick="UI.closeModal('importModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+
+      <!-- PASO 1: Subir archivo -->
+      <div id="import-step1">
+        <div class="import-formats">
+          <div class="import-fmt-card active" data-fmt="mt5">
+            <i class="ti ti-brand-meta"></i>
+            <div class="import-fmt-name">MetaTrader 5</div>
+            <div class="import-fmt-sub">Historia → Exportar CSV</div>
+          </div>
+          <div class="import-fmt-card" data-fmt="mt4">
+            <i class="ti ti-chart-candle"></i>
+            <div class="import-fmt-name">MetaTrader 4</div>
+            <div class="import-fmt-sub">Cuenta → Historial → Guardar</div>
+          </div>
+          <div class="import-fmt-card" data-fmt="generic">
+            <i class="ti ti-file-spreadsheet"></i>
+            <div class="import-fmt-name">CSV genérico</div>
+            <div class="import-fmt-sub">Mapeo manual de columnas</div>
+          </div>
+        </div>
+
+        <div class="import-hint" id="importHint">
+          <i class="ti ti-info-circle"></i>
+          <span>En MT5: pestaña <strong>Historia</strong> → clic derecho → <strong>Guardar como reporte detallado</strong> → formato CSV</span>
+        </div>
+
+        <div class="form-row" style="margin-top:16px;">
+          <div class="tv-label">Cuenta destino</div>
+          <select class="tv-input" id="import-account"></select>
+        </div>
+
+        <div class="import-dropzone" id="importDropzone">
+          <input type="file" id="importFile" accept=".csv,.txt" style="display:none;">
+          <i class="ti ti-upload" style="font-size:32px;color:var(--accent);margin-bottom:10px;"></i>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Arrastra tu CSV aquí</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;">o haz clic para seleccionar</div>
+          <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
+            <i class="ti ti-folder-open"></i> Seleccionar archivo
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: Preview -->
+      <div id="import-step2" style="display:none;">
+        <div class="import-summary" id="importSummary"></div>
+        <div style="overflow-x:auto;max-height:320px;overflow-y:auto;margin-top:12px;">
+          <table class="tv-table" id="importPreviewTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="importSelectAll" checked></th>
+                <th>Fecha</th><th>Par</th><th>Tipo</th>
+                <th>Entrada</th><th>Salida</th><th>Tamaño</th><th>P&L</th>
+              </tr>
+            </thead>
+            <tbody id="importPreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PASO 3: Resultado -->
+      <div id="import-step3" style="display:none;">
+        <div class="import-result" id="importResult"></div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="importBtnBack" style="display:none;" onclick="Import.back()">
+        <i class="ti ti-arrow-left"></i> Atrás
+      </button>
+      <button class="btn-secondary" onclick="UI.closeModal('importModal')">Cancelar</button>
+      <button class="btn-primary" id="importBtnNext" onclick="Import.next()">
+        <i class="ti ti-arrow-right"></i> Continuar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ESTRATEGIA -->
+<div class="modal-overlay" id="stratModal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Editar estrategia</h3>
+      <button class="modal-close" onclick="UI.closeModal('stratModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-strat-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-row"><div class="tv-label">Nombre *</div><input class="tv-input" id="edit-strat-name" placeholder="Ej: Breakout Londres"></div>
+        <div class="form-row"><div class="tv-label">Mercado</div><input class="tv-input" id="edit-strat-market" placeholder="Forex, Crypto, Índices"></div>
+        <div class="form-row"><div class="tv-label">Timeframe</div><input class="tv-input" id="edit-strat-tf" placeholder="H1, M15, D1"></div>
+        <div class="form-row"><div class="tv-label">Objetivo R:R</div><input class="tv-input" id="edit-strat-rr" placeholder="1:2"></div>
+        <div class="form-row"><div class="tv-label">Estado</div>
+          <select class="tv-input" id="edit-strat-status">
+            <option value="active">Activa</option>
+            <option value="paused">Pausada</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:4px;"><div class="tv-label">Descripción</div>
+        <textarea class="tv-input" id="edit-strat-desc" rows="3" placeholder="Reglas de entrada y salida..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="UI.closeModal('stratModal')">Cancelar</button>
+      <button class="btn-primary" id="btnSaveEditStrat"><i class="ti ti-check"></i> Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CUENTA -->
+<div class="modal-overlay" id="accountModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Editar cuenta</h3>
+      <button class="modal-close" onclick="UI.closeModal('accountModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-acc-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-row"><div class="tv-label">Nombre *</div><input class="tv-input" id="edit-acc-name" placeholder="Cuenta Principal"></div>
+        <div class="form-row"><div class="tv-label">Broker</div><input class="tv-input" id="edit-acc-broker" placeholder="IC Markets, FTMO..."></div>
+        <div class="form-row"><div class="tv-label">Plataforma</div><input class="tv-input" id="edit-acc-platform" placeholder="MT4, MT5, cTrader..."></div>
+        <div class="form-row"><div class="tv-label">Tipo</div>
+          <select class="tv-input" id="edit-acc-type">
+            <option value="fase1">Fase 1</option>
+            <option value="fase2">Fase 2</option>
+            <option value="funded">Funded</option>
+            <option value="propio">Capital Propio</option>
+          </select>
+        </div>
+        <div class="form-row" id="edit-acc-target-row">
+          <div class="tv-label">Objetivo de beneficio (%)</div>
+          <input class="tv-input" id="edit-acc-target" type="number" step="0.5" placeholder="Ej: 8">
+        </div>
+        <div class="form-row"><div class="tv-label">Balance actual</div><input class="tv-input" id="edit-acc-balance" type="number" step="0.01"></div>
+        <div class="form-row"><div class="tv-label">Balance inicial</div><input class="tv-input" id="edit-acc-initial" type="number" step="0.01"></div>
+        <div class="form-row"><div class="tv-label">Divisa</div>
+          <select class="tv-input" id="edit-acc-currency">
+            <option>USD</option><option>EUR</option><option>GBP</option><option>CHF</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="UI.closeModal('accountModal')">Cancelar</button>
+      <button class="btn-primary" id="btnSaveEditAccount"><i class="ti ti-check"></i> Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA OPERACIÓN -->
+<div class="modal-overlay" id="tradeModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="tradeModalTitle">Nueva operación</h3>
+      <button class="modal-close" id="closeTradeModal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="trade-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-row">
+          <div class="tv-label">Par *</div>
+          <input class="tv-input" id="trade-pair" placeholder="EUR/USD" list="pairsList">
+          <datalist id="pairsList">
+            <option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option>
+            <option>GBP/JPY</option><option>EUR/GBP</option><option>AUD/USD</option>
+            <option>USD/CHF</option><option>XAU/USD</option><option>BTC/USD</option>
+            <option>NASDAQ</option><option>S&P500</option><option>DAX</option>
+          </datalist>
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Fecha *</div>
+          <input class="tv-input" id="trade-date" type="date">
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Tipo *</div>
+          <select class="tv-input" id="trade-type">
+            <option value="long">Long (Compra)</option>
+            <option value="short">Short (Venta)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Sesión</div>
+          <select class="tv-input" id="trade-session">
+            <option value="">— Sin especificar —</option>
+            <option value="london">🇬🇧 Londres</option>
+            <option value="ny">🇺🇸 Nueva York</option>
+            <option value="overlap">🔀 Overlap Lon/NY</option>
+            <option value="tokyo">🇯🇵 Tokio</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Precio entrada</div>
+          <input class="tv-input" id="trade-entry" type="number" step="0.00001" placeholder="1.08420">
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Precio salida</div>
+          <input class="tv-input" id="trade-exit" type="number" step="0.00001" placeholder="1.08910">
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Tamaño (lotes)</div>
+          <input class="tv-input" id="trade-size" type="number" step="0.01" placeholder="0.50">
+        </div>
+        <div class="form-row">
+          <div class="tv-label">P&L (€) *</div>
+          <input class="tv-input" id="trade-pnl" type="number" step="0.01" placeholder="120.00">
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Cuenta</div>
+          <select class="tv-input" id="trade-account"></select>
+        </div>
+        <div class="form-row">
+          <div class="tv-label">Estrategia</div>
+          <select class="tv-input" id="trade-strategy"></select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-top:6px;">
+        <div class="tv-label">Notas</div>
+        <textarea class="tv-input" id="trade-notes" rows="2" placeholder="Observaciones sobre la operación..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="cancelTradeModal">Cancelar</button>
+      <button class="btn-primary" id="btnSaveTrade"><i class="ti ti-check"></i> Guardar operación</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- SCRIPTS -->
+<script src="/js/api.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/trades.js"></script>
+<script src="/js/calendar.js"></script>
+<script src="/js/strategies.js"></script>
+<script src="/js/analysis.js"></script>
+<script src="/js/accounts.js"></script>
+<script src="/js/funding.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/tools.js"></script>
+<script src="/js/risk.js"></script>
+<script src="/js/session.js"></script>
+<script src="/js/import.js"></script>
+<script src="/js/settings.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

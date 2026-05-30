@@ -1,0 +1,455 @@
+// ─── App — Orquestador principal ──────────────────────────────────────────────
+const App = {
+  activeSection:  'resumen',
+  activeAccountId: null,
+  activeAccount:   null,
+  _accounts:       [],
+
+  async init() {
+    Theme.init();
+    UI.initInteractions();
+    MarketSession.init();
+    await App.loadAccounts();
+    App._setupNav();
+    App._setupTradeModal();
+    App._setupFilters();
+    App._setupMisc();
+    App.navigate('resumen');
+  },
+
+  // ── Accounts selector ───────────────────────────────────────────────────────
+  async loadAccounts() {
+    const accounts = await API.accounts.list().catch(() => []);
+    App._accounts = accounts;
+
+    const sel = document.getElementById('accountSelect');
+    sel.innerHTML = '<option value="">Todas las cuentas</option>' +
+      accounts.map(a => `<option value="${a.id}"${a.id == App.activeAccountId ? ' selected' : ''}>${a.name}</option>`).join('');
+
+    const active = accounts.find(a => a.id == App.activeAccountId) || null;
+    App.activeAccount   = active;
+    App.activeAccountId = active?.id || null;
+    document.getElementById('activeAccountLabel').textContent = active?.name || 'Todas las cuentas';
+    sel.value = active?.id || '';
+
+    // Populate trade modal account select
+    const tradeSel = document.getElementById('trade-account');
+    tradeSel.innerHTML = '<option value="">— Sin cuenta —</option>' +
+      accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  },
+
+  // ── Navigation ──────────────────────────────────────────────────────────────
+  _setupNav() {
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+      item.addEventListener('click', () => {
+        const section = item.dataset.section;
+        App.navigate(section);
+        // Close sidebar on mobile
+        if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+      });
+    });
+
+    document.getElementById('accountSelect').addEventListener('change', e => {
+      App.activeAccountId = e.target.value || null;
+      App.activeAccount = App._accounts.find(a => a.id == App.activeAccountId) || null;
+      document.getElementById('activeAccountLabel').textContent = App.activeAccount?.name || 'Todas';
+      App.reload();
+    });
+
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+    document.getElementById('btnLogout')?.addEventListener('click', () => {
+      if (confirm('¿Cerrar sesión?')) {
+        localStorage.removeItem('tv_token');
+        localStorage.removeItem('tv_user');
+        window.location.href = '/login';
+      }
+    });
+
+    document.getElementById('btnAddAccount').addEventListener('click', () => App.navigate('cuentas'));
+  },
+
+  navigate(section) {
+    // Hide all sections
+    document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
+    // Deactivate all nav items
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+    // Activate section
+    const el = document.getElementById(`sec-${section}`);
+    if (el) el.classList.add('active');
+
+    // Activate nav item(s)
+    document.querySelectorAll(`.nav-item[data-section="${section}"]`).forEach(el => el.classList.add('active'));
+
+    // Update breadcrumb
+    const labels = {
+      resumen: 'Resumen', calendario: 'Calendario', operaciones: 'Operaciones',
+      estrategias: 'Estrategias', analisis: 'Análisis', cuentas: 'Cuentas',
+      portfolio: 'Portfolio', funding: 'Movimientos', 'cal-eco': 'Cal. Económico',
+      progress: 'Progress Tracker', herramientas: 'Herramientas',
+      riesgo: 'Gestión de Riesgo', ajustes: 'Ajustes',
+    };
+    document.getElementById('breadcrumb').textContent = labels[section] || section;
+
+    App.activeSection = section;
+    App._loadSection(section);
+  },
+
+  _loadSection(section) {
+    const aid = App.activeAccountId;
+    switch (section) {
+      case 'resumen':      Dashboard.load(aid); break;
+      case 'calendario':   Calendar.load(aid); break;
+      case 'operaciones':  Trades.load(aid); break;
+      case 'estrategias':  Strategies.load(); break;
+      case 'analisis':     Analysis.load(aid); break;
+      case 'cuentas':      Accounts.load(); break;
+      case 'portfolio':    Portfolio.load(); break;
+      case 'funding':      Funding.load(); break;
+      case 'cal-eco':      App._loadEcoCalendar(); break;
+      case 'progress':     Progress.load(aid); break;
+      case 'herramientas': Tools.load(); break;
+      case 'riesgo':       Risk.load(aid); break;
+      case 'ajustes':      Settings.load(); break;
+    }
+  },
+
+  reload() { App._loadSection(App.activeSection); },
+
+  // ── Trade Modal ─────────────────────────────────────────────────────────────
+  _setupTradeModal() {
+    document.getElementById('btnNuevaOp').addEventListener('click', () => TradeModal.open());
+    document.getElementById('closeTradeModal').addEventListener('click', () => TradeModal.close());
+    document.getElementById('cancelTradeModal').addEventListener('click', () => TradeModal.close());
+    document.getElementById('btnSaveTrade').addEventListener('click', () => TradeModal.save());
+    document.getElementById('tradeModal').addEventListener('click', e => {
+      if (e.target.id === 'tradeModal') TradeModal.close();
+    });
+
+    // Populate strategy selector
+    API.strategies.list().then(strategies => {
+      document.getElementById('trade-strategy').innerHTML = '<option value="">— Sin estrategia —</option>' +
+        strategies.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    });
+
+    // Set today's date as default
+    document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
+  },
+
+  // ── Filters ─────────────────────────────────────────────────────────────────
+  _setupFilters() {
+    ['opsFilterResult', 'opsFilterPair', 'opsFilterMonth'].forEach(id => {
+      document.getElementById(id)?.addEventListener('change', () => Trades.load(App.activeAccountId));
+    });
+    document.getElementById('opsClearFilters')?.addEventListener('click', () => {
+      document.getElementById('opsFilterResult').value = '';
+      document.getElementById('opsFilterPair').value   = '';
+      document.getElementById('opsFilterMonth').value  = '';
+      Trades.load(App.activeAccountId);
+    });
+  },
+
+  // ── Misc buttons ────────────────────────────────────────────────────────────
+  _setupMisc() {
+    document.getElementById('btnSaveStrat')?.addEventListener('click', () => Strategies.save());
+    document.getElementById('btnSaveEditStrat')?.addEventListener('click', () => Strategies.saveEdit());
+    document.getElementById('btnSaveAccount')?.addEventListener('click', () => Accounts.save());
+    document.getElementById('btnImportCSV')?.addEventListener('click', () => Import.open());
+    document.getElementById('btnSaveEditAccount')?.addEventListener('click', () => Accounts.saveEdit());
+    document.getElementById('btnSaveFunding')?.addEventListener('click', () => Funding.save());
+    document.getElementById('btnSaveGoal')?.addEventListener('click', () => Progress.save());
+    document.getElementById('btnSaveRisk')?.addEventListener('click', () => Risk.save(App.activeAccountId));
+    document.getElementById('btnSaveProfile')?.addEventListener('click', () => Settings.saveProfile());
+    document.getElementById('btnSavePwd')?.addEventListener('click', () => Settings.savePassword());
+    document.getElementById('btnExportData')?.addEventListener('click', () => Settings.exportData());
+    document.getElementById('btnDeleteAccount')?.addEventListener('click', () => Settings.deleteAccount());
+    document.getElementById('btnThemeToggle')?.addEventListener('click', () => Theme.toggle());
+    document.getElementById('btnThemeToggleBig')?.addEventListener('click', () => Theme.toggle());
+    document.getElementById('calPrev')?.addEventListener('click', () => Calendar.prev());
+    document.getElementById('calNext')?.addEventListener('click', () => Calendar.next());
+    document.getElementById('ecoFilterImpact')?.addEventListener('change', () => App._loadEcoCalendar());
+    document.getElementById('ecoFilterCurrency')?.addEventListener('change', () => App._loadEcoCalendar());
+    document.getElementById('btnAddEcoEvent')?.addEventListener('click', () => App._openEcoForm());
+    document.getElementById('btnSyncEco')?.addEventListener('click', () => App._syncEcoCalendar());
+    document.getElementById('btnSaveApiKey')?.addEventListener('click', () => App._saveEcoApiKey());
+
+    // Keyboard
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(m => {
+          UI.closeModal(m.id);
+        });
+      }
+    });
+  },
+
+  // ── Economic Calendar ────────────────────────────────────────────────────────
+  async _loadEcoCalendar() {
+    // Cargar estado de configuración
+    App._loadEcoSettings();
+
+    const impact   = document.getElementById('ecoFilterImpact')?.value   || 'high';
+    const currency = document.getElementById('ecoFilterCurrency')?.value || '';
+    // Fecha de hoy en hora local (no UTC)
+    const now   = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const params = { from: today };
+    if (impact)   params.impact   = impact;
+    if (currency) params.currency = currency;
+    const events = await API.ecoCalendar.list(params);
+
+    const grouped = {};
+    events.forEach(e => {
+      if (!grouped[e.date]) grouped[e.date] = [];
+      grouped[e.date].push(e);
+    });
+
+    const impactCfg = {
+      high:   { label: 'Alto',  cls: 'high',   icon: 'ti-alert-triangle' },
+      medium: { label: 'Medio', cls: 'medium',  icon: 'ti-minus' },
+      low:    { label: 'Bajo',  cls: 'low',     icon: 'ti-arrow-down' },
+    };
+
+    const dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    let html = '';
+
+    if (!Object.keys(grouped).length) {
+      html = `<div class="empty-state" style="padding:50px 20px;">
+        <i class="ti ti-calendar-off" style="font-size:36px;color:#DDE3EF;display:block;margin-bottom:12px;"></i>
+        <div style="font-weight:600;margin-bottom:6px;color:var(--text-primary);">Sin eventos para mostrar</div>
+        <div style="font-size:12px;">Sincroniza con Finnhub o añade uno manualmente</div>
+      </div>`;
+    } else {
+      for (const [date, evts] of Object.entries(grouped)) {
+        const d     = new Date(date + 'T12:00:00');
+        const dayN  = dayNames[d.getDay()];
+        const dayNum= d.getDate();
+        const monthN= monthNames[d.getMonth()];
+        const year  = d.getFullYear();
+        const today = new Date().toISOString().split('T')[0];
+        const isToday   = date === today;
+        const highCount = evts.filter(e => e.impact === 'high').length;
+
+        html += `
+          <div class="eco-day-block${isToday ? ' eco-day-today' : ''}">
+            <div class="eco-day-head">
+              <div class="eco-day-num-wrap">
+                <div class="eco-day-num${isToday ? ' eco-day-num--today' : ''}">${dayNum}</div>
+                <div class="eco-day-name">${dayN}</div>
+              </div>
+              <div style="flex:1;">
+                <div class="eco-day-title">${monthN} ${year}${isToday ? ' <span class="eco-today-badge">Hoy</span>' : ''}</div>
+                <div class="eco-day-meta">${evts.length} evento${evts.length !== 1 ? 's' : ''}${highCount ? ` · <span style="color:var(--red-mid);font-weight:600;">${highCount} alto impacto</span>` : ''}</div>
+              </div>
+            </div>
+            <div class="eco-events-list">
+              ${evts.map(ev => {
+                const cfg = impactCfg[ev.impact] || impactCfg.low;
+                const actualColor = ev.actual
+                  ? (parseFloat(ev.actual) > parseFloat(ev.forecast || ev.previous || 0) ? 'var(--green-mid)' : 'var(--red-mid)')
+                  : 'var(--text-secondary)';
+                return `
+                  <div class="eco-event eco-event--${cfg.cls}">
+                    <div class="eco-event-time">${ev.time || '—'}</div>
+                    <div class="eco-event-main">
+                      <div class="eco-event-top-row">
+                        <span class="eco-flag">${ev.country?.split(' ')[0] || '🌍'}</span>
+                        <span class="eco-currency">${ev.currency || ''}</span>
+                        <span class="eco-event-name">${ev.event}</span>
+                      </div>
+                      <div class="eco-event-vals">
+                        <div class="eco-val-item">
+                          <div class="eco-val-label">Anterior</div>
+                          <div class="eco-val-num">${ev.previous || '—'}</div>
+                        </div>
+                        <div class="eco-val-sep"></div>
+                        <div class="eco-val-item">
+                          <div class="eco-val-label">Previsto</div>
+                          <div class="eco-val-num">${ev.forecast || '—'}</div>
+                        </div>
+                        <div class="eco-val-sep"></div>
+                        <div class="eco-val-item">
+                          <div class="eco-val-label">Real</div>
+                          <div class="eco-val-num eco-val-real" style="color:${ev.actual ? actualColor : 'var(--text-secondary)'};">${ev.actual || 'Pendiente'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="eco-impact-badge eco-impact-badge--${cfg.cls}">
+                      <i class="ti ${cfg.icon}"></i> ${cfg.label}
+                    </div>
+                    <button class="eco-delete-btn" onclick="App._deleteEcoEvent(${ev.id})" title="Eliminar">
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+      }
+    }
+    document.getElementById('ecoCalendar').innerHTML = html;
+  },
+
+  async _loadEcoSettings() {
+    try {
+      const s = await API.get('/api/economic-calendar/settings');
+      const statusEl = document.getElementById('ecoSyncStatus');
+      const lastSyncEl = document.getElementById('ecoLastSync');
+
+      if (s.configured) {
+        statusEl.innerHTML = `<span class="eco-sync-ok"><i class="ti ti-check"></i> Conectado · Key: ${s.masked}</span>`;
+        if (s.lastSync) {
+          const d = new Date(s.lastSync);
+          lastSyncEl.textContent = `Última sincronización: ${d.toLocaleDateString('es-ES')} ${d.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'})}`;
+        }
+      } else {
+        statusEl.innerHTML = `<span style="color:var(--amber);">⚠️ Sin configurar — Regístrate gratis en <strong>finnhub.io</strong> y pega tu API key</span>`;
+      }
+    } catch (e) { /* silencioso */ }
+  },
+
+  async _saveEcoApiKey() {
+    const key = document.getElementById('ecoApiKeyInput').value.trim();
+    if (!key) { UI.toast('Pega una API key válida', 'error'); return; }
+    try {
+      await API.post('/api/economic-calendar/settings', { api_key: key });
+      UI.toast('API key guardada correctamente', 'success');
+      document.getElementById('ecoApiKeyInput').value = '';
+      App._loadEcoSettings();
+    } catch (e) { UI.toast(e.message, 'error'); }
+  },
+
+  async _syncEcoCalendar() {
+    const btn = document.getElementById('btnSyncEco');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader"></i> Sincronizando…';
+    try {
+      const result = await API.post('/api/economic-calendar/sync', {});
+      UI.toast(`✅ ${result.inserted} nuevos · ${result.updated} actualizados`, 'success');
+      App._loadEcoCalendar();
+    } catch (e) {
+      UI.toast(e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-refresh"></i> Sincronizar';
+    }
+  },
+
+  _ecoFormOpen: false,
+  _openEcoForm() {
+    const date  = prompt('Fecha del evento (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+    if (!date) return;
+    const event = prompt('Nombre del evento:');
+    if (!event) return;
+    const time     = prompt('Hora (HH:MM):', '14:30') || '';
+    const country  = prompt('País (emoji + código):', '🇺🇸 USD') || '';
+    const currency = country.split(' ')[1] || '';
+    const impact   = prompt('Impacto (high / medium / low):', 'high') || 'medium';
+    const previous = prompt('Valor anterior:', '') || '';
+    const forecast = prompt('Previsión:', '') || '';
+
+    API.ecoCalendar.create({ date, time, country, currency, event, impact, previous, forecast })
+      .then(() => { UI.toast('Evento añadido', 'success'); App._loadEcoCalendar(); })
+      .catch(e => UI.toast(e.message, 'error'));
+  },
+
+  async _deleteEcoEvent(id) {
+    if (!confirm('¿Eliminar este evento?')) return;
+    await API.ecoCalendar.delete(id);
+    App._loadEcoCalendar();
+  },
+};
+
+// ─── Trade Modal ──────────────────────────────────────────────────────────────
+const TradeModal = {
+  _editId: null,
+
+  open(trade = null) {
+    TradeModal._editId = trade?.id || null;
+    document.getElementById('tradeModalTitle').textContent = trade ? 'Editar operación' : 'Nueva operación';
+
+    // Fill form
+    document.getElementById('trade-id').value       = trade?.id || '';
+    document.getElementById('trade-pair').value      = trade?.pair || '';
+    document.getElementById('trade-date').value      = trade?.date || new Date().toISOString().split('T')[0];
+    document.getElementById('trade-type').value      = trade?.type || 'long';
+    document.getElementById('trade-session').value   = trade?.session || '';
+    document.getElementById('trade-entry').value     = trade?.entry_price || '';
+    document.getElementById('trade-exit').value      = trade?.exit_price || '';
+    document.getElementById('trade-size').value      = trade?.size || '';
+    document.getElementById('trade-pnl').value       = trade?.pnl || '';
+    document.getElementById('trade-notes').value     = trade?.notes || '';
+    document.getElementById('trade-account').value   = trade?.account_id || App.activeAccountId || '';
+    document.getElementById('trade-strategy').value  = trade?.strategy_id || '';
+
+    UI.openModal('tradeModal');
+    document.getElementById('trade-pair').focus();
+  },
+
+  close() {
+    UI.closeModal('tradeModal');
+    TradeModal._editId = null;
+  },
+
+  async save() {
+    const data = {
+      pair:        document.getElementById('trade-pair').value.trim().toUpperCase(),
+      date:        document.getElementById('trade-date').value,
+      type:        document.getElementById('trade-type').value,
+      session:     document.getElementById('trade-session').value,
+      entry_price: document.getElementById('trade-entry').value,
+      exit_price:  document.getElementById('trade-exit').value,
+      size:        document.getElementById('trade-size').value,
+      pnl:         document.getElementById('trade-pnl').value,
+      notes:       document.getElementById('trade-notes').value.trim(),
+      account_id:  document.getElementById('trade-account').value || null,
+      strategy_id: document.getElementById('trade-strategy').value || null,
+    };
+
+    if (!data.pair || !data.date || !data.pnl) {
+      UI.toast('Par, fecha y P&L son obligatorios', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('btnSaveTrade');
+    btn.disabled = true;
+
+    try {
+      if (TradeModal._editId) {
+        await API.trades.update(TradeModal._editId, data);
+        UI.toast('Operación actualizada', 'success');
+      } else {
+        await API.trades.create(data);
+        UI.toast('Operación registrada ✓', 'success');
+      }
+      TradeModal.close();
+      await App.loadAccounts(); // update balance
+      App.reload();
+    } catch (e) {
+      UI.toast(e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  },
+};
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Verificar autenticación
+  const token = localStorage.getItem('tv_token');
+  if (!token) { window.location.href = '/login'; return; }
+
+  // Mostrar nombre del usuario en sidebar
+  const user = JSON.parse(localStorage.getItem('tv_user') || '{}');
+  const nameEl = document.getElementById('sb-user-name');
+  const emailEl = document.getElementById('sb-user-email');
+  const avatarEl = document.getElementById('sb-avatar-letter');
+  if (nameEl)   nameEl.textContent  = user.name  || 'Usuario';
+  if (emailEl)  emailEl.textContent = user.email || '';
+  if (avatarEl) avatarEl.textContent = (user.name || 'U')[0].toUpperCase();
+
+  App.init();
+});

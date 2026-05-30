@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FundLog — Acceder</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Sora', sans-serif; display: flex; min-height: 100vh; background: #F4F6FA; }
+
+/* ── Keyframes ─────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeSlideRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes shimmerBtn {
+  0%   { transform: translateX(-100%) skewX(-20deg); }
+  100% { transform: translateX(300%) skewX(-20deg); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 4px 16px rgba(55,138,221,0.3); }
+  50%       { box-shadow: 0 8px 32px rgba(55,138,221,0.6); }
+}
+@keyframes rippleLogin {
+  from { transform: scale(0); opacity: 0.5; }
+  to   { transform: scale(3);  opacity: 0; }
+}
+@keyframes orbFloat1 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(30px,-20px) scale(1.1); }
+  66%      { transform: translate(-20px,15px) scale(0.95); }
+}
+@keyframes orbFloat2 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%      { transform: translate(-25px,30px) scale(0.9); }
+  66%      { transform: translate(20px,-25px) scale(1.05); }
+}
+
+/* ── Panel izquierdo ───────────────────────────── */
+.left-panel {
+  width: 420px; flex-shrink: 0;
+  background: linear-gradient(160deg, #0B1628 0%, #0F2040 60%, #0B1628 100%);
+  display: flex; flex-direction: column;
+  padding: 48px 44px;
+  position: relative; overflow: hidden;
+}
+/* Orbes de fondo animados */
+.lp-orb {
+  position: absolute; border-radius: 50%;
+  pointer-events: none; filter: blur(60px);
+}
+.lp-orb-1 {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(55,138,221,0.22) 0%, transparent 70%);
+  top: -60px; left: -80px;
+  animation: orbFloat1 8s ease-in-out infinite;
+}
+.lp-orb-2 {
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(29,158,117,0.15) 0%, transparent 70%);
+  bottom: 60px; right: -60px;
+  animation: orbFloat2 10s ease-in-out infinite;
+}
+.lp-orb-3 {
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(83,74,183,0.18) 0%, transparent 70%);
+  top: 45%; left: 50%;
+  animation: orbFloat1 12s ease-in-out infinite reverse;
+}
+.left-panel::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 80%, rgba(55,138,221,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(29,158,117,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+.lp-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 60px; }
+.lp-logo-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1D3A5F, #378ADD);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(55,138,221,0.4);
+}
+.lp-logo-icon i { font-size: 20px; color: #fff; }
+.lp-logo-name { font-size: 18px; font-weight: 700; color: #EFF6FF; letter-spacing: -0.02em; }
+.lp-tagline {
+  font-size: 28px; font-weight: 700; color: #fff;
+  line-height: 1.25; letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+.lp-tagline span { color: #85B7EB; }
+.lp-sub { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.6; margin-bottom: 48px; }
+.lp-features { display: flex; flex-direction: column; gap: 16px; }
+.lp-feat { display: flex; align-items: center; gap: 14px; }
+.lp-feat-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.lp-feat-icon.blue   { background: rgba(55,138,221,0.2); }
+.lp-feat-icon.green  { background: rgba(29,158,117,0.2); }
+.lp-feat-icon.purple { background: rgba(83,74,183,0.2); }
+.lp-feat-icon.amber  { background: rgba(186,117,23,0.2); }
+.lp-feat-icon i { font-size: 17px; }
+.lp-feat-icon.blue i   { color: #85B7EB; }
+.lp-feat-icon.green i  { color: #4ABFA0; }
+.lp-feat-icon.purple i { color: #9D96E6; }
+.lp-feat-icon.amber i  { color: #D4922A; }
+.lp-feat-text { font-size: 13px; color: rgba(255,255,255,0.65); }
+.lp-feat-text strong { color: rgba(255,255,255,0.9); font-weight: 600; display: block; margin-bottom: 1px; }
+.lp-footer { margin-top: auto; font-size: 11px; color: rgba(255,255,255,0.2); }
+
+/* ── Entradas animadas ─────────────────────────── */
+.lp-logo     { animation: fadeSlideLeft 0.5s 0.1s ease both; }
+.lp-tagline  { animation: fadeSlideLeft 0.5s 0.25s ease both; }
+.lp-sub      { animation: fadeSlideLeft 0.5s 0.38s ease both; }
+.lp-features { animation: fadeSlideLeft 0.5s 0.5s ease both; }
+.lp-feat:nth-child(1) { animation: fadeSlideUp 0.4s 0.55s ease both; }
+.lp-feat:nth-child(2) { animation: fadeSlideUp 0.4s 0.65s ease both; }
+.lp-feat:nth-child(3) { animation: fadeSlideUp 0.4s 0.75s ease both; }
+.lp-feat:nth-child(4) { animation: fadeSlideUp 0.4s 0.85s ease both; }
+
+.right-panel  { animation: fadeSlideRight 0.5s 0.2s ease both; }
+.form-title   { animation: fadeSlideUp 0.4s 0.35s ease both; }
+.form-sub     { animation: fadeSlideUp 0.4s 0.45s ease both; }
+.form-group:nth-child(1) { animation: fadeSlideUp 0.4s 0.5s ease both; }
+.form-group:nth-child(2) { animation: fadeSlideUp 0.4s 0.6s ease both; }
+.btn-submit   { animation: fadeSlideUp 0.4s 0.7s ease both; }
+.form-switch  { animation: fadeSlideUp 0.4s 0.8s ease both; }
+
+/* Feature icon hover */
+.lp-feat { transition: transform 0.2s ease; cursor: default; }
+.lp-feat:hover { transform: translateX(6px); }
+.lp-feat-icon { transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+.lp-feat:hover .lp-feat-icon { transform: scale(1.15) rotate(-4deg); }
+
+/* ── Panel derecho ─────────────────────────────── */
+.right-panel {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 40px 24px;
+}
+.form-box { width: 100%; max-width: 400px; }
+.form-title { font-size: 24px; font-weight: 700; color: #0C1A2E; letter-spacing: -0.03em; margin-bottom: 6px; }
+.form-sub { font-size: 13px; color: #6B7A99; margin-bottom: 36px; }
+
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: #6B7A99; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px;
+}
+.form-input {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid #DDE3EF; border-radius: 10px;
+  font-family: 'Sora', sans-serif; font-size: 13.5px;
+  color: #0C1A2E; background: #fff; outline: none;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.18s ease;
+}
+.form-input:focus {
+  border-color: #378ADD;
+  box-shadow: 0 0 0 4px rgba(55,138,221,0.14);
+  transform: translateY(-1px);
+}
+.form-input:hover:not(:focus) { border-color: #B5C8E8; }
+.form-input::placeholder { color: #B0BAD0; transition: opacity 0.2s; }
+.form-input:focus::placeholder { opacity: 0.5; }
+.input-wrap { position: relative; }
+.input-wrap .form-input { padding-right: 44px; }
+.input-icon {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 17px; color: #B0BAD0; cursor: pointer;
+  transition: color 0.15s;
+}
+.input-icon:hover { color: #6B7A99; }
+
+.btn-submit {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #1D3A5F 0%, #2B72C8 50%, #378ADD 100%);
+  background-size: 200% 200%;
+  color: #fff; border: none; border-radius: 10px;
+  font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(55,138,221,0.35);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 8px;
+  position: relative; overflow: hidden;
+  transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.2s ease,
+              background-position 0.4s ease;
+}
+.btn-submit::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: translateX(-100%) skewX(-20deg);
+  transition: none;
+}
+.btn-submit:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 32px rgba(55,138,221,0.55);
+  background-position: 100% 0;
+}
+.btn-submit:hover::before {
+  animation: shimmerBtn 0.65s ease forwards;
+}
+.btn-submit:active {
+  transform: scale(0.97) translateY(0);
+  box-shadow: 0 4px 14px rgba(55,138,221,0.3);
+}
+.btn-submit:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+/* Ripple */
+.btn-submit .lp-ripple {
+  position: absolute; border-radius: 50%;
+  width: 80px; height: 80px;
+  margin-top: -40px; margin-left: -40px;
+  background: rgba(255,255,255,0.3);
+  pointer-events: none;
+  animation: rippleLogin 0.55s ease-out forwards;
+}
+
+.form-switch {
+  text-align: center; margin-top: 24px;
+  font-size: 13px; color: #6B7A99;
+}
+.form-switch a {
+  color: #378ADD; font-weight: 600; text-decoration: none;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.form-switch a:hover { opacity: 0.8; }
+
+.form-error {
+  background: #FCEBEB; border: 1px solid #F0C0C0;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 12.5px; color: #A32D2D;
+  margin-bottom: 18px; display: none; align-items: center; gap: 8px;
+}
+.form-error.show { display: flex; }
+.form-error i { font-size: 16px; flex-shrink: 0; }
+
+.form-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 24px 0; color: #B0BAD0; font-size: 12px;
+}
+.form-divider::before, .form-divider::after {
+  content: ''; flex: 1; height: 1px; background: #EEF1F8;
+}
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 720px) {
+  .left-panel { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- PANEL IZQUIERDO -->
+<div class="left-panel">
+  <div class="lp-orb lp-orb-1"></div>
+  <div class="lp-orb lp-orb-2"></div>
+  <div class="lp-orb lp-orb-3"></div>
+  <div class="lp-logo">
+    <svg width="42" height="42" viewBox="0 0 38 38" fill="none" style="filter:drop-shadow(0 4px 12px rgba(43,114,200,0.5));flex-shrink:0;">
+      <rect width="38" height="38" rx="10" fill="url(#llg1)"/>
+      <rect width="38" height="38" rx="10" fill="url(#llg2)" opacity="0.35"/>
+      <path d="M7 29 L13 22 L19.5 25.5 L29.5 12"
+            stroke="rgba(255,255,255,0.85)" stroke-width="2.4"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="29.5" cy="12" r="5" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="29.5" cy="12" r="3.2" fill="white"/>
+      <circle cx="29.5" cy="12" r="1.6" fill="#378ADD"/>
+      <rect x="7" y="31.5" width="24" height="1.5" rx="0.75" fill="rgba(255,255,255,0.2)"/>
+      <defs>
+        <linearGradient id="llg1" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#152C4A"/>
+          <stop offset="1" stop-color="#2B72C8"/>
+        </linearGradient>
+        <linearGradient id="llg2" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+          <stop stop-color="white" stop-opacity="0.18"/>
+          <stop offset="0.6" stop-color="white" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <span class="lp-logo-name"><span style="color:#EFF6FF;">Fund</span><span style="color:#85B7EB;">Log</span></span>
+  </div>
+
+  <div class="lp-tagline">Tu journal de<br>trading <span>profesional</span></div>
+  <div class="lp-sub">Analiza cada operación, gestiona el riesgo y mejora como trader con datos reales.</div>
+
+  <div class="lp-features">
+    <div class="lp-feat">
+      <div class="lp-feat-icon blue"><i class="ti ti-chart-dots"></i></div>
+      <div class="lp-feat-text">
+        <strong>Análisis avanzado</strong>
+        Profit Factor, Sharpe, equity curve y más
+      </div>
+    </div>
+    <div class="lp-feat">
+      <div class="lp-feat-icon green"><i class="ti ti-shield-check"></i></div>
+      <div class="lp-feat-text">
+        <strong>Gestión de riesgo</strong>
+        Controla drawdown, exposición y límites
+      </div>
+    </div>
+    <div class="lp-feat">
+      <div class="lp-feat-icon purple"><i class="ti ti-chess-knight"></i></div>
+      <div class="lp-feat-text">
+        <strong>Seguimiento de estrategias</strong>
+        Compara el rendimiento de tus sistemas
+      </div>
+    </div>
+    <div class="lp-feat">
+      <div class="lp-feat-icon amber"><i class="ti ti-calendar-stats"></i></div>
+      <div class="lp-feat-text">
+        <strong>Calendario económico</strong>
+        Eventos macro actualizados automáticamente
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-footer">© 2026 FundLog · Todos los derechos reservados</div>
+</div>
+
+<!-- PANEL DERECHO -->
+<div class="right-panel">
+  <div class="form-box">
+
+    <!-- LOGIN -->
+    <div id="view-login">
+      <div class="form-title">Bienvenido de nuevo</div>
+      <div class="form-sub">Inicia sesión en tu cuenta de FundLog</div>
+
+      <div class="form-error" id="login-error">
+        <i class="ti ti-alert-circle"></i>
+        <span id="login-error-msg"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="login-email" type="email" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <div class="input-wrap">
+          <input class="form-input" id="login-password" type="password" placeholder="Tu contraseña" autocomplete="current-password">
+          <i class="ti ti-eye input-icon" id="toggleLoginPwd"></i>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btnLogin">
+        <i class="ti ti-login"></i> Iniciar sesión
+      </button>
+
+      <div class="form-switch">
+        ¿No tienes cuenta? <a onclick="showView('register')">Regístrate gratis</a>
+      </div>
+    </div>
+
+    <!-- REGISTRO -->
+    <div id="view-register" style="display:none;">
+      <div class="form-title">Crear cuenta</div>
+      <div class="form-sub">Empieza a mejorar tu trading hoy</div>
+
+      <div class="form-error" id="register-error">
+        <i class="ti ti-alert-circle"></i>
+        <span id="register-error-msg"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <input class="form-input" id="register-name" type="text" placeholder="Tu nombre" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="register-email" type="email" placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <div class="input-wrap">
+          <input class="form-input" id="register-password" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+          <i class="ti ti-eye input-icon" id="toggleRegPwd"></i>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btnRegister">
+        <i class="ti ti-user-plus"></i> Crear cuenta
+      </button>
+
+      <div class="form-switch">
+        ¿Ya tienes cuenta? <a onclick="showView('login')">Inicia sesión</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_BASE = '';
+
+function showView(v) {
+  document.getElementById('view-login').style.display    = v === 'login'    ? 'block' : 'none';
+  document.getElementById('view-register').style.display = v === 'register' ? 'block' : 'none';
+}
+
+function showError(prefix, msg) {
+  const el  = document.getElementById(`${prefix}-error`);
+  const msg2 = document.getElementById(`${prefix}-error-msg`);
+  msg2.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+// Toggle contraseña visible
+document.getElementById('toggleLoginPwd').addEventListener('click', function() {
+  const inp = document.getElementById('login-password');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  this.className = `ti ti-${inp.type === 'password' ? 'eye' : 'eye-off'} input-icon`;
+});
+document.getElementById('toggleRegPwd').addEventListener('click', function() {
+  const inp = document.getElementById('register-password');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  this.className = `ti ti-${inp.type === 'password' ? 'eye' : 'eye-off'} input-icon`;
+});
+
+// Enter para submit
+document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('register-password').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+
+// LOGIN
+document.getElementById('btnLogin').addEventListener('click', doLogin);
+async function doLogin() {
+  const btn   = document.getElementById('btnLogin');
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  if (!email || !pass) { showError('login', 'Completa todos los campos'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Entrando...';
+  try {
+    const res  = await fetch('/api/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    localStorage.setItem('tv_token', data.token);
+    localStorage.setItem('tv_user',  JSON.stringify(data.user));
+    window.location.href = '/';
+  } catch(e) {
+    showError('login', e.message);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-login"></i> Iniciar sesión';
+  }
+}
+
+// REGISTRO
+document.getElementById('btnRegister').addEventListener('click', doRegister);
+async function doRegister() {
+  const btn  = document.getElementById('btnRegister');
+  const name = document.getElementById('register-name').value.trim();
+  const email= document.getElementById('register-email').value.trim();
+  const pass = document.getElementById('register-password').value;
+  if (!name || !email || !pass) { showError('register', 'Completa todos los campos'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Creando cuenta...';
+  try {
+    const res  = await fetch('/api/auth/register', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    localStorage.setItem('tv_token', data.token);
+    localStorage.setItem('tv_user',  JSON.stringify(data.user));
+    window.location.href = '/';
+  } catch(e) {
+    showError('register', e.message);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-user-plus"></i> Crear cuenta';
+  }
+}
+
+// Si ya hay token válido, redirige directo
+if (localStorage.getItem('tv_token')) window.location.href = '/';
+
+// ── Ripple en botones ────────────────────────────
+document.querySelectorAll('.btn-submit').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const r    = btn.getBoundingClientRect();
+    const span = document.createElement('span');
+    span.className   = 'lp-ripple';
+    span.style.left  = (e.clientX - r.left) + 'px';
+    span.style.top   = (e.clientY - r.top)  + 'px';
+    btn.appendChild(span);
+    setTimeout(() => span.remove(), 600);
+  });
+});
+</script>
+</body>
+</html>

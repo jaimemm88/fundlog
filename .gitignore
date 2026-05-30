@@ -1,0 +1,7 @@
+node_modules/
+db/tradevista.db
+db/tradevista.db-shm
+db/tradevista.db-wal
+.env
+.DS_Store
+*.log

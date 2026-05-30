@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeVista</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg-sidebar: #0C1A2E;
+  --bg-sidebar-hover: rgba(255,255,255,0.06);
+  --bg-sidebar-active: #1D3A5F;
+  --bg-main: #F4F6FA;
+  --bg-card: #ffffff;
+  --border-card: #DDE3EF;
+  --text-primary: #0C1A2E;
+  --text-secondary: #6B7A99;
+  --text-sidebar: rgba(255,255,255,0.45);
+  --text-sidebar-active: #85B7EB;
+  --text-sidebar-label: rgba(255,255,255,0.25);
+  --accent: #378ADD;
+  --accent-light: #85B7EB;
+  --accent-bg: #E6F1FB;
+  --green: #0F6E56;
+  --green-light: #E1F5EE;
+  --green-mid: #1D9E75;
+  --red: #A32D2D;
+  --red-light: #FCEBEB;
+  --red-mid: #D85A30;
+  --amber: #BA7517;
+  --amber-light: #FAEEDA;
+  --purple: #534AB7;
+  --purple-light: #EEEDFE;
+  --teal: #0F6E56;
+  --teal-light: #E1F5EE;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --sidebar-w: 220px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Sora', sans-serif; background: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--bg-sidebar); display: flex; flex-direction: column; overflow: hidden; }
+.sb-header { padding: 18px 14px 14px; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
+.logo-row { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+.logo-icon { width: 32px; height: 32px; border-radius: var(--radius); background: var(--bg-sidebar-active); display: flex; align-items: center; justify-content: center; }
+.logo-icon i { font-size: 16px; color: var(--accent-light); }
+.logo-name { font-size: 14px; font-weight: 600; color: #E6F1FB; letter-spacing: -0.01em; }
+.add-account { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0.5px dashed rgba(255,255,255,0.15); border-radius: var(--radius); cursor: pointer; transition: background 0.15s; }
+.add-account:hover { background: var(--bg-sidebar-hover); }
+.add-account i { font-size: 14px; color: rgba(255,255,255,0.35); }
+.add-account span { font-size: 11px; color: rgba(255,255,255,0.35); }
+.sb-content { flex: 1; overflow-y: auto; padding: 12px 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+.sb-label { font-size: 9.5px; font-weight: 600; color: var(--text-sidebar-label); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 6px; margin-bottom: 5px; margin-top: 10px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: var(--radius); cursor: pointer; font-size: 12px; color: var(--text-sidebar); transition: all 0.15s; }
+.nav-item:hover { background: var(--bg-sidebar-hover); color: rgba(255,255,255,0.75); }
+.nav-item.active { background: var(--bg-sidebar-active); color: var(--text-sidebar-active); }
+.nav-item .ic { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+.nav-item.active .ic { background: rgba(133,183,235,0.15); }
+.nav-item .ic i { font-size: 14px; }
+.nav-sub { margin-left: 8px; padding-left: 10px; border-left: 1.5px solid rgba(133,183,235,0.2); }
+.nav-sub .nav-item { font-size: 11.5px; padding: 5px 8px; }
+.nav-sub .nav-item .ic { width: 22px; height: 22px; border-radius: 7px; }
+.nav-sub .nav-item .ic i { font-size: 12px; }
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-left: auto; }
+.badge.new { background: rgba(29,158,117,0.2); color: #5DCAA5; }
+.sb-footer { padding: 12px 10px; border-top: 0.5px solid rgba(255,255,255,0.07); }
+.user-row { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: var(--radius); cursor: pointer; transition: background 0.15s; }
+.user-row:hover { background: var(--bg-sidebar-hover); }
+.avatar { width: 32px; height: 32px; border-radius: var(--radius); background: var(--bg-sidebar-active); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--accent-light); flex-shrink: 0; }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.dot-bg { position: absolute; inset: 0; background-image: radial-gradient(circle, #CBD5E8 1px, transparent 1px); background-size: 22px 22px; opacity: 0.55; pointer-events: none; }
+.content-area { position: relative; z-index: 1; flex: 1; overflow-y: auto; padding: 24px 24px; display: none; height: 100%; }
+.content-area.active { display: block; }
+
+/* PAGE HEADER */
+.page-header { margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.03em; margin-bottom: 3px; }
+.page-sub { font-size: 11.5px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; }
+
+/* CARDS */
+.card { background: var(--bg-card); border: 0.5px solid var(--border-card); border-radius: var(--radius); padding: 16px 18px; }
+.card-title { font-size: 11px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.07em; }
+.card-title i { font-size: 15px; color: var(--accent); }
+
+/* METRICS */
+.metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+.metric { background: var(--bg-card); border-radius: var(--radius); padding: 14px 15px; border: 0.5px solid var(--border-card); }
+.metric-label { font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+.metric-val { font-size: 20px; font-weight: 500; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+.metric-val.pos { color: var(--green); }
+.metric-val.neg { color: var(--red-mid); }
+.metric-delta { font-size: 10.5px; margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
+.metric-delta.pos { color: var(--green-mid); }
+.metric-delta.neg { color: var(--red-mid); }
+
+/* TWO COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+/* TABLE */
+.tv-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tv-table th { text-align: left; font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; padding: 0 10px 10px; border-bottom: 0.5px solid var(--border-card); }
+.tv-table td { padding: 10px; border-bottom: 0.5px solid #EEF1F8; color: var(--text-primary); }
+.tv-table tr:last-child td { border-bottom: none; }
+.tv-table tr:hover td { background: #F9FAFC; }
+.pill { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 500; }
+.pill.long { background: var(--green-light); color: var(--green); }
+.pill.short { background: var(--red-light); color: var(--red); }
+.pill.win { background: var(--green-light); color: var(--green); }
+.pill.loss { background: var(--red-light); color: var(--red); }
+.pill.active { background: var(--accent-bg); color: #185FA5; }
+.pill.inactive { background: #F1EFE8; color: #5F5E5A; }
+.pill.pending { background: var(--amber-light); color: var(--amber); }
+
+/* PROGRESS BAR */
+.progress-wrap { background: #EEF1F8; border-radius: 20px; height: 7px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 20px; background: var(--accent); }
+.progress-fill.green { background: var(--green-mid); }
+.progress-fill.amber { background: #EF9F27; }
+.progress-fill.red { background: #E24B4A; }
+
+/* BARS CHART */
+.bars-wrap { display: flex; align-items: flex-end; gap: 5px; height: 110px; }
+.bar { flex: 1; border-radius: 4px 4px 0 0; }
+.bar-days { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+
+/* CALENDAR */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+.cal-day-name { text-align: center; font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 0; }
+.cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 11px; cursor: pointer; border: 0.5px solid transparent; transition: all 0.15s; position: relative; }
+.cal-day:hover { background: var(--accent-bg); }
+.cal-day.today { background: var(--accent); color: #fff; font-weight: 600; }
+.cal-day.has-trade { border-color: var(--border-card); }
+.cal-day .cal-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 2px; }
+.cal-day .cal-dot.pos { background: var(--green-mid); }
+.cal-day .cal-dot.neg { background: var(--red-mid); }
+.cal-day.other-month { color: var(--text-secondary); opacity: 0.4; }
+
+/* STAT ROW */
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 0.5px solid #EEF1F8; font-size: 12px; }
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--text-secondary); }
+.stat-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--text-primary); }
+.stat-val.pos { color: var(--green); }
+.stat-val.neg { color: var(--red-mid); }
+
+/* INPUT */
+.tv-input { width: 100%; padding: 8px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border-card); font-family: 'Sora', sans-serif; font-size: 12px; color: var(--text-primary); background: var(--bg-card); outline: none; }
+.tv-input:focus { border-color: var(--accent); }
+.tv-label { font-size: 10.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+.form-row { margin-bottom: 14px; }
+.tv-btn { padding: 9px 18px; border-radius: var(--radius-sm); border: none; background: var(--accent); color: #fff; font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+.tv-btn:hover { opacity: 0.88; }
+.tv-btn.secondary { background: transparent; border: 0.5px solid var(--border-card); color: var(--text-secondary); }
+
+/* DONUT */
+.donut-wrap { display: flex; align-items: center; gap: 20px; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* RISK METER */
+.risk-meter { position: relative; height: 80px; display: flex; align-items: flex-end; justify-content: center; }
+.risk-arc { width: 140px; height: 70px; border-radius: 70px 70px 0 0; border: 10px solid #EEF1F8; border-bottom: none; position: relative; }
+.risk-val { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 500; }
+
+/* TOOL CARD */
+.tool-card { background: var(--bg-card); border: 0.5px solid var(--border-card); border-radius: var(--radius); padding: 16px; cursor: pointer; transition: border-color 0.15s; }
+.tool-card:hover { border-color: var(--accent); }
+.tool-icon { width: 38px; height: 38px; border-radius: var(--radius); background: var(--accent-bg); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.tool-icon i { font-size: 18px; color: var(--accent); }
+.tool-name { font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.tool-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-header">
+    <div class="logo-row">
+      <div class="logo-icon"><i class="ti ti-chart-line"></i></div>
+      <span class="logo-name">TradeVista</span>
+    </div>
+    <div class="add-account">
+      <i class="ti ti-circle-plus"></i>
+      <span>Añadir cuenta</span>
+    </div>
+  </div>
+  <div class="sb-content">
+    <div class="sb-label">Plataforma</div>
+    <div class="nav-item active" onclick="showSection('resumen',this)">
+      <div class="ic"><i class="ti ti-smart-home"></i></div> Inicio
+    </div>
+    <div class="nav-sub">
+      <div class="nav-item active" onclick="showSection('resumen',this)"><div class="ic"><i class="ti ti-layout-dashboard"></i></div> Resumen</div>
+      <div class="nav-item" onclick="showSection('calendario',this)"><div class="ic"><i class="ti ti-calendar-month"></i></div> Calendario</div>
+      <div class="nav-item" onclick="showSection('operaciones',this)"><div class="ic"><i class="ti ti-arrows-exchange"></i></div> Operaciones</div>
+      <div class="nav-item" onclick="showSection('estrategias',this)"><div class="ic"><i class="ti ti-chess-knight"></i></div> Estrategias</div>
+      <div class="nav-item" onclick="showSection('analisis',this)"><div class="ic"><i class="ti ti-chart-dots"></i></div> Análisis</div>
+    </div>
+    <div class="nav-item" onclick="showSection('cuentas',this)"><div class="ic"><i class="ti ti-wallet"></i></div> Cuentas</div>
+    <div class="nav-item" onclick="showSection('portfolio',this)"><div class="ic"><i class="ti ti-chart-donut"></i></div> Portfolio</div>
+    <div class="nav-item" onclick="showSection('funding',this)"><div class="ic"><i class="ti ti-cash-banknote"></i></div> Funding <span class="badge new">Nuevo</span></div>
+    <div class="nav-item" onclick="showSection('cal-eco',this)"><div class="ic"><i class="ti ti-calendar-stats"></i></div> Cal. Económico</div>
+    <div class="nav-item" onclick="showSection('progress',this)"><div class="ic"><i class="ti ti-trophy"></i></div> Progress Tracker</div>
+    <div class="sb-label" style="margin-top:14px;">Herramientas</div>
+    <div class="nav-item" onclick="showSection('herramientas',this)"><div class="ic"><i class="ti ti-tool"></i></div> Herramientas</div>
+    <div class="nav-item" onclick="showSection('riesgo',this)"><div class="ic"><i class="ti ti-shield-check"></i></div> Gestión de Riesgo</div>
+    <div class="nav-item" onclick="showSection('backtesting',this)"><div class="ic"><i class="ti ti-rocket"></i></div> Backtesting</div>
+    <div class="nav-item" onclick="showSection('copy',this)"><div class="ic"><i class="ti ti-users"></i></div> Copy Trading</div>
+  </div>
+  <div class="sb-footer">
+    <div class="nav-item" onclick="showSection('ayuda',this)"><div class="ic"><i class="ti ti-messages"></i></div> Centro de Ayuda</div>
+    <div class="nav-item" onclick="showSection('university',this)"><div class="ic"><i class="ti ti-book"></i></div> University</div>
+    <div class="user-row">
+      <div class="avatar">J</div>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:500;color:#E6F1FB;">Jaime</div>
+        <div style="font-size:10.5px;color:rgba(255,255,255,0.3);">jaime@gmail.com</div>
+      </div>
+      <i class="ti ti-chevrons-up-down" style="font-size:13px;color:rgba(255,255,255,0.25);"></i>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="dot-bg"></div>
+
+  <!-- RESUMEN -->
+  <div class="content-area active" id="sec-resumen">
+    <div class="page-header">
+      <div class="page-title">Resumen</div>
+      <div class="page-sub mono">TradeVista · mayo 2026</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Balance total</div><div class="metric-val mono">€12.480</div><div class="metric-delta pos mono">↑ +3,2% este mes</div></div>
+      <div class="metric"><div class="metric-label">P&L mes</div><div class="metric-val pos mono">+€394</div><div class="metric-delta pos mono">↑ 28 operaciones</div></div>
+      <div class="metric"><div class="metric-label">Win rate</div><div class="metric-val mono">64%</div><div class="metric-delta pos mono">↑ +4% vs anterior</div></div>
+      <div class="metric"><div class="metric-label">Drawdown máx.</div><div class="metric-val neg mono">−2,1%</div><div class="metric-delta neg mono">↓ Límite: 5%</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-arrows-exchange"></i> Últimas operaciones</div>
+        <table class="tv-table">
+          <thead><tr><th>Par</th><th>Tipo</th><th>P&L</th><th>Fecha</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">EUR/USD</td><td><span class="pill long">Long</span></td><td class="mono pos" style="color:var(--green)">+€120</td><td style="color:var(--text-secondary)">27 may</td></tr>
+            <tr><td class="mono">BTC/USD</td><td><span class="pill short">Short</span></td><td class="mono" style="color:var(--red-mid)">−€45</td><td style="color:var(--text-secondary)">26 may</td></tr>
+            <tr><td class="mono">NASDAQ</td><td><span class="pill long">Long</span></td><td class="mono pos" style="color:var(--green)">+€210</td><td style="color:var(--text-secondary)">25 may</td></tr>
+            <tr><td class="mono">GBP/JPY</td><td><span class="pill short">Short</span></td><td class="mono pos" style="color:var(--green)">+€88</td><td style="color:var(--text-secondary)">24 may</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar"></i> P&L últimos 7 días</div>
+        <div class="bars-wrap">
+          <div class="bar" style="height:40%;background:#B5D4F4;"></div>
+          <div class="bar" style="height:62%;background:#85B7EB;"></div>
+          <div class="bar" style="height:28%;background:#F09595;"></div>
+          <div class="bar" style="height:78%;background:#85B7EB;"></div>
+          <div class="bar" style="height:52%;background:#B5D4F4;"></div>
+          <div class="bar" style="height:22%;background:#F09595;"></div>
+          <div class="bar" style="height:90%;background:#378ADD;"></div>
+        </div>
+        <div class="bar-days"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chess-knight"></i> Estrategias activas</div>
+        <div class="stat-row"><span class="stat-label">Breakout Londres</span><span class="stat-val pos">+8,2%</span></div>
+        <div class="stat-row"><span class="stat-label">Reversión Media</span><span class="stat-val pos">+3,1%</span></div>
+        <div class="stat-row"><span class="stat-label">Scalping NY Open</span><span class="stat-val neg">−1,4%</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-target"></i> Objetivos del mes</div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:var(--text-secondary)">P&L objetivo</span><span class="mono" style="color:var(--green)">€394 / €500</span></div>
+          <div class="progress-wrap"><div class="progress-fill green" style="width:79%"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:var(--text-secondary)">Operaciones</span><span class="mono">28 / 40</span></div>
+          <div class="progress-wrap"><div class="progress-fill" style="width:70%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span style="color:var(--text-secondary)">Drawdown</span><span class="mono" style="color:var(--red-mid)">2,1% / 5%</span></div>
+          <div class="progress-wrap"><div class="progress-fill amber" style="width:42%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDARIO -->
+  <div class="content-area" id="sec-calendario">
+    <div class="page-header">
+      <div class="page-title">Calendario</div>
+      <div class="page-sub mono">Mayo 2026</div>
+    </div>
+    <div class="two-col">
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-title"><i class="ti ti-calendar-month"></i> Mayo 2026</div>
+        <div class="cal-header">
+          <div class="cal-day-name">Lun</div><div class="cal-day-name">Mar</div><div class="cal-day-name">Mié</div>
+          <div class="cal-day-name">Jue</div><div class="cal-day-name">Vie</div><div class="cal-day-name">Sáb</div><div class="cal-day-name">Dom</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:14px;">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-list"></i> Operaciones del día seleccionado</div>
+        <table class="tv-table">
+          <thead><tr><th>Par</th><th>Tipo</th><th>Entrada</th><th>Salida</th><th>P&L</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">EUR/USD</td><td><span class="pill long">Long</span></td><td class="mono">1.0842</td><td class="mono">1.0891</td><td class="mono" style="color:var(--green)">+€120</td></tr>
+            <tr><td class="mono">GBP/USD</td><td><span class="pill short">Short</span></td><td class="mono">1.2741</td><td class="mono">1.2698</td><td class="mono" style="color:var(--green)">+€86</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar"></i> Resumen mensual</div>
+        <div class="stat-row"><span class="stat-label">Días con operaciones</span><span class="stat-val mono">18</span></div>
+        <div class="stat-row"><span class="stat-label">Días positivos</span><span class="stat-val pos mono">13</span></div>
+        <div class="stat-row"><span class="stat-label">Días negativos</span><span class="stat-val neg mono">5</span></div>
+        <div class="stat-row"><span class="stat-label">Mejor día</span><span class="stat-val pos mono">+€318</span></div>
+        <div class="stat-row"><span class="stat-label">Peor día</span><span class="stat-val neg mono">−€95</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPERACIONES -->
+  <div class="content-area" id="sec-operaciones">
+    <div class="page-header">
+      <div class="page-title">Operaciones</div>
+      <div class="page-sub mono">Historial completo · 2026</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Total ops.</div><div class="metric-val mono">128</div><div class="metric-delta pos mono">Este año</div></div>
+      <div class="metric"><div class="metric-label">Ganadoras</div><div class="metric-val pos mono">82</div><div class="metric-delta pos mono">64% win rate</div></div>
+      <div class="metric"><div class="metric-label">P&L total</div><div class="metric-val pos mono">+€2.841</div><div class="metric-delta pos mono">↑ vs año ant.</div></div>
+      <div class="metric"><div class="metric-label">Ratio R:R</div><div class="metric-val mono">1:2,4</div><div class="metric-delta pos mono">Por encima de obj.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-list"></i> Historial de operaciones</div>
+      <table class="tv-table">
+        <thead><tr><th>Fecha</th><th>Par</th><th>Tipo</th><th>Entrada</th><th>Salida</th><th>Tamaño</th><th>P&L</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--text-secondary)">27 may</td><td class="mono">EUR/USD</td><td><span class="pill long">Long</span></td><td class="mono">1.0842</td><td class="mono">1.0891</td><td class="mono">0.5 lot</td><td class="mono" style="color:var(--green)">+€120</td><td><span class="pill win">Win</span></td></tr>
+          <tr><td style="color:var(--text-secondary)">26 may</td><td class="mono">BTC/USD</td><td><span class="pill short">Short</span></td><td class="mono">67.420</td><td class="mono">67.890</td><td class="mono">0.1 lot</td><td class="mono" style="color:var(--red-mid)">−€45</td><td><span class="pill loss">Loss</span></td></tr>
+          <tr><td style="color:var(--text-secondary)">25 may</td><td class="mono">NASDAQ</td><td><span class="pill long">Long</span></td><td class="mono">18.240</td><td class="mono">18.480</td><td class="mono">1 lot</td><td class="mono" style="color:var(--green)">+€210</td><td><span class="pill win">Win</span></td></tr>
+          <tr><td style="color:var(--text-secondary)">24 may</td><td class="mono">GBP/JPY</td><td><span class="pill short">Short</span></td><td class="mono">196.42</td><td class="mono">195.91</td><td class="mono">0.3 lot</td><td class="mono" style="color:var(--green)">+€88</td><td><span class="pill win">Win</span></td></tr>
+          <tr><td style="color:var(--text-secondary)">23 may</td><td class="mono">USD/JPY</td><td><span class="pill long">Long</span></td><td class="mono">154.20</td><td class="mono">154.80</td><td class="mono">0.5 lot</td><td class="mono" style="color:var(--green)">+€156</td><td><span class="pill win">Win</span></td></tr>
+          <tr><td style="color:var(--text-secondary)">22 may</td><td class="mono">EUR/GBP</td><td><span class="pill short">Short</span></td><td class="mono">0.8521</td><td class="mono">0.8558</td><td class="mono">0.5 lot</td><td class="mono" style="color:var(--red-mid)">−€62</td><td><span class="pill loss">Loss</span></td></tr>
+          <tr><td style="color:var(--text-secondary)">21 may</td><td class="mono">XAU/USD</td><td><span class="pill long">Long</span></td><td class="mono">2.318</td><td class="mono">2.341</td><td class="mono">0.2 lot</td><td class="mono" style="color:var(--green)">+€174</td><td><span class="pill win">Win</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ESTRATEGIAS -->
+  <div class="content-area" id="sec-estrategias">
+    <div class="page-header">
+      <div class="page-title">Estrategias</div>
+      <div class="page-sub mono">Gestión y seguimiento de estrategias</div>
+    </div>
+    <div class="three-col">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div><div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Breakout Londres</div><span class="pill active">Activa</span></div>
+          <div style="font-size:18px;font-weight:500;font-family:'JetBrains Mono';color:var(--green);">+8,2%</div>
+        </div>
+        <div class="stat-row"><span class="stat-label">Operaciones</span><span class="stat-val">42</span></div>
+        <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val">71%</span></div>
+        <div class="stat-row"><span class="stat-label">Ratio R:R</span><span class="stat-val">1:2,8</span></div>
+        <div class="stat-row"><span class="stat-label">Max. DD</span><span class="stat-val neg">−1,8%</span></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div><div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Reversión Media</div><span class="pill active">Activa</span></div>
+          <div style="font-size:18px;font-weight:500;font-family:'JetBrains Mono';color:var(--green);">+3,1%</div>
+        </div>
+        <div class="stat-row"><span class="stat-label">Operaciones</span><span class="stat-val">58</span></div>
+        <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val">61%</span></div>
+        <div class="stat-row"><span class="stat-label">Ratio R:R</span><span class="stat-val">1:1,9</span></div>
+        <div class="stat-row"><span class="stat-label">Max. DD</span><span class="stat-val neg">−2,3%</span></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div><div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px;">Scalping NY Open</div><span class="pill inactive">Pausada</span></div>
+          <div style="font-size:18px;font-weight:500;font-family:'JetBrains Mono';color:var(--red-mid);">−1,4%</div>
+        </div>
+        <div class="stat-row"><span class="stat-label">Operaciones</span><span class="stat-val">28</span></div>
+        <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val">46%</span></div>
+        <div class="stat-row"><span class="stat-label">Ratio R:R</span><span class="stat-val">1:1,2</span></div>
+        <div class="stat-row"><span class="stat-label">Max. DD</span><span class="stat-val neg">−3,1%</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-plus"></i> Nueva estrategia</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-row"><div class="tv-label">Nombre</div><input class="tv-input" type="text" placeholder="Ej: Trend Following EUR"></div>
+        <div class="form-row"><div class="tv-label">Mercado</div><input class="tv-input" type="text" placeholder="Ej: Forex, Crypto, Índices"></div>
+        <div class="form-row"><div class="tv-label">Timeframe</div><input class="tv-input" type="text" placeholder="Ej: H1, M15, D1"></div>
+        <div class="form-row"><div class="tv-label">Objetivo R:R</div><input class="tv-input" type="text" placeholder="Ej: 1:2"></div>
+      </div>
+      <div class="form-row"><div class="tv-label">Descripción</div><textarea class="tv-input" rows="2" placeholder="Describe las reglas de entrada y salida..."></textarea></div>
+      <button class="tv-btn">Guardar estrategia</button>
+    </div>
+  </div>
+
+  <!-- ANÁLISIS -->
+  <div class="content-area" id="sec-analisis">
+    <div class="page-header">
+      <div class="page-title">Análisis</div>
+      <div class="page-sub mono">Estadísticas avanzadas · 2026</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Profit Factor</div><div class="metric-val mono">2,41</div><div class="metric-delta pos mono">↑ Excelente</div></div>
+      <div class="metric"><div class="metric-label">Sharpe Ratio</div><div class="metric-val mono">1,87</div><div class="metric-delta pos mono">↑ Bueno</div></div>
+      <div class="metric"><div class="metric-label">Avg. Win</div><div class="metric-val pos mono">+€148</div><div class="metric-delta pos mono">Por operación</div></div>
+      <div class="metric"><div class="metric-label">Avg. Loss</div><div class="metric-val neg mono">−€61</div><div class="metric-delta neg mono">Por operación</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar"></i> P&L por par de divisas</div>
+        <div class="stat-row"><span class="stat-label mono">EUR/USD</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:80px;"><div class="progress-wrap"><div class="progress-fill green" style="width:85%"></div></div></div><span class="stat-val pos mono">+€680</span></div></div>
+        <div class="stat-row"><span class="stat-label mono">NASDAQ</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:80px;"><div class="progress-wrap"><div class="progress-fill green" style="width:72%"></div></div></div><span class="stat-val pos mono">+€576</span></div></div>
+        <div class="stat-row"><span class="stat-label mono">XAU/USD</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:80px;"><div class="progress-wrap"><div class="progress-fill green" style="width:60%"></div></div></div><span class="stat-val pos mono">+€480</span></div></div>
+        <div class="stat-row"><span class="stat-label mono">GBP/JPY</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:80px;"><div class="progress-wrap"><div class="progress-fill amber" style="width:30%"></div></div></div><span class="stat-val pos mono">+€240</span></div></div>
+        <div class="stat-row"><span class="stat-label mono">BTC/USD</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:80px;"><div class="progress-wrap"><div class="progress-fill red" style="width:20%"></div></div></div><span class="stat-val neg mono">−€135</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-clock"></i> Rendimiento por sesión</div>
+        <div class="stat-row"><span class="stat-label">Sesión Tokio</span><span class="stat-val neg mono">−€82</span></div>
+        <div class="stat-row"><span class="stat-label">Sesión Londres</span><span class="stat-val pos mono">+€1.241</span></div>
+        <div class="stat-row"><span class="stat-label">Overlap Lon/NY</span><span class="stat-val pos mono">+€874</span></div>
+        <div class="stat-row"><span class="stat-label">Sesión Nueva York</span><span class="stat-val pos mono">+€808</span></div>
+        <div style="margin-top:14px;">
+          <div class="tv-label" style="margin-bottom:8px;">Distribución de operaciones</div>
+          <div style="display:flex;gap:4px;height:40px;align-items:flex-end;">
+            <div style="flex:1;background:#EEF1F8;border-radius:4px 4px 0 0;height:20%;"></div>
+            <div style="flex:1;background:#85B7EB;border-radius:4px 4px 0 0;height:80%;"></div>
+            <div style="flex:1;background:#378ADD;border-radius:4px 4px 0 0;height:65%;"></div>
+            <div style="flex:1;background:#85B7EB;border-radius:4px 4px 0 0;height:55%;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-secondary);margin-top:4px;font-family:'JetBrains Mono';"><span>Tokio</span><span>Londres</span><span>Overlap</span><span>NY</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-calendar-week"></i> Rendimiento por día de la semana</div>
+        <div class="stat-row"><span class="stat-label">Lunes</span><span class="stat-val pos mono">+€218</span></div>
+        <div class="stat-row"><span class="stat-label">Martes</span><span class="stat-val pos mono">+€341</span></div>
+        <div class="stat-row"><span class="stat-label">Miércoles</span><span class="stat-val neg mono">−€48</span></div>
+        <div class="stat-row"><span class="stat-label">Jueves</span><span class="stat-val pos mono">+€520</span></div>
+        <div class="stat-row"><span class="stat-label">Viernes</span><span class="stat-val pos mono">+€190</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-percentage"></i> Estadísticas clave</div>
+        <div class="stat-row"><span class="stat-label">Racha ganadora máx.</span><span class="stat-val mono">8 ops.</span></div>
+        <div class="stat-row"><span class="stat-label">Racha perdedora máx.</span><span class="stat-val neg mono">3 ops.</span></div>
+        <div class="stat-row"><span class="stat-label">Tiempo medio en op.</span><span class="stat-val mono">2h 14min</span></div>
+        <div class="stat-row"><span class="stat-label">Ops. por día (media)</span><span class="stat-val mono">1,6</span></div>
+        <div class="stat-row"><span class="stat-label">Expectativa matemática</span><span class="stat-val pos mono">+€22,2</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUENTAS -->
+  <div class="content-area" id="sec-cuentas">
+    <div class="page-header">
+      <div class="page-title">Cuentas</div>
+      <div class="page-sub mono">Gestión de cuentas de trading</div>
+    </div>
+    <div class="three-col">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Cuenta Principal</div><div style="font-size:11px;color:var(--text-secondary);">IC Markets · MT5</div></div>
+          <span class="pill active">Live</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Balance</span><span class="stat-val mono">€12.480</span></div>
+        <div class="stat-row"><span class="stat-label">Equity</span><span class="stat-val mono">€12.610</span></div>
+        <div class="stat-row"><span class="stat-label">Margen libre</span><span class="stat-val mono">€11.890</span></div>
+        <div class="stat-row"><span class="stat-label">P&L abierto</span><span class="stat-val pos mono">+€130</span></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Cuenta Prop Firm</div><div style="font-size:11px;color:var(--text-secondary);">FTMO · Challenge</div></div>
+          <span class="pill pending">Challenge</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Balance</span><span class="stat-val mono">€50.000</span></div>
+        <div class="stat-row"><span class="stat-label">Objetivo</span><span class="stat-val pos mono">€5.000</span></div>
+        <div class="stat-row"><span class="stat-label">Conseguido</span><span class="stat-val pos mono">€2.841</span></div>
+        <div class="stat-row"><span class="stat-label">Días restantes</span><span class="stat-val mono">18 días</span></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Demo Crypto</div><div style="font-size:11px;color:var(--text-secondary);">Binance · Demo</div></div>
+          <span class="pill inactive">Demo</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Balance</span><span class="stat-val mono">$10.000</span></div>
+        <div class="stat-row"><span class="stat-label">P&L total</span><span class="stat-val neg mono">−$124</span></div>
+        <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val mono">48%</span></div>
+        <div class="stat-row"><span class="stat-label">Ops. totales</span><span class="stat-val mono">34</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-plus"></i> Añadir nueva cuenta</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+        <div class="form-row"><div class="tv-label">Nombre</div><input class="tv-input" type="text" placeholder="Ej: Cuenta Principal"></div>
+        <div class="form-row"><div class="tv-label">Broker</div><input class="tv-input" type="text" placeholder="Ej: IC Markets, FTMO"></div>
+        <div class="form-row"><div class="tv-label">Plataforma</div><input class="tv-input" type="text" placeholder="Ej: MT4, MT5, cTrader"></div>
+        <div class="form-row"><div class="tv-label">Balance inicial</div><input class="tv-input" type="number" placeholder="10000"></div>
+        <div class="form-row"><div class="tv-label">Divisa</div><input class="tv-input" type="text" placeholder="EUR, USD, GBP"></div>
+        <div class="form-row"><div class="tv-label">Tipo</div><input class="tv-input" type="text" placeholder="Live, Demo, Prop Firm"></div>
+      </div>
+      <button class="tv-btn">Añadir cuenta</button>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div class="content-area" id="sec-portfolio">
+    <div class="page-header">
+      <div class="page-title">Portfolio</div>
+      <div class="page-sub mono">Distribución de activos y rendimiento</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Valor total</div><div class="metric-val mono">€62.480</div><div class="metric-delta pos mono">↑ +12,4% YTD</div></div>
+      <div class="metric"><div class="metric-label">Forex</div><div class="metric-val mono">€12.480</div><div class="metric-delta mono" style="color:var(--text-secondary)">20% del total</div></div>
+      <div class="metric"><div class="metric-label">Prop Firm</div><div class="metric-val mono">€50.000</div><div class="metric-delta mono" style="color:var(--text-secondary)">80% del total</div></div>
+      <div class="metric"><div class="metric-label">P&L total YTD</div><div class="metric-val pos mono">+€6.841</div><div class="metric-delta pos mono">↑ Acumulado</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-donut"></i> Distribución por activo</div>
+        <div class="stat-row"><span class="stat-label">Forex</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:100px;"><div class="progress-wrap"><div class="progress-fill" style="width:45%"></div></div></div><span class="stat-val mono">45%</span></div></div>
+        <div class="stat-row"><span class="stat-label">Índices</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:100px;"><div class="progress-wrap"><div class="progress-fill green" style="width:30%"></div></div></div><span class="stat-val mono">30%</span></div></div>
+        <div class="stat-row"><span class="stat-label">Crypto</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:100px;"><div class="progress-wrap"><div class="progress-fill amber" style="width:15%"></div></div></div><span class="stat-val mono">15%</span></div></div>
+        <div class="stat-row"><span class="stat-label">Materias Primas</span><div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end;"><div style="width:100px;"><div class="progress-wrap"><div class="progress-fill red" style="width:10%"></div></div></div><span class="stat-val mono">10%</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-trending-up"></i> Evolución mensual</div>
+        <div class="bars-wrap">
+          <div class="bar" style="height:55%;background:#B5D4F4;"></div>
+          <div class="bar" style="height:68%;background:#85B7EB;"></div>
+          <div class="bar" style="height:45%;background:#F09595;"></div>
+          <div class="bar" style="height:80%;background:#85B7EB;"></div>
+          <div class="bar" style="height:72%;background:#378ADD;"></div>
+          <div class="bar" style="height:90%;background:#378ADD;"></div>
+        </div>
+        <div class="bar-days"><span>Ene</span><span>Feb</span><span>Mar</span><span>Abr</span><span>May</span><span>Jun</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FUNDING -->
+  <div class="content-area" id="sec-funding">
+    <div class="page-header">
+      <div class="page-title">Funding</div>
+      <div class="page-sub mono">Control de depósitos, retiros y comisiones</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Total depositado</div><div class="metric-val mono">€15.000</div><div class="metric-delta mono" style="color:var(--text-secondary)">3 depósitos</div></div>
+      <div class="metric"><div class="metric-label">Total retirado</div><div class="metric-val mono">€2.800</div><div class="metric-delta pos mono">2 retiros</div></div>
+      <div class="metric"><div class="metric-label">Comisiones</div><div class="metric-val neg mono">−€284</div><div class="metric-delta neg mono">Este año</div></div>
+      <div class="metric"><div class="metric-label">Net funding</div><div class="metric-val mono">€12.200</div><div class="metric-delta pos mono">Balance neto</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-list"></i> Historial de movimientos</div>
+        <table class="tv-table">
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Cuenta</th><th>Importe</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text-secondary)">15 may</td><td><span class="pill long">Depósito</span></td><td>Principal</td><td class="mono" style="color:var(--green)">+€5.000</td></tr>
+            <tr><td style="color:var(--text-secondary)">02 abr</td><td><span class="pill win">Retiro</span></td><td>Principal</td><td class="mono" style="color:var(--red-mid)">−€1.500</td></tr>
+            <tr><td style="color:var(--text-secondary)">10 mar</td><td><span class="pill long">Depósito</span></td><td>Principal</td><td class="mono" style="color:var(--green)">+€5.000</td></tr>
+            <tr><td style="color:var(--text-secondary)">15 feb</td><td><span class="pill win">Retiro</span></td><td>Principal</td><td class="mono" style="color:var(--red-mid)">−€1.300</td></tr>
+            <tr><td style="color:var(--text-secondary)">01 ene</td><td><span class="pill long">Depósito</span></td><td>Principal</td><td class="mono" style="color:var(--green)">+€5.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-plus"></i> Registrar movimiento</div>
+        <div class="form-row"><div class="tv-label">Tipo</div><input class="tv-input" type="text" placeholder="Depósito / Retiro / Comisión"></div>
+        <div class="form-row"><div class="tv-label">Cuenta</div><input class="tv-input" type="text" placeholder="Seleccionar cuenta"></div>
+        <div class="form-row"><div class="tv-label">Importe</div><input class="tv-input" type="number" placeholder="0.00"></div>
+        <div class="form-row"><div class="tv-label">Fecha</div><input class="tv-input" type="date"></div>
+        <div class="form-row"><div class="tv-label">Notas</div><input class="tv-input" type="text" placeholder="Descripción opcional"></div>
+        <button class="tv-btn">Registrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDARIO ECONÓMICO -->
+  <div class="content-area" id="sec-cal-eco">
+    <div class="page-header">
+      <div class="page-title">Calendario Económico</div>
+      <div class="page-sub mono">Eventos macroeconómicos · Mayo 2026</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-calendar-stats"></i> Próximos eventos</div>
+      <table class="tv-table">
+        <thead><tr><th>Fecha</th><th>Hora</th><th>País</th><th>Evento</th><th>Impacto</th><th>Anterior</th><th>Previsto</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--text-secondary)">28 may</td><td class="mono">14:30</td><td>🇺🇸 USD</td><td>PIB Q1 (Final)</td><td><span class="pill short">Alto</span></td><td class="mono">2,1%</td><td class="mono">2,3%</td></tr>
+          <tr><td style="color:var(--text-secondary)">28 may</td><td class="mono">16:00</td><td>🇺🇸 USD</td><td>Confianza del Consumidor</td><td><span class="pill pending">Medio</span></td><td class="mono">97,0</td><td class="mono">98,5</td></tr>
+          <tr><td style="color:var(--text-secondary)">29 may</td><td class="mono">09:00</td><td>🇪🇺 EUR</td><td>IPC Eurozona (Flash)</td><td><span class="pill short">Alto</span></td><td class="mono">2,2%</td><td class="mono">2,1%</td></tr>
+          <tr><td style="color:var(--text-secondary)">30 may</td><td class="mono">13:30</td><td>🇺🇸 USD</td><td>Peticiones Desempleo</td><td><span class="pill pending">Medio</span></td><td class="mono">222K</td><td class="mono">218K</td></tr>
+          <tr><td style="color:var(--text-secondary)">30 may</td><td class="mono">14:30</td><td>🇺🇸 USD</td><td>PCE Core (Inflación Fed)</td><td><span class="pill short">Alto</span></td><td class="mono">2,6%</td><td class="mono">2,5%</td></tr>
+          <tr><td style="color:var(--text-secondary)">02 jun</td><td class="mono">09:30</td><td>🇬🇧 GBP</td><td>PMI Manufacturero</td><td><span class="pill active">Bajo</span></td><td class="mono">48,7</td><td class="mono">49,2</td></tr>
+          <tr><td style="color:var(--text-secondary)">06 jun</td><td class="mono">14:30</td><td>🇺🇸 USD</td><td>NFP (Nóminas no agrícolas)</td><td><span class="pill short">Alto</span></td><td class="mono">177K</td><td class="mono">185K</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PROGRESS TRACKER -->
+  <div class="content-area" id="sec-progress">
+    <div class="page-header">
+      <div class="page-title">Progress Tracker</div>
+      <div class="page-sub mono">Seguimiento de objetivos y metas</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Objetivos activos</div><div class="metric-val mono">6</div><div class="metric-delta mono" style="color:var(--text-secondary)">Este mes</div></div>
+      <div class="metric"><div class="metric-label">Completados</div><div class="metric-val pos mono">3</div><div class="metric-delta pos mono">50% completado</div></div>
+      <div class="metric"><div class="metric-label">En progreso</div><div class="metric-val mono">2</div><div class="metric-delta mono" style="color:var(--text-secondary)">En curso</div></div>
+      <div class="metric"><div class="metric-label">Pendientes</div><div class="metric-val neg mono">1</div><div class="metric-delta neg mono">Sin iniciar</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-trophy"></i> Objetivos del mes</div>
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;font-weight:500;">P&L objetivo: €500</span><span class="pill win">79%</span></div>
+          <div class="progress-wrap" style="height:8px;"><div class="progress-fill green" style="width:79%"></div></div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">€394 conseguidos</div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;font-weight:500;">Win rate: 65%</span><span class="pill active">64%</span></div>
+          <div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:98%"></div></div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">Casi en objetivo</div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;font-weight:500;">Máx. drawdown: 5%</span><span class="pill win">Bajo control</span></div>
+          <div class="progress-wrap" style="height:8px;"><div class="progress-fill amber" style="width:42%"></div></div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">2,1% actual</div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;font-weight:500;">Operaciones: 40</span><span class="pill active">70%</span></div>
+          <div class="progress-wrap" style="height:8px;"><div class="progress-fill" style="width:70%"></div></div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">28 de 40 operaciones</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-plus"></i> Nuevo objetivo</div>
+        <div class="form-row"><div class="tv-label">Objetivo</div><input class="tv-input" type="text" placeholder="Ej: Alcanzar €1.000 de P&L"></div>
+        <div class="form-row"><div class="tv-label">Métrica</div><input class="tv-input" type="text" placeholder="Ej: P&L, Win rate, Drawdown"></div>
+        <div class="form-row"><div class="tv-label">Valor objetivo</div><input class="tv-input" type="number" placeholder="0"></div>
+        <div class="form-row"><div class="tv-label">Fecha límite</div><input class="tv-input" type="date"></div>
+        <button class="tv-btn">Crear objetivo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERRAMIENTAS -->
+  <div class="content-area" id="sec-herramientas">
+    <div class="page-header">
+      <div class="page-title">Herramientas</div>
+      <div class="page-sub mono">Calculadoras y utilidades para trading</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;">
+      <div class="tool-card" onclick="showSection('riesgo',document.querySelector('[onclick*=riesgo]'))">
+        <div class="tool-icon"><i class="ti ti-shield-check"></i></div>
+        <div class="tool-name">Gestión de Riesgo</div>
+        <div class="tool-desc">Calcula el tamaño de posición óptimo según tu riesgo por operación.</div>
+      </div>
+      <div class="tool-card" onclick="showSection('backtesting',document.querySelector('[onclick*=backtesting]'))">
+        <div class="tool-icon" style="background:#E1F5EE;"><i class="ti ti-rocket" style="color:var(--green);"></i></div>
+        <div class="tool-name">Backtesting</div>
+        <div class="tool-desc">Prueba tus estrategias con datos históricos y analiza su rendimiento.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:var(--amber-light);"><i class="ti ti-calculator" style="color:var(--amber);"></i></div>
+        <div class="tool-name">Calculadora Pip</div>
+        <div class="tool-desc">Convierte pips a valor monetario en cualquier par de divisas.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:#EEEDFE;"><i class="ti ti-percentage" style="color:var(--purple);"></i></div>
+        <div class="tool-name">Calculadora R:R</div>
+        <div class="tool-desc">Visualiza y ajusta el ratio riesgo/recompensa de tus operaciones.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:var(--teal-light);"><i class="ti ti-currency-euro" style="color:var(--teal);"></i></div>
+        <div class="tool-name">Conversor de Divisa</div>
+        <div class="tool-desc">Convierte entre divisas usando tipos de cambio en tiempo real.</div>
+      </div>
+      <div class="tool-card" onclick="showSection('copy',document.querySelector('[onclick*=copy]'))">
+        <div class="tool-icon" style="background:#F4C0D1;"><i class="ti ti-users" style="color:var(--red);"></i></div>
+        <div class="tool-name">Copy Trading</div>
+        <div class="tool-desc">Copia automáticamente las operaciones de traders profesionales.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-calculator"></i> Calculadora de tamaño de posición</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;align-items:end;">
+        <div><div class="tv-label">Balance de cuenta</div><input class="tv-input" type="number" id="tool-balance" value="12480" oninput="calcPosition()"></div>
+        <div><div class="tv-label">Riesgo por op. (%)</div><input class="tv-input" type="number" id="tool-risk" value="1" step="0.1" oninput="calcPosition()"></div>
+        <div><div class="tv-label">Stop Loss (pips)</div><input class="tv-input" type="number" id="tool-sl" value="20" oninput="calcPosition()"></div>
+        <div><div class="tv-label">Valor pip (€/pip/lot)</div><input class="tv-input" type="number" id="tool-pipval" value="10" oninput="calcPosition()"></div>
+      </div>
+      <div style="margin-top:16px;padding:14px;background:#F4F6FA;border-radius:var(--radius);display:flex;gap:32px;">
+        <div><div class="tv-label">Importe en riesgo</div><div style="font-size:18px;font-weight:500;font-family:'JetBrains Mono';color:var(--text-primary);" id="tool-amount">€124,80</div></div>
+        <div><div class="tv-label">Tamaño de posición</div><div style="font-size:18px;font-weight:500;font-family:'JetBrains Mono';color:var(--accent);" id="tool-size">0,62 lotes</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GESTIÓN DE RIESGO -->
+  <div class="content-area" id="sec-riesgo">
+    <div class="page-header">
+      <div class="page-title">Gestión de Riesgo</div>
+      <div class="page-sub mono">Parámetros y límites de riesgo</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Riesgo por op.</div><div class="metric-val mono">1%</div><div class="metric-delta pos mono">Bajo control</div></div>
+      <div class="metric"><div class="metric-label">Drawdown actual</div><div class="metric-val neg mono">2,1%</div><div class="metric-delta mono" style="color:var(--text-secondary)">Límite: 5%</div></div>
+      <div class="metric"><div class="metric-label">Exposición total</div><div class="metric-val mono">3,2%</div><div class="metric-delta pos mono">Dentro de límites</div></div>
+      <div class="metric"><div class="metric-label">Ops. abiertas</div><div class="metric-val mono">2</div><div class="metric-delta mono" style="color:var(--text-secondary)">Máx: 5</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-settings"></i> Configuración de riesgo</div>
+        <div class="form-row"><div class="tv-label">Riesgo máximo por operación (%)</div><input class="tv-input" type="number" value="1" step="0.5"></div>
+        <div class="form-row"><div class="tv-label">Drawdown máximo diario (%)</div><input class="tv-input" type="number" value="3" step="0.5"></div>
+        <div class="form-row"><div class="tv-label">Drawdown máximo total (%)</div><input class="tv-input" type="number" value="5" step="0.5"></div>
+        <div class="form-row"><div class="tv-label">Máximo de operaciones simultáneas</div><input class="tv-input" type="number" value="5"></div>
+        <div class="form-row"><div class="tv-label">Pérdida máxima diaria (€)</div><input class="tv-input" type="number" value="375"></div>
+        <button class="tv-btn">Guardar configuración</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-activity"></i> Estado de riesgo en tiempo real</div>
+        <div class="stat-row"><span class="stat-label">Riesgo abierto ahora</span><span class="stat-val mono">€249,60</span></div>
+        <div class="stat-row"><span class="stat-label">Pérdida de hoy</span><span class="stat-val pos mono">+€88</span></div>
+        <div class="stat-row"><span class="stat-label">Margen utilizado</span><span class="stat-val mono">5,8%</span></div>
+        <div style="margin-top:16px;">
+          <div class="tv-label" style="margin-bottom:8px;">Drawdown diario (3% límite)</div>
+          <div class="progress-wrap" style="height:10px;"><div class="progress-fill green" style="width:0%"></div></div>
+          <div style="font-size:11px;color:var(--green-mid);margin-top:5px;">0% — Sin pérdidas hoy</div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="tv-label" style="margin-bottom:8px;">Drawdown total (5% límite)</div>
+          <div class="progress-wrap" style="height:10px;"><div class="progress-fill amber" style="width:42%"></div></div>
+          <div style="font-size:11px;color:var(--amber);margin-top:5px;">2,1% — Moderado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKTESTING -->
+  <div class="content-area" id="sec-backtesting">
+    <div class="page-header">
+      <div class="page-title">Backtesting</div>
+      <div class="page-sub mono">Prueba tus estrategias con datos históricos</div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-settings"></i> Configurar test</div>
+        <div class="form-row"><div class="tv-label">Estrategia</div><input class="tv-input" type="text" placeholder="Nombre de la estrategia"></div>
+        <div class="form-row"><div class="tv-label">Par de divisas</div><input class="tv-input" type="text" placeholder="Ej: EUR/USD"></div>
+        <div class="form-row"><div class="tv-label">Timeframe</div><input class="tv-input" type="text" placeholder="Ej: H1, M15, D1"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="form-row"><div class="tv-label">Desde</div><input class="tv-input" type="date" value="2025-01-01"></div>
+          <div class="form-row"><div class="tv-label">Hasta</div><input class="tv-input" type="date" value="2026-01-01"></div>
+        </div>
+        <div class="form-row"><div class="tv-label">Capital inicial (€)</div><input class="tv-input" type="number" value="10000"></div>
+        <div class="form-row"><div class="tv-label">Riesgo por op. (%)</div><input class="tv-input" type="number" value="1" step="0.5"></div>
+        <button class="tv-btn">Ejecutar backtest</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-dots"></i> Último resultado: Breakout Londres</div>
+        <div class="stat-row"><span class="stat-label">Período</span><span class="stat-val mono">Ene–Dic 2025</span></div>
+        <div class="stat-row"><span class="stat-label">Total operaciones</span><span class="stat-val mono">312</span></div>
+        <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val pos mono">68,2%</span></div>
+        <div class="stat-row"><span class="stat-label">Profit Factor</span><span class="stat-val pos mono">2,81</span></div>
+        <div class="stat-row"><span class="stat-label">P&L total</span><span class="stat-val pos mono">+€4.218</span></div>
+        <div class="stat-row"><span class="stat-label">Max. Drawdown</span><span class="stat-val neg mono">−8,4%</span></div>
+        <div class="stat-row"><span class="stat-label">Sharpe Ratio</span><span class="stat-val pos mono">2,14</span></div>
+        <div style="margin-top:14px;">
+          <div class="tv-label" style="margin-bottom:8px;">Curva de equity</div>
+          <div class="bars-wrap" style="height:70px;">
+            <div class="bar" style="height:30%;background:#B5D4F4;"></div>
+            <div class="bar" style="height:45%;background:#85B7EB;"></div>
+            <div class="bar" style="height:55%;background:#85B7EB;"></div>
+            <div class="bar" style="height:40%;background:#F09595;"></div>
+            <div class="bar" style="height:60%;background:#85B7EB;"></div>
+            <div class="bar" style="height:75%;background:#378ADD;"></div>
+            <div class="bar" style="height:65%;background:#378ADD;"></div>
+            <div class="bar" style="height:80%;background:#378ADD;"></div>
+            <div class="bar" style="height:90%;background:#185FA5;"></div>
+            <div class="bar" style="height:85%;background:#185FA5;"></div>
+            <div class="bar" style="height:95%;background:#0C447C;"></div>
+            <div class="bar" style="height:100%;background:#0C447C;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COPY TRADING -->
+  <div class="content-area" id="sec-copy">
+    <div class="page-header">
+      <div class="page-title">Copy Trading</div>
+      <div class="page-sub mono">Copia a los mejores traders</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric"><div class="metric-label">Traders copiados</div><div class="metric-val mono">2</div><div class="metric-delta mono" style="color:var(--text-secondary)">Activos</div></div>
+      <div class="metric"><div class="metric-label">P&L generado</div><div class="metric-val pos mono">+€482</div><div class="metric-delta pos mono">Este mes</div></div>
+      <div class="metric"><div class="metric-label">Capital asignado</div><div class="metric-val mono">€3.000</div><div class="metric-delta mono" style="color:var(--text-secondary)">24% del portfolio</div></div>
+      <div class="metric"><div class="metric-label">Win rate medio</div><div class="metric-val mono">71%</div><div class="metric-delta pos mono">↑ Excelente</div></div>
+    </div>
+    <div class="three-col">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">AlexFX_Pro</div><div style="font-size:11px;color:var(--text-secondary);">Forex · Londres</div></div>
+          <span class="pill active">Copiando</span>
+        </div>
+        <div class="stat-row"><span class="stat-label">Rendimiento YTD</span><span class="stat-val pos mono">+34,2%</span></div>
+        <div class="stat-row"><span class="stat-label">Win rate</span><span class="stat-val mono">73%</span></div>
+        <div class="stat-row"><span class="stat-label">Max. DD</span><span class="stat-val neg mono">−6,1%</span></div>
+        <div class="stat-row"><span cl
