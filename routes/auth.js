@@ -20,7 +20,8 @@ router.post('/register', async (req, res) => {
   if (exists) return res.status(409).json({ error: 'Ya existe una cuenta con ese email' });
 
   const hash = await bcrypt.hash(password, 12);
-  const r    = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)').run(name, email.toLowerCase(), hash);
+  const trialEnd = new Date(Date.now() + 14*24*60*60*1000).toISOString();
+  const r    = db.prepare('INSERT INTO users (name, email, password, plan, trial_ends_at) VALUES (?, ?, ?, ?, ?)').run(name, email.toLowerCase(), hash, 'trial', trialEnd);
   const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(r.lastInsertRowid);
 
   res.json({ token: makeToken(user), user: { id: user.id, name: user.name, email: user.email } });
@@ -52,9 +53,15 @@ router.post('/login', async (req, res) => {
 
 // ── Perfil actual ─────────────────────────────────────────────────────────────
 router.get('/me', require('../middleware/auth'), (req, res) => {
-  const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(req.user.id);
+  const user = db.prepare('SELECT id, name, email, plan, trial_ends_at, created_at FROM users WHERE id = ?').get(req.user.id);
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-  res.json(user);
+
+  const now          = new Date();
+  const trialEnd     = user.trial_ends_at ? new Date(user.trial_ends_at) : null;
+  const trialExpired = user.plan === 'trial' && trialEnd && now > trialEnd;
+  const daysLeft     = trialEnd ? Math.max(0, Math.ceil((trialEnd - now) / 86400000)) : null;
+
+  res.json({ ...user, trial_expired: trialExpired, days_left: daysLeft });
 });
 
 // ── Actualizar perfil ─────────────────────────────────────────────────────────

@@ -9,10 +9,11 @@ const App = {
     Theme.init();
     UI.initInteractions();
     MarketSession.init();
-    // Pedir permiso para notificaciones del navegador
     if ('Notification' in window && Notification.permission === 'default') {
       setTimeout(() => Notification.requestPermission(), 3000);
     }
+    // Verificar estado del plan / trial
+    App.checkPlanStatus();
     await App.loadAccounts();
     App._setupNav();
     App._setupTradeModal();
@@ -123,6 +124,53 @@ const App = {
   },
 
   reload() { App._loadSection(App.activeSection); },
+
+  async checkPlanStatus() {
+    try {
+      const me = await API.get('/api/auth/me');
+      if (me.trial_expired) {
+        App._showPaywall();
+      } else if (me.plan === 'trial' && me.days_left !== null && me.days_left <= 7) {
+        App._showTrialBanner(me.days_left);
+      }
+    } catch(e) {}
+  },
+
+  _showTrialBanner(daysLeft) {
+    const existing = document.getElementById('trialBanner');
+    if (existing) return;
+    const banner = document.createElement('div');
+    banner.id = 'trialBanner';
+    banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#152C4A,#2B72C8);color:#fff;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:500;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);white-space:nowrap;';
+    banner.innerHTML = `
+      <span>⏳ Tu prueba gratuita termina en <strong>${daysLeft === 0 ? 'hoy' : daysLeft + ' días'}</strong></span>
+      <a href="#" onclick="App._showPaywall();return false;" style="background:rgba(255,255,255,0.2);color:#fff;padding:5px 14px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:700;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Activar plan →</a>
+      <button onclick="document.getElementById('trialBanner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:18px;padding:0;line-height:1;">×</button>
+    `;
+    document.body.appendChild(banner);
+  },
+
+  _showPaywall() {
+    const existing = document.getElementById('paywallOverlay');
+    if (existing) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'paywallOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,22,40,0.95);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = `
+      <div style="background:#172030;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:48px 40px;max-width:460px;width:90%;text-align:center;">
+        <div style="font-size:42px;margin-bottom:16px;">🔒</div>
+        <h2 style="font-size:24px;font-weight:800;color:#EFF6FF;margin-bottom:10px;letter-spacing:-0.03em;">Tu prueba ha terminado</h2>
+        <p style="font-size:14px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:28px;">Activa tu plan Pro para seguir usando FundLog sin límites. Acceso completo por solo <strong style="color:#85B7EB;">€9/mes</strong>.</p>
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px 20px;margin-bottom:28px;text-align:left;">
+          <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">Incluye todo</div>
+          ${['Operaciones ilimitadas','Análisis avanzado completo','Calendario económico','Diario de trading','Alertas de riesgo','Importar CSV de MetaTrader'].map(f => `<div style="font-size:13px;color:#EFF6FF;padding:4px 0;display:flex;align-items:center;gap:8px;"><span style="color:#1D9E75;">✓</span> ${f}</div>`).join('')}
+        </div>
+        <a href="mailto:hola@fundlog.es?subject=Quiero activar mi plan Pro" style="display:block;background:linear-gradient(135deg,#1A3A6A,#2B72C8);color:#fff;padding:14px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:12px;box-shadow:0 4px 16px rgba(55,138,221,0.4);">→ Activar plan Pro — €9/mes</a>
+        <button onclick="document.getElementById('paywallOverlay').remove()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;font-family:inherit;">Cerrar y continuar (acceso limitado)</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  },
 
   async checkRiskAlerts() {
     try {
