@@ -18,8 +18,9 @@
 body{font-family:'Sora',sans-serif;color:var(--text);background:var(--white);overflow-x:hidden}
 
 /* ── NAV ──────────────────────────────────────── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;height:70px;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:all 0.35s ease}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 5%;height:70px;display:flex;align-items:center;justify-content:space-between;background:transparent;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1), background 0.35s ease, border-color 0.35s ease}
 nav.scrolled{background:rgba(10,22,40,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07)}
+nav.hidden{transform:translateY(-100%)}
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
 .nav-logo svg{filter:drop-shadow(0 2px 6px rgba(43,114,200,0.4))}
 .nav-logo-text{font-size:17px;font-weight:700;color:#EFF6FF}
@@ -486,10 +487,18 @@ if (params.get('mode') === 'register') {
   sessionStorage.setItem('loginMode', 'register');
 }
 
-// Navbar scroll effect
+// Navbar — transparente en top, oscura al scrollear, se oculta al bajar y aparece al subir
 const nav = document.querySelector('nav');
+let lastY = 0;
 window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 40);
+  const y = window.scrollY;
+  nav.classList.toggle('scrolled', y > 40);
+  if (y > 80) {
+    nav.classList.toggle('hidden', y > lastY); // bajando = ocultar, subiendo = mostrar
+  } else {
+    nav.classList.remove('hidden'); // siempre visible en el top
+  }
+  lastY = y;
 }, { passive: true });
 </script>
 </body>
