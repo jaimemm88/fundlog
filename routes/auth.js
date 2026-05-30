@@ -23,14 +23,6 @@ router.post('/register', async (req, res) => {
   const r    = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)').run(name, email.toLowerCase(), hash);
   const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(r.lastInsertRowid);
 
-  // Si es el primer usuario, asignarle los datos de ejemplo
-  if (user.id === 1) {
-    const tables = ['accounts','trades','strategies','funding','goals','economic_calendar','risk_settings'];
-    for (const t of tables) {
-      try { db.prepare(`UPDATE ${t} SET user_id = 1 WHERE user_id IS NULL OR user_id = 0`).run(); } catch {}
-    }
-  }
-
   res.json({ token: makeToken(user), user: { id: user.id, name: user.name, email: user.email } });
 });
 
