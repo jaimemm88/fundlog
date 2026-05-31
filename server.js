@@ -24,7 +24,8 @@ app.use('/api/stripe',                  require('./routes/stripe'));
 
 // Login page — cualquier ruta no-API sirve el index o login
 app.get('/',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/login',          (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/reset-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'reset-password.html')));
 app.get('/app',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('*',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 

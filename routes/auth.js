@@ -92,6 +92,95 @@ router.put('/password', require('../middleware/auth'), async (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Olvidé mi contraseña ─────────────────────────────────────────────────────
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email obligatorio' });
+
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase());
+  // Siempre respondemos igual para no revelar si el email existe
+  if (!user) return res.json({ ok: true });
+
+  // Generar token único
+  const crypto = require('crypto');
+  const token  = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hora
+
+  db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?')
+    .run(token, expires, user.id);
+
+  // Enviar email
+  try {
+    const appUrl = process.env.APP_URL || 'https://fundlog.es';
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    const html = `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#F0F4F8;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F0F4F8;padding:40px 0;">
+<tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+  <tr><td style="background:linear-gradient(135deg,#0F2040,#1A3A6A);border-radius:16px 16px 0 0;padding:28px 40px;text-align:center;">
+    <div style="font-size:24px;font-weight:800;"><span style="color:#fff;">Fund</span><span style="color:#7DB8E8;">Log</span></div>
+  </td></tr>
+  <tr><td style="background:#fff;padding:36px 40px;">
+    <h2 style="font-size:24px;font-weight:800;color:#0C1A2E;margin:0 0 12px;">Recuperar contraseña</h2>
+    <p style="font-size:15px;color:#6B7A99;line-height:1.7;margin:0 0 28px;">
+      Hemos recibido una solicitud para restablecer la contraseña de <strong>${user.email}</strong>.
+      Haz clic en el botón para crear una nueva. El enlace expira en 1 hora.
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr><td align="center">
+        <a href="${appUrl}/reset-password?token=${token}"
+           style="display:inline-block;background:linear-gradient(135deg,#1A3A6A,#2B72C8);color:#fff;text-decoration:none;padding:15px 36px;border-radius:10px;font-size:15px;font-weight:700;">
+          → Cambiar contraseña
+        </a>
+      </td></tr>
+    </table>
+    <p style="font-size:13px;color:#94A3B8;margin-top:24px;text-align:center;">
+      Si no solicitaste esto, ignora este email. Tu contraseña no cambiará.
+    </p>
+  </td></tr>
+  <tr><td style="background:#0F2040;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+    <p style="font-size:11px;color:rgba(255,255,255,0.2);margin:0;">© 2026 FundLog · fundlog.es</p>
+  </td></tr>
+</table></td></tr></table>
+</body></html>`;
+
+    await resend.emails.send({
+      from:    process.env.RESEND_FROM || 'noreply@fundlog.es',
+      to:      user.email,
+      subject: 'Recuperar contraseña — FundLog',
+      html,
+    });
+    console.log(`📧 Reset password enviado a ${user.email}`);
+  } catch(e) {
+    console.error(`📧 Error reset email: ${e.message}`);
+  }
+
+  res.json({ ok: true });
+});
+
+// ── Resetear contraseña ───────────────────────────────────────────────────────
+router.post('/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) return res.status(400).json({ error: 'Token y contraseña obligatorios' });
+  if (password.length < 6)  return res.status(400).json({ error: 'Mínimo 6 caracteres' });
+
+  const user = db.prepare('SELECT * FROM users WHERE reset_token = ?').get(token);
+  if (!user) return res.status(400).json({ error: 'Token inválido o ya usado' });
+  if (new Date() > new Date(user.reset_token_expires)) {
+    return res.status(400).json({ error: 'El enlace ha expirado. Solicita uno nuevo.' });
+  }
+
+  const hash = await bcrypt.hash(password, 12);
+  db.prepare('UPDATE users SET password = ?, reset_token = "", reset_token_expires = "" WHERE id = ?')
+    .run(hash, user.id);
+
+  res.json({ ok: true });
+});
+
 // ── Test email (con log detallado) ────────────────────────────────────────────
 router.post('/email-test', require('../middleware/auth'), async (req, res) => {
   try {

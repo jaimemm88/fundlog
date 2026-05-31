@@ -125,6 +125,8 @@ db.exec(`
 const migrations = [
   ['users', 'plan TEXT DEFAULT "trial"'],
   ['users', 'trial_ends_at TEXT DEFAULT ""'],
+  ['users', 'reset_token TEXT DEFAULT ""'],
+  ['users', 'reset_token_expires TEXT DEFAULT ""'],
   ['accounts',          'user_id INTEGER DEFAULT 1'],
   ['trades',            'user_id INTEGER DEFAULT 1'],
   ['strategies',        'user_id INTEGER DEFAULT 1'],
