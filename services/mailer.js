@@ -30,11 +30,18 @@ async function sendWelcomeEmail(user) {
 <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;">
 
   <!-- HEADER -->
-  <tr><td style="background:linear-gradient(135deg,#0F2040 0%,#1A3A6A 100%);border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
-    <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;">
-      <span style="color:#ffffff;">Fund</span><span style="color:#7DB8E8;">Log</span>
-    </div>
-    <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:4px;letter-spacing:1px;text-transform:uppercase;">Trading Journal Profesional</div>
+  <tr><td style="background:#0F2040;border-radius:16px 16px 0 0;padding:28px 40px;text-align:center;">
+    <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+      <tr>
+        <td style="background:#1D4080;border-radius:10px;width:38px;height:38px;text-align:center;vertical-align:middle;padding:0 10px;">
+          <span style="font-size:20px;color:#fff;font-weight:800;font-family:Georgia,serif;">f</span>
+        </td>
+        <td style="padding-left:12px;">
+          <span style="font-size:24px;font-weight:800;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-0.5px;">Fund</span><span style="font-size:24px;font-weight:800;color:#7DB8E8;font-family:Arial,sans-serif;letter-spacing:-0.5px;">Log</span>
+        </td>
+      </tr>
+    </table>
+    <div style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:10px;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;">Trading Journal</div>
   </td></tr>
 
   <!-- HERO -->
