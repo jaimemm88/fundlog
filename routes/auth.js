@@ -21,7 +21,8 @@ router.post('/register', async (req, res) => {
 
   const hash = await bcrypt.hash(password, 12);
   const trialEnd = new Date(Date.now() + 14*24*60*60*1000).toISOString();
-  const r    = db.prepare('INSERT INTO users (name, email, password, plan, trial_ends_at) VALUES (?, ?, ?, ?, ?)').run(name, email.toLowerCase(), hash, 'trial', trialEnd);
+  const { trader_profile } = req.body;
+  const r    = db.prepare('INSERT INTO users (name, email, password, plan, trial_ends_at, trader_profile) VALUES (?, ?, ?, ?, ?, ?)').run(name, email.toLowerCase(), hash, 'trial', trialEnd, trader_profile || '');
   const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(r.lastInsertRowid);
 
   res.json({ token: makeToken(user), user: { id: user.id, name: user.name, email: user.email } });

@@ -250,6 +250,27 @@ body { font-family: 'Sora', sans-serif; display: flex; min-height: 100vh; backgr
 }
 .form-switch a:hover { opacity: 0.8; }
 
+/* Profile selection */
+.profile-title { font-size: 22px; font-weight: 800; color: #0C1A2E; margin-bottom: 6px; letter-spacing: -0.03em; }
+.profile-sub   { font-size: 13px; color: #6B7A99; margin-bottom: 28px; line-height: 1.5; }
+.profile-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.profile-card {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 18px; border: 2px solid #DDE3EF;
+  border-radius: 12px; cursor: pointer;
+  transition: all 0.18s; background: #fff;
+}
+.profile-card:hover { border-color: #378ADD; background: #F0F7FF; }
+.profile-card.selected { border-color: #378ADD; background: #EBF5FF; box-shadow: 0 0 0 3px rgba(55,138,221,0.12); }
+.profile-card-icon { font-size: 32px; flex-shrink: 0; width: 52px; height: 52px; background: #F4F6FA; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.profile-card.selected .profile-card-icon { background: #D6EBFF; }
+.profile-card-body { flex: 1; }
+.profile-card-name { font-size: 15px; font-weight: 700; color: #0C1A2E; margin-bottom: 3px; }
+.profile-card-desc { font-size: 12.5px; color: #6B7A99; line-height: 1.4; }
+.profile-card-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #DDE3EF; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+.profile-card.selected .profile-card-check { background: #378ADD; border-color: #378ADD; }
+.profile-card.selected .profile-card-check::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
+
 .form-error {
   background: #FCEBEB; border: 1px solid #F0C0C0;
   border-radius: 8px; padding: 10px 14px;
@@ -381,7 +402,7 @@ body { font-family: 'Sora', sans-serif; display: flex; min-height: 100vh; backgr
       </div>
     </div>
 
-    <!-- REGISTRO -->
+    <!-- REGISTRO — Paso 1: datos -->
     <div id="view-register" style="display:none;">
       <div class="form-title">Crear cuenta</div>
       <div class="form-sub">Empieza a mejorar tu trading hoy</div>
@@ -407,12 +428,66 @@ body { font-family: 'Sora', sans-serif; display: flex; min-height: 100vh; backgr
         </div>
       </div>
 
-      <button class="btn-submit" id="btnRegister">
-        <i class="ti ti-user-plus"></i> Crear cuenta
+      <button class="btn-submit" id="btnRegisterNext">
+        Continuar <i class="ti ti-arrow-right"></i>
       </button>
 
       <div class="form-switch">
         ¿Ya tienes cuenta? <a onclick="showView('login')">Inicia sesión</a>
+      </div>
+    </div>
+
+    <!-- REGISTRO — Paso 2: perfil de trader -->
+    <div id="view-profile" style="display:none;">
+      <div class="profile-title">¿Cómo te describes?</div>
+      <div class="profile-sub">Personalizaremos FundLog según tu perfil para ayudarte mejor.</div>
+
+      <div class="form-error" id="profile-error">
+        <i class="ti ti-alert-circle"></i>
+        <span id="profile-error-msg"></span>
+      </div>
+
+      <div class="profile-cards" id="profileCards">
+        <div class="profile-card" data-profile="novato">
+          <div class="profile-card-icon">🌱</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">Trader Novato</div>
+            <div class="profile-card-desc">Estoy empezando o llevo poco tiempo en el trading</div>
+          </div>
+          <div class="profile-card-check"></div>
+        </div>
+        <div class="profile-card" data-profile="activo">
+          <div class="profile-card-icon">📊</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">Trader Activo</div>
+            <div class="profile-card-desc">Opero con regularidad y quiero mejorar mis estadísticas</div>
+          </div>
+          <div class="profile-card-check"></div>
+        </div>
+        <div class="profile-card" data-profile="funded">
+          <div class="profile-card-icon">🏆</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">Prop Firm Trader</div>
+            <div class="profile-card-desc">Hago challenges o ya tengo cuenta fondead</div>
+          </div>
+          <div class="profile-card-check"></div>
+        </div>
+        <div class="profile-card" data-profile="profesional">
+          <div class="profile-card-icon">💼</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">Trader Profesional</div>
+            <div class="profile-card-desc">El trading es mi fuente de ingresos principal</div>
+          </div>
+          <div class="profile-card-check"></div>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btnRegister">
+        <i class="ti ti-rocket"></i> Empezar mi prueba gratuita
+      </button>
+
+      <div class="form-switch" style="margin-top:16px;">
+        <a onclick="showView('register')" style="color:#94A3B8;font-weight:400;">← Volver</a>
       </div>
     </div>
 
@@ -425,6 +500,8 @@ const API_BASE = '';
 function showView(v) {
   document.getElementById('view-login').style.display    = v === 'login'    ? 'block' : 'none';
   document.getElementById('view-register').style.display = v === 'register' ? 'block' : 'none';
+  document.getElementById('view-profile').style.display  = 'none';
+  if (v === 'register') selectedProfile = '';
 }
 
 function showError(prefix, msg) {
@@ -478,21 +555,44 @@ async function doLogin() {
   }
 }
 
-// REGISTRO
+// REGISTRO — Paso 1: validar y pasar al paso 2
+document.getElementById('btnRegisterNext').addEventListener('click', () => {
+  const name  = document.getElementById('register-name').value.trim();
+  const email = document.getElementById('register-email').value.trim();
+  const pass  = document.getElementById('register-password').value;
+  if (!name || !email || !pass) { showError('register', 'Completa todos los campos'); return; }
+  if (pass.length < 6)          { showError('register', 'La contraseña debe tener al menos 6 caracteres'); return; }
+  // Ir al paso 2
+  document.getElementById('view-register').style.display = 'none';
+  document.getElementById('view-profile').style.display  = 'block';
+});
+
+// Selección de perfil
+let selectedProfile = '';
+document.querySelectorAll('.profile-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedProfile = card.dataset.profile;
+  });
+});
+
+// REGISTRO — Paso 2: crear cuenta
 document.getElementById('btnRegister').addEventListener('click', doRegister);
 async function doRegister() {
+  if (!selectedProfile) { showError('profile', 'Selecciona tu perfil para continuar'); return; }
+
   const btn  = document.getElementById('btnRegister');
   const name = document.getElementById('register-name').value.trim();
   const email= document.getElementById('register-email').value.trim();
   const pass = document.getElementById('register-password').value;
-  if (!name || !email || !pass) { showError('register', 'Completa todos los campos'); return; }
 
   btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader"></i> Creando cuenta...';
+  btn.innerHTML = '<i class="ti ti-loader"></i> Creando tu cuenta...';
   try {
     const res  = await fetch('/api/auth/register', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password: pass })
+      body: JSON.stringify({ name, email, password: pass, trader_profile: selectedProfile })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
@@ -500,9 +600,9 @@ async function doRegister() {
     localStorage.setItem('tv_user',  JSON.stringify(data.user));
     window.location.href = '/app';
   } catch(e) {
-    showError('register', e.message);
+    showError('profile', e.message);
     btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-user-plus"></i> Crear cuenta';
+    btn.innerHTML = '<i class="ti ti-rocket"></i> Empezar mi prueba gratuita';
   }
 }
 
