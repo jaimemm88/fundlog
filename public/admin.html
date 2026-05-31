@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — FundLog</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:#0B1628;color:#E2EAF8;min-height:100vh;}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Nav */
+nav{background:#080F1A;border-bottom:1px solid rgba(255,255,255,0.07);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800}
+.nav-logo .fund{color:#EFF6FF}.nav-logo .log{color:#85B7EB}
+.nav-badge{background:rgba(216,90,48,0.2);border:1px solid rgba(216,90,48,0.4);color:#E07A5A;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.05em}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-user{font-size:12px;color:rgba(255,255,255,0.4)}
+.btn-logout{padding:6px 14px;border:1px solid rgba(255,255,255,0.12);border-radius:7px;background:transparent;color:rgba(255,255,255,0.5);font-family:'Sora',sans-serif;font-size:12px;cursor:pointer;transition:all 0.15s}
+.btn-logout:hover{border-color:rgba(255,255,255,0.3);color:#fff}
+
+/* Layout */
+.container{max-width:1100px;margin:0 auto;padding:28px 20px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:#172030;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px}
+.stat-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.stat-val{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#EFF6FF}
+.stat-val.green{color:#4ABFA0}.stat-val.amber{color:#D4922A}.stat-val.red{color:#E07A5A}.stat-val.blue{color:#85B7EB}
+.stat-sub{font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px}
+
+/* Profiles mini chart */
+.profiles-bar{display:flex;gap:4px;margin-top:8px;height:6px;border-radius:3px;overflow:hidden}
+.profile-seg{height:100%;border-radius:3px}
+
+/* Filters */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.search-input{flex:1;padding:9px 14px;background:#172030;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-family:'Sora',sans-serif;font-size:13px;color:#EFF6FF;outline:none;transition:border-color 0.15s}
+.search-input::placeholder{color:rgba(255,255,255,0.25)}
+.search-input:focus{border-color:#378ADD}
+.filter-select{padding:9px 12px;background:#172030;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-family:'Sora',sans-serif;font-size:13px;color:#EFF6FF;outline:none;cursor:pointer}
+.btn-refresh{padding:9px 16px;background:rgba(55,138,221,0.15);border:1px solid rgba(55,138,221,0.3);border-radius:8px;color:#85B7EB;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.btn-refresh:hover{background:rgba(55,138,221,0.25)}
+
+/* Table */
+.table-wrap{background:#172030;border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:#0F1A2B}
+th{text-align:left;padding:12px 16px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap}
+td{padding:13px 16px;border-top:1px solid rgba(255,255,255,0.05);color:#C8D5E8;vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,0.03)}
+
+/* Pills */
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.pill-trial{background:rgba(55,138,221,0.15);color:#85B7EB;border:1px solid rgba(55,138,221,0.25)}
+.pill-pro{background:rgba(29,158,117,0.15);color:#4ABFA0;border:1px solid rgba(29,158,117,0.25)}
+.pill-expired{background:rgba(216,90,48,0.15);color:#E07A5A;border:1px solid rgba(216,90,48,0.25)}
+.pill-cancelled{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.1)}
+
+/* Actions */
+.actions{display:flex;gap:6px}
+.btn-plan{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.15s;border:none}
+.btn-pro{background:rgba(29,158,117,0.2);color:#4ABFA0}
+.btn-pro:hover{background:rgba(29,158,117,0.35)}
+.btn-trial{background:rgba(55,138,221,0.15);color:#85B7EB}
+.btn-trial:hover{background:rgba(55,138,221,0.3)}
+.btn-del{background:rgba(216,90,48,0.15);color:#E07A5A}
+.btn-del:hover{background:rgba(216,90,48,0.3)}
+
+/* Empty */
+.empty{text-align:center;padding:48px;color:rgba(255,255,255,0.25)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#172030;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 18px;font-size:13px;color:#EFF6FF;box-shadow:0 8px 24px rgba(0,0,0,0.3);display:none;animation:fadeUp 0.25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Responsive */
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.table-wrap{overflow-x:auto}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="nav-logo"><span class="fund">Fund</span><span class="log">Log</span></div>
+    <div class="nav-badge">ADMIN</div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-user" id="adminEmail"></span>
+    <button class="btn-logout" id="btnLogout"><i class="ti ti-logout"></i> Salir</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-label">Total usuarios</div><div class="stat-val mono" id="sTotal">—</div><div class="stat-sub">Registrados</div></div>
+    <div class="stat-card"><div class="stat-label">En trial</div><div class="stat-val mono blue" id="sTrial">—</div><div class="stat-sub">Activos</div></div>
+    <div class="stat-card"><div class="stat-label">Pro</div><div class="stat-val mono green" id="sPro">—</div><div class="stat-sub">Pagando</div></div>
+    <div class="stat-card"><div class="stat-label">Nuevos hoy</div><div class="stat-val mono amber" id="sToday">—</div><div class="stat-sub">Registros</div></div>
+    <div class="stat-card"><div class="stat-label">Trial expira pronto</div><div class="stat-val mono red" id="sExpiring">—</div><div class="stat-sub">En 3 días</div></div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <input class="search-input" id="searchInput" placeholder="🔍  Buscar por nombre o email..." oninput="filterUsers()">
+    <select class="filter-select" id="planFilter" onchange="filterUsers()">
+      <option value="">Todos los planes</option>
+      <option value="trial">Trial</option>
+      <option value="pro">Pro</option>
+      <option value="cancelled">Cancelado</option>
+    </select>
+    <button class="btn-refresh" onclick="load()"><i class="ti ti-refresh"></i> Actualizar</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Perfil</th>
+          <th>Plan</th>
+          <th>Trial expira</th>
+          <th>Registro</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="usersBody">
+        <tr><td colspan="8" class="empty">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TOKEN = localStorage.getItem('tv_token');
+if (!TOKEN) window.location.href = '/login';
+
+// Mostrar email del admin
+const user = JSON.parse(localStorage.getItem('tv_user') || '{}');
+document.getElementById('adminEmail').textContent = user.email || '';
+
+document.getElementById('btnLogout').addEventListener('click', () => {
+  localStorage.removeItem('tv_token');
+  localStorage.removeItem('tv_user');
+  window.location.href = '/login';
+});
+
+let allUsers = [];
+
+async function api(method, url, body) {
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (res.status === 403) { alert('Acceso denegado — no eres admin'); window.location.href = '/app'; return; }
+  if (res.status === 401) { window.location.href = '/login'; return; }
+  return res.json();
+}
+
+function showToast(msg, ok = true) {
+  const t = document.getElementById('toast');
+  t.textContent = (ok ? '✅ ' : '❌ ') + msg;
+  t.style.display = 'block';
+  t.style.borderColor = ok ? 'rgba(29,158,117,0.3)' : 'rgba(216,90,48,0.3)';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+const PROFILES = { novato: '🌱 Novato', activo: '📊 Activo', funded: '🏆 Funded', profesional: '💼 Profesional', '': '—' };
+
+function pillPlan(u) {
+  if (u.plan === 'pro')       return `<span class="pill pill-pro">Pro</span>`;
+  if (u.plan === 'cancelled') return `<span class="pill pill-cancelled">Cancelado</span>`;
+  if (u.trial_expired)        return `<span class="pill pill-expired">Trial expirado</span>`;
+  return `<span class="pill pill-trial">Trial</span>`;
+}
+
+function fmtDate(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return `${d.getDate()} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function renderUsers(users) {
+  const body = document.getElementById('usersBody');
+  if (!users.length) { body.innerHTML = '<tr><td colspan="8" class="empty">No hay usuarios con estos filtros</td></tr>'; return; }
+
+  body.innerHTML = users.map(u => `
+    <tr>
+      <td class="mono" style="color:rgba(255,255,255,0.25);font-size:11px;">${u.id}</td>
+      <td style="font-weight:600;color:#EFF6FF;">${u.name}</td>
+      <td style="color:rgba(255,255,255,0.55);">${u.email}</td>
+      <td style="font-size:12px;">${PROFILES[u.trader_profile] || '—'}</td>
+      <td>
+        ${pillPlan(u)}
+        ${u.plan === 'trial' && u.days_left !== null ? `<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:3px;">${u.days_left > 0 ? u.days_left + ' días' : 'Hoy'}</div>` : ''}
+      </td>
+      <td class="mono" style="font-size:12px;color:${u.trial_expired ? '#E07A5A' : 'rgba(255,255,255,0.4)'};">${fmtDate(u.trial_ends_at)}</td>
+      <td class="mono" style="font-size:11px;color:rgba(255,255,255,0.35);">${fmtDate(u.created_at)}</td>
+      <td>
+        <div class="actions">
+          ${u.plan !== 'pro' ? `<button class="btn-plan btn-pro" onclick="setPlan(${u.id},'pro')"><i class="ti ti-crown"></i> Pro</button>` : ''}
+          ${u.plan === 'pro' ? `<button class="btn-plan btn-trial" onclick="setPlan(${u.id},'trial')">Trial</button>` : ''}
+          <button class="btn-plan btn-del" onclick="delUser(${u.id},'${u.name}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterUsers() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const plan   = document.getElementById('planFilter').value;
+  let filtered = allUsers;
+  if (search) filtered = filtered.filter(u => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
+  if (plan)   filtered = filtered.filter(u => {
+    if (plan === 'trial') return u.plan === 'trial' && !u.trial_expired;
+    return u.plan === plan;
+  });
+  renderUsers(filtered);
+}
+
+async function setPlan(id, plan) {
+  await api('PUT', `/api/admin/users/${id}/plan`, { plan });
+  showToast(`Plan cambiado a ${plan}`);
+  load();
+}
+
+async function delUser(id, name) {
+  if (!confirm(`¿Eliminar a ${name} y todos sus datos? Esta acción es irreversible.`)) return;
+  await api('DELETE', `/api/admin/users/${id}`);
+  showToast('Usuario eliminado');
+  load();
+}
+
+async function load() {
+  const [stats, users] = await Promise.all([
+    api('GET', '/api/admin/stats'),
+    api('GET', '/api/admin/users'),
+  ]);
+
+  if (stats) {
+    document.getElementById('sTotal').textContent    = stats.total;
+    document.getElementById('sTrial').textContent    = stats.trial;
+    document.getElementById('sPro').textContent      = stats.pro;
+    document.getElementById('sToday').textContent    = stats.newToday;
+    document.getElementById('sExpiring').textContent = stats.expiring;
+  }
+
+  if (users) {
+    allUsers = users;
+    filterUsers();
+  }
+}
+
+load();
+setInterval(load, 60000); // Auto-refresh cada minuto
+</script>
+</body>
+</html>
