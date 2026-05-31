@@ -26,6 +26,8 @@ app.use('/api/stripe',                  require('./routes/stripe'));
 app.get('/',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
 app.get('/login',          (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/reset-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'reset-password.html')));
+app.get('/terminos',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'terminos.html')));
+app.get('/privacidad',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 app.get('/app',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('*',      (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidad — FundLog</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:#F4F6FA;color:#0C1A2E;line-height:1.7}
+nav{background:#0B1628;padding:0 5%;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-text{font-size:17px;font-weight:800}
+.nav-logo-text .fund{color:#EFF6FF}.nav-logo-text .log{color:#85B7EB}
+.nav-back{font-size:13px;color:rgba(255,255,255,0.5);text-decoration:none;transition:color 0.15s}
+.nav-back:hover{color:#fff}
+.container{max-width:740px;margin:0 auto;padding:60px 20px 80px}
+.hero{background:linear-gradient(135deg,#0B1628,#152C4A);border-radius:16px;padding:48px 40px;margin-bottom:40px;color:#fff}
+.hero-label{font-size:11px;font-weight:700;color:#85B7EB;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px}
+h1{font-size:32px;font-weight:800;letter-spacing:-0.03em;margin-bottom:12px}
+.hero-date{font-size:13px;color:rgba(255,255,255,0.4)}
+.card{background:#fff;border-radius:14px;padding:36px 40px;margin-bottom:20px;border:0.5px solid #DDE3EF}
+h2{font-size:17px;font-weight:700;color:#0C1A2E;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #EEF1F8}
+h3{font-size:14px;font-weight:700;color:#0C1A2E;margin:20px 0 8px}
+p{font-size:14px;color:#4A5568;margin-bottom:12px}
+ul{font-size:14px;color:#4A5568;padding-left:20px;margin-bottom:12px}
+ul li{margin-bottom:6px}
+strong{color:#0C1A2E}
+a{color:#378ADD;text-decoration:none}
+a:hover{text-decoration:underline}
+.highlight{background:#E1F5EE;border-left:3px solid #1D9E75;padding:14px 18px;border-radius:0 8px 8px 0;font-size:13.5px;color:#0F4A3A;margin-bottom:16px}
+.warn{background:#FAEEDA;border-left:3px solid #BA7517;padding:14px 18px;border-radius:0 8px 8px 0;font-size:13.5px;color:#5A3A08;margin-bottom:16px}
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.right-item{background:#F8FAFB;border:1px solid #EEF1F8;border-radius:10px;padding:14px 16px}
+.right-item strong{display:block;font-size:13px;color:#0C1A2E;margin-bottom:4px}
+.right-item span{font-size:12px;color:#6B7A99}
+.third-party{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #EEF1F8;font-size:13.5px}
+.third-party:last-child{border-bottom:none}
+.third-party .name{font-weight:700;color:#0C1A2E}
+.third-party .purpose{color:#6B7A99;font-size:12.5px}
+.third-party a{font-size:12px}
+footer{text-align:center;padding:40px 20px;font-size:13px;color:#94A3B8}
+footer a{color:#378ADD}
+@media(max-width:600px){.container{padding:30px 16px 60px}.card{padding:24px 20px}.hero{padding:32px 24px}h1{font-size:24px}.rights-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <div style="width:34px;height:34px;background:linear-gradient(135deg,#152C4A,#378ADD);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+      <svg width="18" height="18" viewBox="0 0 38 38" fill="none"><path d="M6 28 L12 21 L19 24.5 L29 12" stroke="rgba(255,255,255,0.9)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="29" cy="12" r="4" fill="white"/></svg>
+    </div>
+    <div class="nav-logo-text"><span class="fund">Fund</span><span class="log">Log</span></div>
+  </a>
+  <a href="/" class="nav-back">← Volver</a>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-label">Legal</div>
+    <h1>Política de Privacidad</h1>
+    <div class="hero-date">Última actualización: junio de 2026 · Cumple con el RGPD</div>
+  </div>
+
+  <div class="card">
+    <h2>1. Responsable del tratamiento</h2>
+    <p><strong>Responsable:</strong> Jaime Mosquete<br>
+    <strong>Servicio:</strong> FundLog (fundlog.es)<br>
+    <strong>Contacto:</strong> <a href="mailto:hola@fundlog.es">hola@fundlog.es</a></p>
+    <div class="highlight">FundLog cumple con el Reglamento General de Protección de Datos (RGPD) de la Unión Europea y la Ley Orgánica de Protección de Datos (LOPDGDD) española.</div>
+  </div>
+
+  <div class="card">
+    <h2>2. Datos que recopilamos</h2>
+    <h3>Datos que nos proporcionas directamente</h3>
+    <ul>
+      <li><strong>Nombre y email</strong> — al registrarte</li>
+      <li><strong>Contraseña</strong> — almacenada cifrada con bcrypt (nunca en texto plano)</li>
+      <li><strong>Datos de trading</strong> — operaciones, cuentas, estrategias y notas que introduces tú mismo</li>
+      <li><strong>Datos de pago</strong> — gestionados directamente por Stripe. FundLog no almacena datos de tarjeta.</li>
+    </ul>
+    <h3>Datos generados automáticamente</h3>
+    <ul>
+      <li>Fecha y hora de registro y último acceso</li>
+      <li>Estado del plan y fecha de expiración del trial</li>
+    </ul>
+    <div class="warn">FundLog <strong>no usa cookies de seguimiento</strong>, no vende datos a terceros y no muestra publicidad.</div>
+  </div>
+
+  <div class="card">
+    <h2>3. Para qué usamos tus datos</h2>
+    <ul>
+      <li><strong>Prestación del servicio</strong> — mostrar y analizar tus operaciones de trading</li>
+      <li><strong>Comunicaciones esenciales</strong> — emails de bienvenida, recuperación de contraseña y recordatorios de uso del servicio</li>
+      <li><strong>Gestión de suscripción</strong> — procesamiento de pagos y control del período de prueba</li>
+      <li><strong>Seguridad</strong> — prevención de accesos no autorizados</li>
+    </ul>
+    <p>La base legal del tratamiento es la <strong>ejecución del contrato</strong> (prestación del servicio) y, en algunos casos, el <strong>interés legítimo</strong> (seguridad, mejora del servicio).</p>
+  </div>
+
+  <div class="card">
+    <h2>4. Proveedores de servicios (terceros)</h2>
+    <p>Compartimos datos mínimos y necesarios con los siguientes proveedores:</p>
+
+    <div class="third-party">
+      <div><div class="name">Render</div><div class="purpose">Alojamiento del servidor · UE (Irlanda)</div></div>
+      <a href="https://render.com/privacy" target="_blank">Política ↗</a>
+    </div>
+    <div class="third-party">
+      <div><div class="name">Stripe</div><div class="purpose">Procesamiento de pagos · Datos de tarjeta cifrados</div></div>
+      <a href="https://stripe.com/es/privacy" target="_blank">Política ↗</a>
+    </div>
+    <div class="third-party">
+      <div><div class="name">Resend</div><div class="purpose">Envío de emails transaccionales</div></div>
+      <a href="https://resend.com/privacy" target="_blank">Política ↗</a>
+    </div>
+    <div class="third-party">
+      <div><div class="name">ForexFactory</div><div class="purpose">Datos del calendario económico (solo lectura, sin datos personales)</div></div>
+      <a href="https://www.forexfactory.com/privacy" target="_blank">Política ↗</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Conservación de los datos</h2>
+    <ul>
+      <li><strong>Datos de cuenta activa</strong> — mientras mantengas tu cuenta</li>
+      <li><strong>Datos tras cancelación</strong> — eliminados en un plazo máximo de 30 días</li>
+      <li><strong>Datos de facturación</strong> — conservados 5 años por obligación fiscal</li>
+    </ul>
+    <p>Puedes exportar todos tus datos en cualquier momento desde <strong>Ajustes → Exportar mis datos</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h2>6. Tus derechos (RGPD)</h2>
+    <p>Como usuario tienes los siguientes derechos sobre tus datos personales:</p>
+    <div class="rights-grid">
+      <div class="right-item"><strong>Acceso</strong><span>Ver todos los datos que tenemos sobre ti</span></div>
+      <div class="right-item"><strong>Rectificación</strong><span>Corregir datos incorrectos o incompletos</span></div>
+      <div class="right-item"><strong>Supresión</strong><span>Solicitar la eliminación de tus datos</span></div>
+      <div class="right-item"><strong>Portabilidad</strong><span>Recibir tus datos en formato exportable (CSV)</span></div>
+      <div class="right-item"><strong>Oposición</strong><span>Oponerte al tratamiento para fines específicos</span></div>
+      <div class="right-item"><strong>Limitación</strong><span>Restringir el tratamiento de tus datos</span></div>
+    </div>
+    <p style="margin-top:16px;">Para ejercer cualquiera de estos derechos, escríbenos a <a href="mailto:hola@fundlog.es">hola@fundlog.es</a>. Responderemos en un máximo de 30 días.</p>
+    <p>Si consideras que no hemos atendido correctamente tu solicitud, puedes reclamar ante la <strong>Agencia Española de Protección de Datos</strong> (aepd.es).</p>
+  </div>
+
+  <div class="card">
+    <h2>7. Seguridad</h2>
+    <ul>
+      <li>Las contraseñas se almacenan con hash bcrypt (no reversible)</li>
+      <li>Todas las comunicaciones se cifran con HTTPS/TLS</li>
+      <li>Las sesiones usan tokens JWT con expiración automática</li>
+      <li>No almacenamos datos de tarjeta de crédito (gestionados por Stripe)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>8. Menores de edad</h2>
+    <p>FundLog no está dirigido a menores de 18 años. Si tienes conocimiento de que un menor ha proporcionado datos personales, contáctanos para eliminarlos.</p>
+  </div>
+
+  <div class="card">
+    <h2>9. Cambios en esta política</h2>
+    <p>Notificaremos cualquier cambio significativo por email con al menos 15 días de antelación. La fecha de "última actualización" en el encabezado siempre refleja la versión vigente.</p>
+  </div>
+
+  <div class="card">
+    <h2>10. Contacto</h2>
+    <p>Para cualquier consulta sobre privacidad o protección de datos: <a href="mailto:hola@fundlog.es">hola@fundlog.es</a></p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 FundLog · <a href="/terminos">Términos</a> · <a href="/privacidad">Privacidad</a> · <a href="/">Inicio</a></p>
+</footer>
+</body>
+</html>
