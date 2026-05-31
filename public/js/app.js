@@ -64,9 +64,30 @@ const App = {
       App.reload();
     });
 
+    // Sidebar hamburger + overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    overlay.id = 'sidebarOverlay';
+    document.body.appendChild(overlay);
+
+    const closeSidebar = () => {
+      document.getElementById('sidebar').classList.remove('open');
+      overlay.classList.remove('show');
+    };
     document.getElementById('hamburger').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('open');
+      const isOpen = document.getElementById('sidebar').classList.toggle('open');
+      overlay.classList.toggle('show', isOpen);
     });
+    overlay.addEventListener('click', closeSidebar);
+
+    // Bottom nav móvil
+    document.querySelectorAll('.bn-item[data-section]').forEach(item => {
+      item.addEventListener('click', () => {
+        App.navigate(item.dataset.section);
+        closeSidebar();
+      });
+    });
+    document.getElementById('btnNuevaOpMobile')?.addEventListener('click', () => TradeModal.open());
     document.getElementById('btnLogout')?.addEventListener('click', () => {
       localStorage.removeItem('tv_token');
       localStorage.removeItem('tv_user');
@@ -101,6 +122,11 @@ const App = {
 
     App.activeSection = section;
     App._loadSection(section);
+
+    // Sincronizar bottom nav
+    document.querySelectorAll('.bn-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.section === section);
+    });
   },
 
   _loadSection(section) {
