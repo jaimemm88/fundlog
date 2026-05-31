@@ -190,9 +190,14 @@
 
     <!-- RESUMEN -->
     <div class="content-area active" id="sec-resumen">
-      <div class="page-header">
-        <div class="page-title">Resumen</div>
-        <div class="page-sub" id="resumen-sub">FundLog</div>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="page-title">Resumen</div>
+          <div class="page-sub" id="resumen-sub">FundLog</div>
+        </div>
+        <button class="btn-share" id="btnShareResults" title="Compartir mis resultados">
+          <i class="ti ti-share"></i> Compartir
+        </button>
       </div>
       <div class="metrics-grid" id="resumen-metrics"></div>
       <div class="two-col">
@@ -1148,6 +1153,46 @@
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- MODAL COMPARTIR RESULTADOS -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Compartir resultados</h3>
+      <button class="modal-close" onclick="UI.closeModal('shareModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="padding:16px 22px;">
+      <!-- Selector de período -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="share-period-btn active" data-period="month">Este mes</button>
+        <button class="share-period-btn" data-period="year">Este año</button>
+        <button class="share-period-btn" data-period="all">Todo</button>
+        <select class="tv-select" id="shareTheme" style="margin-left:auto;">
+          <option value="dark">Oscuro</option>
+          <option value="navy">Marino</option>
+          <option value="green">Verde</option>
+        </select>
+      </div>
+
+      <!-- TARJETA (se renderiza aquí) -->
+      <div id="shareCardWrap" style="border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+        <div id="shareCard" style="width:480px;height:480px;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:40px;">
+          <!-- Contenido generado por JS -->
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="btn-primary" id="btnDownloadCard" style="flex:1;justify-content:center;">
+          <i class="ti ti-download"></i> Descargar PNG
+        </button>
+        <button class="btn-secondary" id="btnCopyCard" style="flex:1;justify-content:center;">
+          <i class="ti ti-copy"></i> Copiar imagen
+        </button>
+      </div>
+      <p style="font-size:11px;color:var(--text-secondary);text-align:center;margin-top:8px;">Haz screenshot en móvil o descarga en escritorio</p>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV (solo móvil) -->
 <nav class="bottom-nav" id="bottomNav">
   <div class="bn-item active" data-section="resumen">
@@ -1181,6 +1226,7 @@
 <script src="/js/tools.js"></script>
 <script src="/js/risk.js"></script>
 <script src="/js/session.js"></script>
+<script src="/js/share.js"></script>
 <script src="/js/journal.js"></script>
 <script src="/js/import.js"></script>
 <script src="/js/settings.js"></script>

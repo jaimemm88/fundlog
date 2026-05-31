@@ -308,6 +308,7 @@ const App = {
   // ── Misc buttons ────────────────────────────────────────────────────────────
   _setupMisc() {
     document.getElementById('btnSaveStrat')?.addEventListener('click', () => Strategies.save());
+    document.getElementById('btnShareResults')?.addEventListener('click', () => ShareCard.open());
     document.getElementById('btnSaveEditStrat')?.addEventListener('click', () => Strategies.saveEdit());
     document.getElementById('btnSaveAccount')?.addEventListener('click', () => Accounts.save());
     document.getElementById('btnImportCSV')?.addEventListener('click', () => Import.open());

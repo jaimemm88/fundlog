@@ -693,6 +693,13 @@ body.dark .session-pill { background: rgba(23,32,48,0.9); border-color: rgba(255
   border: 2px solid var(--sb-bg);
 }
 
+/* ─── SHARE CARD ─────────────────────────────────────────────────────────── */
+.btn-share { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,#152C4A,#2B72C8);color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 10px rgba(55,138,221,0.3); }
+.btn-share:hover { box-shadow:0 4px 16px rgba(55,138,221,0.45);transform:translateY(-1px); }
+.share-period-btn { padding:6px 14px;border-radius:7px;border:1px solid var(--border-card);background:var(--bg-card);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all 0.15s; }
+.share-period-btn:hover { border-color:var(--accent);color:var(--accent); }
+.share-period-btn.active { background:var(--accent-bg);border-color:var(--accent);color:var(--accent); }
+
 /* ─── JOURNAL ────────────────────────────────────────────────────────────── */
 .journal-editor { display: flex; flex-direction: column; gap: 0; }
 .journal-date-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
