@@ -347,28 +347,51 @@ footer{background:var(--navy);padding:40px 5%;display:flex;align-items:center;ju
   <div class="section-label">Precios</div>
   <h2 class="section-title reveal">Simple y sin sorpresas</h2>
   <p class="section-sub reveal">14 días gratis con acceso completo a todas las funciones.</p>
-  <!-- Un único plan con trial -->
-  <div style="max-width:520px;margin:0 auto;">
-    <div class="plan popular reveal" style="padding:40px;">
-      <div class="plan-badge">✨ 14 días gratis</div>
-      <div class="plan-name" style="margin-top:8px;">Pro</div>
-      <div class="plan-price"><span class="plan-price-num">€13<span style="font-size:28px;">,99</span></span><span class="plan-price-period">/mes</span></div>
-      <div class="plan-desc">Acceso completo a todo desde el primer día. Sin compromisos, cancela cuando quieras.</div>
+  <div style="max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+    <!-- MENSUAL -->
+    <div class="plan reveal">
+      <div class="plan-name">Mensual</div>
+      <div class="plan-price"><span class="plan-price-num">€13<span style="font-size:26px;">,99</span></span><span class="plan-price-period">/mes</span></div>
+      <div class="plan-desc">Paga mes a mes. Cancela cuando quieras.</div>
       <ul class="plan-features">
         <li><i class="ti ti-check check"></i> Cuentas ilimitadas</li>
         <li><i class="ti ti-check check"></i> Operaciones ilimitadas</li>
         <li><i class="ti ti-check check"></i> Análisis avanzado completo</li>
-        <li><i class="ti ti-check check"></i> Calendario económico en tiempo real</li>
+        <li><i class="ti ti-check check"></i> Calendario económico</li>
         <li><i class="ti ti-check check"></i> Importar CSV MT4/MT5</li>
-        <li><i class="ti ti-check check"></i> 🔔 Alertas de riesgo automáticas</li>
+        <li><i class="ti ti-check check"></i> Alertas de riesgo</li>
         <li><i class="ti ti-check check"></i> Diario de trading</li>
         <li><i class="ti ti-check check"></i> Exportar CSV</li>
-        <li><i class="ti ti-check check"></i> Estrategias ilimitadas</li>
       </ul>
-      <a href="/login?mode=register" class="btn-plan primary" style="font-size:15px;padding:15px;"><i class="ti ti-rocket"></i> Empezar 14 días gratis</a>
-      <p style="text-align:center;font-size:12px;color:var(--sub);margin-top:12px;">Se requiere tarjeta · Cancela cuando quieras</p>
+      <a href="/login?mode=register" class="btn-plan secondary">Empezar 14 días gratis</a>
+      <p style="text-align:center;font-size:11.5px;color:var(--sub);margin-top:10px;">Se requiere tarjeta</p>
     </div>
+
+    <!-- ANUAL -->
+    <div class="plan popular reveal">
+      <div class="plan-badge">⭐ 2 meses gratis</div>
+      <div class="plan-name" style="margin-top:8px;">Anual</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
+        <div class="plan-price" style="margin-bottom:0;"><span class="plan-price-num">€9<span style="font-size:26px;">,99</span></span><span class="plan-price-period">/mes</span></div>
+        <span style="font-size:13px;color:var(--sub);text-decoration:line-through;">€13,99</span>
+      </div>
+      <div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:12px;">Cobrado €119/año · Ahorras €48</div>
+      <div class="plan-desc">La opción más inteligente. Todo incluido por menos.</div>
+      <ul class="plan-features">
+        <li><i class="ti ti-check check"></i> Todo lo del plan mensual</li>
+        <li><i class="ti ti-check check"></i> <strong>2 meses de regalo</strong></li>
+        <li><i class="ti ti-check check"></i> Precio bloqueado 12 meses</li>
+        <li><i class="ti ti-check check"></i> Soporte prioritario</li>
+      </ul>
+      <a href="/login?mode=register" class="btn-plan primary" style="font-size:14px;padding:14px;"><i class="ti ti-rocket"></i> Empezar 14 días gratis</a>
+      <p style="text-align:center;font-size:11.5px;color:var(--sub);margin-top:10px;">Se requiere tarjeta</p>
+    </div>
+
   </div>
+
+  <!-- Responsive: 1 columna en móvil -->
+  <style>@media(max-width:640px){#pricing .plans-2col{grid-template-columns:1fr!important}}</style>
 </section>
 
 <!-- FAQ -->
