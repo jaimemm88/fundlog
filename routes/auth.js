@@ -20,7 +20,7 @@ router.post('/register', async (req, res) => {
   if (exists) return res.status(409).json({ error: 'Ya existe una cuenta con ese email' });
 
   const hash = await bcrypt.hash(password, 12);
-  const trialEnd = new Date(Date.now() + 14*24*60*60*1000).toISOString();
+  const trialEnd = new Date(Date.now() + 7*24*60*60*1000).toISOString();
   const { trader_profile } = req.body;
   const r    = db.prepare('INSERT INTO users (name, email, password, plan, trial_ends_at, trader_profile) VALUES (?, ?, ?, ?, ?, ?)').run(name, email.toLowerCase(), hash, 'trial', trialEnd, trader_profile || '');
   const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(r.lastInsertRowid);

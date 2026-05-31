@@ -35,14 +35,14 @@ router.post('/checkout', require('../middleware/auth'), async (req, res) => {
       db.prepare('UPDATE users SET stripe_customer_id = ? WHERE id = ?').run(customerId, user.id);
     }
 
-    // Crear sesión de checkout con trial de 14 días
+    // Crear sesión de checkout con trial de 7 días
     const session = await stripe.checkout.sessions.create({
       customer:             customerId,
       mode:                 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
-        trial_period_days: 14,
+        trial_period_days: 7,
         metadata: { user_id: String(user.id) },
       },
       success_url: `${appUrl}/app?payment=success`,
