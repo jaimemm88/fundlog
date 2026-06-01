@@ -66,4 +66,15 @@ router.delete('/users/:id', (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Crear usuario demo ────────────────────────────────────────────────────────
+router.post('/seed-demo', async (req, res) => {
+  try {
+    const { seedDemo } = require('../scripts/seed-demo');
+    const uid = await seedDemo();
+    res.json({ ok: true, message: 'Usuario demo creado', uid, email: 'demo@fundlog.es', password: 'usuario' });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 module.exports = router;
