@@ -152,13 +152,8 @@ const ShareCard = {
 
         <!-- Header -->
         <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;">
-          <div style="display:flex;align-items:center;gap:11px;">
-            <div style="width:38px;height:38px;background:#1A3A6A;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(55,138,221,0.4);">
-              <span style="font-size:20px;font-weight:900;color:white;font-family:Georgia,serif;line-height:1;">f</span>
-            </div>
-            <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;font-family:Arial,sans-serif;">
-              <span style="color:${t.text};">Fund</span><span style="color:${t.accent};">Log</span>
-            </div>
+          <div style="display:flex;align-items:center;">
+            <img src="/fundlog-logo.png" style="height:${isTwitter ? '32px' : '38px'};width:auto;object-fit:contain;" crossorigin="anonymous">
           </div>
           <div style="font-size:${ShareCard._period === 'day' ? '13' : '12'}px;color:${t.sub};font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">${params.label}</div>
         </div>
