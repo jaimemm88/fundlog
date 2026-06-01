@@ -52,16 +52,22 @@ const ShareCard = {
       });
     });
     document.getElementById('shareTheme').addEventListener('change', () => ShareCard.render());
+    document.getElementById('shareHideUser').addEventListener('change', () => ShareCard.render());
     document.getElementById('btnDownloadCard').addEventListener('click', () => ShareCard.download());
     document.getElementById('btnCopyCard').addEventListener('click', () => ShareCard.copy());
   },
 
   async _getParams() {
-    const now = new Date();
+    const now     = new Date();
+    const today   = now.toISOString().split('T')[0];
+    const months  = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    if (ShareCard._period === 'day') {
+      return { from: today, to: today, label: UI.fmtDate(today) };
+    }
     if (ShareCard._period === 'month') {
       return {
         from: `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`,
-        label: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][now.getMonth()] + ' ' + now.getFullYear(),
+        label: months[now.getMonth()] + ' ' + now.getFullYear(),
       };
     }
     if (ShareCard._period === 'year') {
@@ -91,6 +97,7 @@ const ShareCard = {
       const avgWin   = stats.avg_win  ? UI.pnlStr(stats.avg_win)  : '—';
       const avgLoss  = stats.avg_loss ? UI.pnlStr(Math.abs(stats.avg_loss)) : '—';
       const pnlColor = pnl >= 0 ? t.posColor : t.negColor;
+      const hideUser = document.getElementById('shareHideUser')?.checked || false;
       const user     = JSON.parse(localStorage.getItem('tv_user') || '{}');
 
       // Calcular racha actual
@@ -135,12 +142,12 @@ const ShareCard = {
               <span>Fund</span><span style="color:${t.accent};">Log</span>
             </div>
           </div>
-          <div style="font-size:12px;color:${t.sub};font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">${params.label}</div>
+          <div style="font-size:${ShareCard._period === 'day' ? '13' : '12'}px;color:${t.sub};font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">${params.label}</div>
         </div>
 
         <!-- P&L principal -->
         <div style="position:relative;z-index:1;text-align:center;margin:8px 0;">
-          <div style="font-size:11px;color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:10px;">P&L ${ShareCard._period === 'month' ? 'del mes' : ShareCard._period === 'year' ? 'del año' : 'total'}</div>
+          <div style="font-size:11px;color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:10px;">P&L ${{ day:'de hoy', month:'del mes', year:'del año', all:'total' }[ShareCard._period]}</div>
           <div style="font-size:68px;font-weight:800;color:${pnlColor};letter-spacing:-3px;line-height:1;font-family:'JetBrains Mono',monospace;">
             ${pnl >= 0 ? '+' : '−'}$${Math.abs(pnl).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})}
           </div>
@@ -164,8 +171,8 @@ const ShareCard = {
         </div>
 
         <!-- Footer -->
-        <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-size:11px;color:${t.sub};">@${user.name || 'trader'}</div>
+        <div style="position:relative;z-index:1;display:flex;justify-content:${hideUser ? 'flex-end' : 'space-between'};align-items:center;">
+          ${hideUser ? '' : `<div style="font-size:11px;color:${t.sub};">@${user.name || 'trader'}</div>`}
           <div style="font-size:12px;font-weight:700;color:${t.accent};letter-spacing:-0.2px;">fundlog.es</div>
         </div>
       `;
