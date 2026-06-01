@@ -73,21 +73,17 @@ const MarketSession = {
     return null;
   },
 
-  update() {
-    const now       = new Date();
-    const utcH      = now.getUTCHours();
-    const utcM      = now.getUTCMinutes();
-    const utcS      = now.getUTCSeconds();
-    const dow       = now.getUTCDay();
+  _getTzName() {
+    const saved = localStorage.getItem('tv_timezone') || 'auto';
+    if (saved === 'auto') return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return saved;
+  },
 
-    // Zona horaria del usuario (offset en horas respecto a UTC)
-    const tzOffset  = parseFloat(localStorage.getItem('tv_timezone') || '1');
-    const localMs   = now.getTime() + tzOffset * 3600000;
-    const localDate = new Date(localMs);
-    const lH = localDate.getUTCHours();
-    const lM = localDate.getUTCMinutes();
-    const lS = localDate.getUTCSeconds();
-    const lDow = localDate.getUTCDay();
+  update() {
+    const now  = new Date();
+    const utcH = now.getUTCHours();
+    const dow  = now.getUTCDay();
+    const tz   = MarketSession._getTzName();
 
     const session = MarketSession.getActiveSession(utcH, dow);
 
@@ -98,9 +94,14 @@ const MarketSession = {
     const clock   = document.getElementById('sessionClock');
     if (!pill) return;
 
-    const sign    = tzOffset >= 0 ? '+' : '';
-    const tzLabel = `UTC${sign}${tzOffset % 1 === 0 ? tzOffset : tzOffset}`;
-    const timeStr = `${String(lH).padStart(2,'0')}:${String(lM).padStart(2,'0')}:${String(lS).padStart(2,'0')} ${tzLabel}`;
+    // Hora en la zona del usuario usando Intl (maneja DST automáticamente)
+    const timeStr = now.toLocaleTimeString('es-ES', {
+      timeZone: tz,
+      hour:     '2-digit',
+      minute:   '2-digit',
+      second:   '2-digit',
+      hour12:   false,
+    }) + ' ' + tz.split('/').pop().replace('_', ' ');
 
     if (!session) {
       pill.className      = 'session-pill session-closed';

@@ -10,10 +10,14 @@ const Settings = {
     Theme.syncToggle();
     Settings._loadEmailConfig();
 
-    // Cargar zona horaria guardada
-    const savedTz = localStorage.getItem('tv_timezone') || '1';
+    // Cargar zona horaria guardada (o auto-detectar)
+    const savedTz = localStorage.getItem('tv_timezone') || 'auto';
     const tzSel = document.getElementById('timezoneSelect');
-    if (tzSel) tzSel.value = savedTz;
+    if (tzSel) {
+      tzSel.value = savedTz;
+      // Si el valor no existe en el select, seleccionar auto
+      if (!tzSel.value) tzSel.value = 'auto';
+    }
 
     document.getElementById('btnSaveEmailConfig')?.addEventListener('click', Settings.saveEmailConfig);
     document.getElementById('btnTestEmail')?.addEventListener('click', Settings.sendTestEmail);
