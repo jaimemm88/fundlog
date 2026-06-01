@@ -52,8 +52,7 @@ const App = {
       item.addEventListener('click', () => {
         const section = item.dataset.section;
         App.navigate(section);
-        // Close sidebar on mobile
-        if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+        closeSidebar(); // cierra sidebar Y overlay en móvil
       });
     });
 
@@ -167,7 +166,8 @@ const App = {
     if (existing) return;
     const banner = document.createElement('div');
     banner.id = 'trialBanner';
-    banner.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#152C4A,#2B72C8);color:#fff;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:500;display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3);white-space:nowrap;';
+    const isMobile = window.innerWidth <= 768;
+    banner.style.cssText = `position:fixed;bottom:${isMobile ? '90px' : '24px'};left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#152C4A,#2B72C8);color:#fff;padding:${isMobile ? '10px 16px' : '12px 24px'};border-radius:12px;font-size:${isMobile ? '12px' : '13px'};font-weight:600;z-index:500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.3);white-space:nowrap;max-width:calc(100vw - 32px);`;
     banner.innerHTML = `
       <span>⏳ Tu prueba gratuita termina en <strong>${daysLeft === 0 ? 'hoy' : daysLeft + ' días'}</strong></span>
       <a href="#" onclick="App._showPaywall();return false;" style="background:rgba(255,255,255,0.2);color:#fff;padding:5px 14px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:700;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Activar plan →</a>
