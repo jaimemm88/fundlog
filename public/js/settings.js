@@ -10,8 +10,19 @@ const Settings = {
     Theme.syncToggle();
     Settings._loadEmailConfig();
 
+    // Cargar zona horaria guardada
+    const savedTz = localStorage.getItem('tv_timezone') || '1';
+    const tzSel = document.getElementById('timezoneSelect');
+    if (tzSel) tzSel.value = savedTz;
+
     document.getElementById('btnSaveEmailConfig')?.addEventListener('click', Settings.saveEmailConfig);
     document.getElementById('btnTestEmail')?.addEventListener('click', Settings.sendTestEmail);
+  },
+
+  saveTimezone(offset) {
+    localStorage.setItem('tv_timezone', offset);
+    MarketSession.update(); // Actualizar la sesión inmediatamente
+    UI.toast('Zona horaria guardada', 'success');
   },
 
   async _loadEmailConfig() {

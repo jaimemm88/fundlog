@@ -74,11 +74,20 @@ const MarketSession = {
   },
 
   update() {
-    const now  = new Date();
-    const utcH = now.getUTCHours();
-    const utcM = now.getUTCMinutes();
-    const utcS = now.getUTCSeconds();
-    const dow  = now.getUTCDay(); // 0=Dom, 6=Sáb
+    const now       = new Date();
+    const utcH      = now.getUTCHours();
+    const utcM      = now.getUTCMinutes();
+    const utcS      = now.getUTCSeconds();
+    const dow       = now.getUTCDay();
+
+    // Zona horaria del usuario (offset en horas respecto a UTC)
+    const tzOffset  = parseFloat(localStorage.getItem('tv_timezone') || '1');
+    const localMs   = now.getTime() + tzOffset * 3600000;
+    const localDate = new Date(localMs);
+    const lH = localDate.getUTCHours();
+    const lM = localDate.getUTCMinutes();
+    const lS = localDate.getUTCSeconds();
+    const lDow = localDate.getUTCDay();
 
     const session = MarketSession.getActiveSession(utcH, dow);
 
@@ -89,7 +98,9 @@ const MarketSession = {
     const clock   = document.getElementById('sessionClock');
     if (!pill) return;
 
-    const timeStr = `${String(utcH).padStart(2,'0')}:${String(utcM).padStart(2,'0')}:${String(utcS).padStart(2,'0')} UTC`;
+    const sign    = tzOffset >= 0 ? '+' : '';
+    const tzLabel = `UTC${sign}${tzOffset % 1 === 0 ? tzOffset : tzOffset}`;
+    const timeStr = `${String(lH).padStart(2,'0')}:${String(lM).padStart(2,'0')}:${String(lS).padStart(2,'0')} ${tzLabel}`;
 
     if (!session) {
       pill.className      = 'session-pill session-closed';

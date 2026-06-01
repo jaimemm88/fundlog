@@ -857,12 +857,36 @@
           </div>
           <div class="settings-toggle-row" style="margin-top:14px;">
             <div>
-              <div style="font-size:13px;font-weight:600;">Idioma</div>
-              <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">Idioma de la interfaz</div>
+              <div style="font-size:13px;font-weight:600;">Zona horaria</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;">Para la sesión de mercado y el calendario</div>
             </div>
-            <select class="tv-input" style="width:auto;">
-              <option>🇪🇸 Español</option>
-              <option>🇬🇧 English</option>
+            <select class="tv-input" id="timezoneSelect" style="width:auto;max-width:260px;" onchange="Settings.saveTimezone(this.value)">
+              <option value="-12">UTC−12 · Línea de cambio de fecha</option>
+              <option value="-11">UTC−11 · Samoa</option>
+              <option value="-10">UTC−10 · Hawái</option>
+              <option value="-9">UTC−9 · Alaska</option>
+              <option value="-8">UTC−8 · Los Ángeles (PST)</option>
+              <option value="-7">UTC−7 · Los Ángeles (PDT) · Denver</option>
+              <option value="-6">UTC−6 · Ciudad de México · Chicago</option>
+              <option value="-5">UTC−5 · Nueva York (EST) · Bogotá · Lima</option>
+              <option value="-4">UTC−4 · Nueva York (EDT) · Caracas</option>
+              <option value="-3">UTC−3 · Buenos Aires · São Paulo · Brasilia</option>
+              <option value="-2">UTC−2 · Atlántico Medio</option>
+              <option value="-1">UTC−1 · Azores · Cabo Verde</option>
+              <option value="0">UTC+0 · Portugal (invierno) · Reino Unido · Islandia</option>
+              <option value="1" selected>UTC+1 · España (invierno) · Portugal (verano) · Francia · Alemania</option>
+              <option value="2">UTC+2 · España (verano) · Sudáfrica · Egipto · Grecia</option>
+              <option value="3">UTC+3 · Moscú · Turquía · Arabia Saudí · Kenia</option>
+              <option value="4">UTC+4 · Dubai · Azerbaiyán · Omán</option>
+              <option value="5">UTC+5 · Pakistán · Uzbekistán</option>
+              <option value="5.5">UTC+5:30 · India · Sri Lanka</option>
+              <option value="6">UTC+6 · Bangladesh · Kazajistán</option>
+              <option value="7">UTC+7 · Tailandia · Vietnam · Indonesia (oeste)</option>
+              <option value="8">UTC+8 · China · Singapur · Hong Kong · Malasia</option>
+              <option value="9">UTC+9 · Japón · Corea del Sur</option>
+              <option value="10">UTC+10 · Australia (este) · Guam</option>
+              <option value="11">UTC+11 · Nueva Caledonia · Islas Salomón</option>
+              <option value="12">UTC+12 · Nueva Zelanda · Fiyi</option>
             </select>
           </div>
         </div>
