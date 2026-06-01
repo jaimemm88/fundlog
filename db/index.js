@@ -128,6 +128,7 @@ const migrations = [
   ['users', 'reset_token TEXT DEFAULT ""'],
   ['users', 'reset_token_expires TEXT DEFAULT ""'],
   ['users', 'trader_profile TEXT DEFAULT ""'],
+  ['users', 'nickname TEXT DEFAULT ""'],
   ['accounts',          'user_id INTEGER DEFAULT 1'],
   ['trades',            'user_id INTEGER DEFAULT 1'],
   ['strategies',        'user_id INTEGER DEFAULT 1'],

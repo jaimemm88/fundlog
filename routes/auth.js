@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
 
 // ── Perfil actual ─────────────────────────────────────────────────────────────
 router.get('/me', require('../middleware/auth'), (req, res) => {
-  const user = db.prepare('SELECT id, name, email, plan, trial_ends_at, created_at FROM users WHERE id = ?').get(req.user.id);
+  const user = db.prepare('SELECT id, name, email, nickname, plan, trial_ends_at, created_at FROM users WHERE id = ?').get(req.user.id);
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
   const now          = new Date();
@@ -67,12 +67,12 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
 
 // ── Actualizar perfil ─────────────────────────────────────────────────────────
 router.put('/profile', require('../middleware/auth'), (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, nickname } = req.body;
   if (!name || !email) return res.status(400).json({ error: 'Nombre y email obligatorios' });
   const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email.toLowerCase(), req.user.id);
   if (exists) return res.status(409).json({ error: 'Ese email ya está en uso' });
-  db.prepare('UPDATE users SET name = ?, email = ? WHERE id = ?').run(name, email.toLowerCase(), req.user.id);
-  const user = db.prepare('SELECT id, name, email FROM users WHERE id = ?').get(req.user.id);
+  db.prepare('UPDATE users SET name = ?, email = ?, nickname = ? WHERE id = ?').run(name, email.toLowerCase(), nickname || '', req.user.id);
+  const user = db.prepare('SELECT id, name, email, nickname FROM users WHERE id = ?').get(req.user.id);
   // Renovar token con nuevo nombre/email
   const token = makeToken(user);
   res.json({ ok: true, user, token });

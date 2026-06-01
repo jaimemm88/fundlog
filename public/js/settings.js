@@ -3,10 +3,12 @@ const Settings = {
 
   load() {
     const user = JSON.parse(localStorage.getItem('tv_user') || '{}');
-    const nameEl  = document.getElementById('set-name');
-    const emailEl = document.getElementById('set-email');
-    if (nameEl)  nameEl.value  = user.name  || '';
-    if (emailEl) emailEl.value = user.email || '';
+    const nameEl     = document.getElementById('set-name');
+    const emailEl    = document.getElementById('set-email');
+    const nicknameEl = document.getElementById('set-nickname');
+    if (nameEl)     nameEl.value     = user.name     || '';
+    if (emailEl)    emailEl.value    = user.email    || '';
+    if (nicknameEl) nicknameEl.value = user.nickname || '';
     Theme.syncToggle();
     Settings._loadEmailConfig();
 
@@ -67,12 +69,13 @@ const Settings = {
 
   // ── Guardar perfil ──────────────────────────────────────────────────────────
   async saveProfile() {
-    const name  = document.getElementById('set-name').value.trim();
-    const email = document.getElementById('set-email').value.trim();
+    const name     = document.getElementById('set-name').value.trim();
+    const email    = document.getElementById('set-email').value.trim();
+    const nickname = document.getElementById('set-nickname').value.trim();
     if (!name || !email) { UI.toast('Nombre y email son obligatorios', 'error'); return; }
 
     try {
-      const res = await API._fetch('PUT', '/api/auth/profile', { name, email });
+      const res = await API._fetch('PUT', '/api/auth/profile', { name, email, nickname });
       // Actualizar localStorage con nuevos datos
       localStorage.setItem('tv_user',  JSON.stringify(res.user));
       localStorage.setItem('tv_token', res.token);

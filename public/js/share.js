@@ -199,7 +199,7 @@ const ShareCard = {
 
         <!-- Footer -->
         <div style="position:relative;z-index:1;display:flex;justify-content:${hideUser ? 'flex-end' : 'space-between'};align-items:center;">
-          ${hideUser ? '' : `<div style="font-size:11px;color:${t.sub};">@${user.name || 'trader'}</div>`}
+          ${hideUser ? '' : `<div style="font-size:11px;color:${t.sub};">${user.nickname ? user.nickname : '@' + (user.name || 'trader')}</div>`}
           <div style="font-size:12px;font-weight:700;color:${t.accent};letter-spacing:-0.2px;">fundlog.es</div>
         </div>
       `;
