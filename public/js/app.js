@@ -744,9 +744,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const nameEl = document.getElementById('sb-user-name');
   const emailEl = document.getElementById('sb-user-email');
   const avatarEl = document.getElementById('sb-avatar-letter');
-  if (nameEl)   nameEl.textContent  = user.name  || 'Usuario';
-  if (emailEl)  emailEl.textContent = user.email || '';
-  if (avatarEl) avatarEl.textContent = (user.name || 'U')[0].toUpperCase();
+  const displayName = user.nickname || user.name || 'Usuario';
+  if (nameEl)   nameEl.textContent   = displayName;
+  if (emailEl)  emailEl.textContent  = user.email || '';
+  if (avatarEl) avatarEl.textContent = displayName[0].toUpperCase();
 
   App.init();
 });
