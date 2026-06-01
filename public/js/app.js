@@ -576,6 +576,37 @@ const App = {
 const TradeModal = {
   _editId: null,
 
+  calcPnl() {
+    const entry  = parseFloat(document.getElementById('trade-entry').value);
+    const exit   = parseFloat(document.getElementById('trade-exit').value);
+    const size   = parseFloat(document.getElementById('trade-size').value);
+    const type   = document.getElementById('trade-type').value;
+    const comm   = parseFloat(document.getElementById('trade-commission').value) || 0;
+    const pair   = (document.getElementById('trade-pair').value || '').toUpperCase();
+
+    if (!entry || !exit || !size) return;
+
+    // Multiplicador según instrumento
+    let multiplier = 100000; // Forex estándar (EUR/USD, GBP/USD...)
+    if (pair.includes('JPY')) multiplier = 1000;         // JPY pairs
+    else if (pair.includes('XAU') || pair.includes('GOLD')) multiplier = 100; // Gold
+    else if (['NAS','SPX','SP5','DAX','DOW','NDX','US30','US100'].some(i => pair.includes(i))) multiplier = 1; // Indices
+    else if (pair.includes('BTC') || pair.includes('ETH')) multiplier = 1; // Crypto
+
+    const diff  = type === 'long' ? (exit - entry) : (entry - exit);
+    const gross = diff * size * multiplier;
+    const net   = gross - Math.abs(comm);
+
+    const pnlInput = document.getElementById('trade-pnl');
+    pnlInput.value = net.toFixed(2);
+    pnlInput.style.color = net >= 0 ? 'var(--green)' : 'var(--red-mid)';
+
+    document.getElementById('pnlAutoLabel').style.display = 'inline';
+    const bd = document.getElementById('pnlBreakdown');
+    bd.style.display = 'block';
+    bd.innerHTML = `Bruto: ${gross >= 0 ? '+' : ''}$${gross.toFixed(2)} · Comisión: −$${Math.abs(comm).toFixed(2)} · <strong style="color:${net>=0?'var(--green)':'var(--red-mid)'}">Neto: ${net>=0?'+':''}$${net.toFixed(2)}</strong>`;
+  },
+
   removeScreenshot() {
     document.getElementById('trade-screenshot-url').value = '';
     document.getElementById('trade-screenshot').value = '';
@@ -596,18 +627,26 @@ const TradeModal = {
     document.getElementById('tradeModalTitle').textContent = trade ? 'Editar operación' : 'Nueva operación';
 
     // Fill form
-    document.getElementById('trade-id').value       = trade?.id || '';
-    document.getElementById('trade-pair').value      = trade?.pair || '';
-    document.getElementById('trade-date').value      = trade?.date || new Date().toISOString().split('T')[0];
-    document.getElementById('trade-type').value      = trade?.type || 'long';
-    document.getElementById('trade-session').value   = trade?.session || '';
-    document.getElementById('trade-entry').value     = trade?.entry_price || '';
-    document.getElementById('trade-exit').value      = trade?.exit_price || '';
-    document.getElementById('trade-size').value      = trade?.size || '';
-    document.getElementById('trade-pnl').value       = trade?.pnl || '';
-    document.getElementById('trade-notes').value     = trade?.notes || '';
-    document.getElementById('trade-account').value   = trade?.account_id || App.activeAccountId || '';
-    document.getElementById('trade-strategy').value  = trade?.strategy_id || '';
+    document.getElementById('trade-id').value         = trade?.id || '';
+    document.getElementById('trade-pair').value        = trade?.pair || '';
+    document.getElementById('trade-date').value        = trade?.date || new Date().toISOString().split('T')[0];
+    document.getElementById('trade-type').value        = trade?.type || 'long';
+    document.getElementById('trade-session').value     = trade?.session || '';
+    document.getElementById('trade-entry').value       = trade?.entry_price || '';
+    document.getElementById('trade-exit').value        = trade?.exit_price || '';
+    document.getElementById('trade-size').value        = trade?.size || '';
+    document.getElementById('trade-pnl').value         = trade?.pnl || '';
+    document.getElementById('trade-commission').value  = '';
+    document.getElementById('trade-notes').value       = trade?.notes || '';
+    document.getElementById('trade-account').value     = trade?.account_id || App.activeAccountId || '';
+    document.getElementById('trade-strategy').value    = trade?.strategy_id || '';
+    // Limpiar auto-cálculo
+    const pnlInput = document.getElementById('trade-pnl');
+    if (pnlInput) { pnlInput.style.color = ''; }
+    const autoLabel = document.getElementById('pnlAutoLabel');
+    if (autoLabel) autoLabel.style.display = 'none';
+    const bd = document.getElementById('pnlBreakdown');
+    if (bd) bd.style.display = 'none';
 
     UI.openModal('tradeModal');
     document.getElementById('trade-pair').focus();
