@@ -129,17 +129,12 @@ const ShareCard = {
 
         <!-- Header -->
         <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:34px;height:34px;background:linear-gradient(135deg,#1D3A5F,#378ADD);border-radius:9px;display:flex;align-items:center;justify-content:center;">
-              <div style="width:18px;height:18px;position:relative;">
-                <div style="position:absolute;bottom:0;left:0;width:100%;height:2px;background:rgba(255,255,255,0.3);border-radius:1px;"></div>
-                <div style="position:absolute;bottom:2px;left:0;width:3px;height:8px;background:rgba(255,255,255,0.6);border-radius:1px;"></div>
-                <div style="position:absolute;bottom:2px;left:4px;width:3px;height:12px;background:rgba(255,255,255,0.8);border-radius:1px;"></div>
-                <div style="position:absolute;bottom:2px;left:8px;width:3px;height:16px;background:white;border-radius:1px;"></div>
-              </div>
+          <div style="display:flex;align-items:center;gap:11px;">
+            <div style="width:38px;height:38px;background:#1A3A6A;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(55,138,221,0.4);">
+              <span style="font-size:20px;font-weight:900;color:white;font-family:Georgia,serif;line-height:1;">f</span>
             </div>
-            <div style="font-size:16px;font-weight:800;color:${t.text};letter-spacing:-0.3px;">
-              <span>Fund</span><span style="color:${t.accent};">Log</span>
+            <div style="font-size:20px;font-weight:800;letter-spacing:-0.5px;font-family:Arial,sans-serif;">
+              <span style="color:${t.text};">Fund</span><span style="color:${t.accent};">Log</span>
             </div>
           </div>
           <div style="font-size:${ShareCard._period === 'day' ? '13' : '12'}px;color:${t.sub};font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">${params.label}</div>
