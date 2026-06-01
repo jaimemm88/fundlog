@@ -71,8 +71,22 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
   if (!name || !email) return res.status(400).json({ error: 'Nombre y email obligatorios' });
   const exists = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(email.toLowerCase(), req.user.id);
   if (exists) return res.status(409).json({ error: 'Ese email ya está en uso' });
-  db.prepare('UPDATE users SET name = ?, email = ?, nickname = ? WHERE id = ?').run(name, email.toLowerCase(), nickname || '', req.user.id);
-  const user = db.prepare('SELECT id, name, email, nickname FROM users WHERE id = ?').get(req.user.id);
+
+  // Añadir columna nickname si no existe
+  try { db.exec('ALTER TABLE users ADD COLUMN nickname TEXT DEFAULT ""'); } catch(e) {}
+
+  try {
+    db.prepare('UPDATE users SET name = ?, email = ?, nickname = ? WHERE id = ?').run(name, email.toLowerCase(), nickname || '', req.user.id);
+  } catch(e) {
+    // Fallback sin nickname si falla
+    db.prepare('UPDATE users SET name = ?, email = ? WHERE id = ?').run(name, email.toLowerCase(), req.user.id);
+  }
+
+  const user = db.prepare('SELECT id, name, email, created_at FROM users WHERE id = ?').get(req.user.id);
+  try {
+    const u2 = db.prepare('SELECT nickname FROM users WHERE id = ?').get(req.user.id);
+    if (u2) user.nickname = u2.nickname;
+  } catch(e) { user.nickname = ''; }
   // Renovar token con nuevo nombre/email
   const token = makeToken(user);
   res.json({ ok: true, user, token });
