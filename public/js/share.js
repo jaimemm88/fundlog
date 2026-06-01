@@ -1,7 +1,15 @@
 // ─── Share Card ───────────────────────────────────────────────────────────────
 const ShareCard = {
   _period: 'month',
+  _format: 'square',
   _stats:  null,
+
+  FORMATS: {
+    square:   { w: 480, h: 480,  display_w: 480, display_h: 480,  label: '1:1',  export_w: 1080, export_h: 1080  },
+    story:    { w: 270, h: 480,  display_w: 270, display_h: 480,  label: '9:16', export_w: 1080, export_h: 1920 },
+    portrait: { w: 384, h: 480,  display_w: 384, display_h: 480,  label: '4:5',  export_w: 1080, export_h: 1350 },
+    twitter:  { w: 480, h: 270,  display_w: 480, display_h: 270,  label: '16:9', export_w: 1280, export_h: 720  },
+  },
 
   THEMES: {
     dark: {
@@ -48,6 +56,14 @@ const ShareCard = {
         document.querySelectorAll('.share-period-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         ShareCard._period = btn.dataset.period;
+        ShareCard.render();
+      });
+    });
+    document.querySelectorAll('.share-format-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.share-format-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ShareCard._format = btn.dataset.format;
         ShareCard.render();
       });
     });
@@ -115,11 +131,18 @@ const ShareCard = {
         ? `${streakEmoji} ${curStreak} ${streakType === 'win' ? 'wins' : 'pérdidas'} seguidas`
         : '';
 
+      const fmt = ShareCard.FORMATS[ShareCard._format] || ShareCard.FORMATS.square;
+      const isStory   = ShareCard._format === 'story';
+      const isTwitter = ShareCard._format === 'twitter';
+      const padH = isTwitter ? '28px' : '38px';
+      const padW = isStory   ? '28px' : '40px';
+
       card.style.cssText = `
-        width:480px;height:480px;position:relative;
+        width:${fmt.display_w}px;height:${fmt.display_h}px;position:relative;
         background:${t.bg};
         display:flex;flex-direction:column;justify-content:space-between;
-        padding:38px 40px;font-family:'Sora',sans-serif;
+        padding:${padH} ${padW};font-family:'Sora',sans-serif;
+        transition:all 0.3s ease;
       `;
 
       card.innerHTML = `
@@ -143,7 +166,7 @@ const ShareCard = {
         <!-- P&L principal -->
         <div style="position:relative;z-index:1;text-align:center;margin:8px 0;">
           <div style="font-size:11px;color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:10px;">P&L ${{ day:'de hoy', month:'del mes', year:'del año', all:'total' }[ShareCard._period]}</div>
-          <div style="font-size:68px;font-weight:800;color:${pnlColor};letter-spacing:-3px;line-height:1;font-family:'JetBrains Mono',monospace;">
+          <div style="font-size:${isStory ? '54px' : isTwitter ? '48px' : '68px'};font-weight:800;color:${pnlColor};letter-spacing:-3px;line-height:1;font-family:'JetBrains Mono',monospace;">
             ${pnl >= 0 ? '+' : '−'}$${Math.abs(pnl).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})}
           </div>
           ${streakLabel ? `<div style="margin-top:10px;font-size:14px;color:${t.sub};font-weight:600;">${streakLabel}</div>` : ''}
@@ -178,6 +201,7 @@ const ShareCard = {
 
   async _getCanvas() {
     const card = document.getElementById('shareCard');
+    const fmt  = ShareCard.FORMATS[ShareCard._format] || ShareCard.FORMATS.square;
     const script = document.createElement('script');
     script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
     await new Promise(resolve => {
@@ -185,11 +209,15 @@ const ShareCard = {
       script.onload = resolve;
       document.head.appendChild(script);
     });
+    // Escala para exportar a la resolución completa del formato
+    const scale = fmt.export_w / fmt.display_w;
     return await html2canvas(card, {
-      scale: 2,
+      scale,
       useCORS: true,
       backgroundColor: null,
       logging: false,
+      width:  fmt.display_w,
+      height: fmt.display_h,
     });
   },
 
