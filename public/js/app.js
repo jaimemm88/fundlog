@@ -198,6 +198,33 @@ const App = {
     document.body.appendChild(overlay);
   },
 
+  async _uploadScreenshot(file) {
+    const area = document.getElementById('screenshotArea');
+    if (!area) return;
+    area.innerHTML = '<div class="screenshot-uploading"><i class="ti ti-loader"></i> Subiendo imagen...</div>';
+    try {
+      const url = await Cloudinary.upload(file);
+      document.getElementById('trade-screenshot-url').value = url;
+      area.innerHTML = `
+        <div id="screenshotPreview">
+          <img src="${url}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px;cursor:pointer;" onclick="window.open('${url}','_blank')">
+          <button type="button" class="screenshot-remove" onclick="TradeModal.removeScreenshot()"><i class="ti ti-x"></i> Quitar</button>
+        </div>`;
+      UI.toast('Imagen subida ✓', 'success');
+    } catch(err) {
+      area.innerHTML = `
+        <input type="file" id="trade-screenshot" accept="image/*" style="display:none;">
+        <div id="screenshotEmpty" onclick="document.getElementById('trade-screenshot').click()">
+          <i class="ti ti-photo-plus" style="font-size:28px;color:var(--red-mid);display:block;margin-bottom:6px;"></i>
+          <div style="font-size:13px;color:var(--red-mid);">Error: ${err.message}</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">Toca para reintentar · ⌘V para pegar</div>
+        </div>`;
+      document.getElementById('trade-screenshot')?.addEventListener('change', async (e) => {
+        if (e.target.files[0]) await App._uploadScreenshot(e.target.files[0]);
+      });
+    }
+  },
+
   async _goToCheckout(btn) {
     const orig = btn.innerHTML;
     btn.innerHTML = '⏳ Redirigiendo a pago...';
@@ -291,29 +318,25 @@ const App = {
     // Set today's date as default
     document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
-    // Screenshot upload
+    // Pegar imagen con Cmd+V / Ctrl+V cuando el modal está abierto
+    document.addEventListener('paste', async (e) => {
+      if (!document.getElementById('tradeModal').classList.contains('open')) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) await App._uploadScreenshot(file);
+          break;
+        }
+      }
+    });
+
+    // Screenshot upload (selector de archivo)
     document.getElementById('trade-screenshot').addEventListener('change', async (e) => {
       const file = e.target.files[0];
-      if (!file) return;
-      const area = document.getElementById('screenshotArea');
-      area.innerHTML = '<div class="screenshot-uploading"><i class="ti ti-loader"></i> Subiendo a Cloudinary...</div>';
-      try {
-        const url = await Cloudinary.upload(file);
-        document.getElementById('trade-screenshot-url').value = url;
-        area.innerHTML = `
-          <div id="screenshotPreview">
-            <img id="screenshotImg" src="${url}" style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;">
-            <button type="button" class="screenshot-remove" onclick="TradeModal.removeScreenshot()"><i class="ti ti-x"></i> Quitar</button>
-          </div>`;
-        UI.toast('Screenshot subido ✓', 'success');
-      } catch(err) {
-        area.innerHTML = `<div id="screenshotEmpty" onclick="document.getElementById('trade-screenshot').click()">
-          <i class="ti ti-photo-plus" style="font-size:28px;color:var(--text-secondary);display:block;margin-bottom:6px;"></i>
-          <div style="font-size:13px;color:var(--red-mid);">Error: ${err.message}</div>
-          <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">Toca para reintentar</div>
-        </div>`;
-        area.querySelector('input') || area.insertAdjacentHTML('beforeend', '<input type="file" id="trade-screenshot" accept="image/*" style="display:none;">');
-      }
+      if (file) await App._uploadScreenshot(file);
     });
   },
 
