@@ -1250,9 +1250,15 @@
         <button class="share-format-btn" data-format="portrait" title="Post 4:5">🖼 4:5</button>
         <button class="share-format-btn" data-format="twitter" title="Twitter/X 16:9">🐦 Twitter</button>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-        <input type="checkbox" id="shareHideUser" style="cursor:pointer;width:15px;height:15px;">
-        <label for="shareHideUser" style="font-size:12.5px;color:var(--text-secondary);cursor:pointer;font-weight:500;">Ocultar mi usuario</label>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;">
+        <div style="display:flex;gap:6px;">
+          <button class="share-pnl-btn active" data-pnl="amount">$ Importe</button>
+          <button class="share-pnl-btn" data-pnl="pct">% Rentabilidad</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="shareHideUser" style="cursor:pointer;width:15px;height:15px;">
+          <label for="shareHideUser" style="font-size:12.5px;color:var(--text-secondary);cursor:pointer;font-weight:500;">Ocultar usuario</label>
+        </div>
       </div>
 
       <!-- TARJETA (se renderiza aquí) -->

@@ -1,8 +1,9 @@
 // ─── Share Card ───────────────────────────────────────────────────────────────
 const ShareCard = {
-  _period: 'month',
-  _format: 'square',
-  _stats:  null,
+  _period:  'month',
+  _format:  'square',
+  _pnlMode: 'amount', // 'amount' | 'pct'
+  _stats:   null,
 
   FORMATS: {
     square:   { w: 480, h: 480,  display_w: 480, display_h: 480,  label: '1:1',  export_w: 1080, export_h: 1080  },
@@ -67,6 +68,14 @@ const ShareCard = {
         ShareCard.render();
       });
     });
+    document.querySelectorAll('.share-pnl-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.share-pnl-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ShareCard._pnlMode = btn.dataset.pnl;
+        ShareCard.render();
+      });
+    });
     document.getElementById('shareTheme').addEventListener('change', () => ShareCard.render());
     document.getElementById('shareHideUser').addEventListener('change', () => ShareCard.render());
     document.getElementById('btnDownloadCard').addEventListener('click', () => ShareCard.download());
@@ -113,6 +122,16 @@ const ShareCard = {
       const avgWin   = stats.avg_win  ? UI.pnlStr(stats.avg_win)  : '—';
       const avgLoss  = stats.avg_loss ? UI.pnlStr(Math.abs(stats.avg_loss)) : '—';
       const pnlColor = pnl >= 0 ? t.posColor : t.negColor;
+
+      // Calcular rentabilidad % usando balance de cuentas
+      const accounts   = await API.accounts.list().catch(() => []);
+      const totalInitial = accounts.reduce((s, a) => s + (a.initial_balance || 0), 0);
+      const pct        = totalInitial > 0 ? ((pnl / totalInitial) * 100) : 0;
+      const isPct      = ShareCard._pnlMode === 'pct';
+      const mainValue  = isPct
+        ? `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`
+        : `${pnl >= 0 ? '+' : '−'}$${Math.abs(pnl).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})}`;
+      const mainLabel  = isPct ? 'RENTABILIDAD' : `P&L ${{ day:'DE HOY', month:'DEL MES', year:'DEL AÑO', all:'TOTAL' }[ShareCard._period]}`;
       const hideUser = document.getElementById('shareHideUser')?.checked || false;
       const user     = JSON.parse(localStorage.getItem('tv_user') || '{}');
 
@@ -181,9 +200,9 @@ const ShareCard = {
 
         <!-- P&L -->
         <div style="position:relative;z-index:1;text-align:center;${isTwitter ? 'margin:0;' : 'margin:6px 0;'}">
-          <div style="font-size:${pnlLblFs};color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:${isTwitter?'4px':'8px'};">P&L ${{ day:'de hoy', month:'del mes', year:'del año', all:'total' }[ShareCard._period]}</div>
-          <div style="font-size:${pnlSize};font-weight:800;color:${pnlColor};letter-spacing:-3px;line-height:1;font-family:'JetBrains Mono',monospace;">
-            ${pnl >= 0 ? '+' : '−'}$${Math.abs(pnl).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})}
+          <div style="font-size:${pnlLblFs};color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:${isTwitter?'4px':'8px'};">${mainLabel}</div>
+          <div style="font-size:${pnlSize};font-weight:800;color:${pnlColor};letter-spacing:-2px;line-height:1;font-family:'JetBrains Mono',monospace;">
+            ${mainValue}
           </div>
           ${streakLabel && !isTwitter ? `<div style="margin-top:8px;font-size:13px;color:${t.sub};font-weight:600;">${streakLabel}</div>` : ''}
         </div>
