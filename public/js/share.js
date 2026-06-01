@@ -151,7 +151,7 @@ const ShareCard = {
       const statPad   = isStory ? '10px 8px' : '12px 10px';
       const statFs    = isStory ? '15px' : isTwitter ? '15px' : '17px';
       const statLblFs = isStory ? '8px'  : '9px';
-      const logoH     = isTwitter ? '28px' : isStory ? '32px' : '36px';
+      const logoH     = isTwitter ? '34px' : isStory ? '40px' : '48px';
       const periodFs  = isTwitter ? '11px' : '12px';
       const pnlLblFs  = isTwitter ? '10px' : '11px';
 
