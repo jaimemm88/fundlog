@@ -145,41 +145,53 @@ const ShareCard = {
         transition:all 0.3s ease;
       `;
 
+      // Config por formato
+      const pnlSize   = isStory ? '52px' : isTwitter ? '46px' : '68px';
+      const statCols  = isTwitter ? '1fr 1fr 1fr 1fr' : isStory ? '1fr 1fr' : '1fr 1fr 1fr';
+      const statPad   = isStory ? '10px 8px' : '12px 10px';
+      const statFs    = isStory ? '15px' : isTwitter ? '15px' : '17px';
+      const statLblFs = isStory ? '8px'  : '9px';
+      const logoH     = isTwitter ? '28px' : isStory ? '32px' : '36px';
+      const periodFs  = isTwitter ? '11px' : '12px';
+      const pnlLblFs  = isTwitter ? '10px' : '11px';
+
+      const allStats = [
+        { label: 'Win Rate',      val: wr + '%',  color: parseFloat(wr) >= 50 ? t.posColor : t.negColor },
+        { label: 'Profit Factor', val: pf,        color: parseFloat(pf) > 1 ? t.posColor : t.negColor },
+        { label: 'Operaciones',   val: stats.total || 0, color: t.text },
+        { label: 'Media gan.',    val: avgWin,    color: t.posColor },
+        { label: 'Media pér.',    val: avgLoss,   color: t.negColor },
+        { label: 'Mejor trade',   val: stats.best_trade ? UI.pnlStr(stats.best_trade) : '—', color: t.posColor },
+      ];
+      // Twitter: 4 stats en una fila; Story: 4 stats en 2x2; otros: 6 stats en 2x3
+      const statsToShow = isTwitter ? allStats.slice(0,4) : isStory ? allStats.slice(0,4) : allStats;
+
       card.innerHTML = `
-        <!-- Orbes decorativos -->
-        <div style="position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,${t.accentBg} 0%,transparent 70%);top:-80px;right:-60px;pointer-events:none;"></div>
-        <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(29,158,117,0.1) 0%,transparent 70%);bottom:-60px;left:-40px;pointer-events:none;"></div>
+        <!-- Orbes -->
+        <div style="position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,${t.accentBg} 0%,transparent 70%);top:-60px;right:-50px;pointer-events:none;"></div>
+        <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(29,158,117,0.1) 0%,transparent 70%);bottom:-50px;left:-30px;pointer-events:none;"></div>
 
         <!-- Header -->
         <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;">
-          <div style="display:flex;align-items:center;">
-            <img src="/fundlog-logo.png" style="height:${isTwitter ? '32px' : '38px'};width:auto;object-fit:contain;" crossorigin="anonymous">
-          </div>
-          <div style="font-size:${ShareCard._period === 'day' ? '13' : '12'}px;color:${t.sub};font-weight:600;letter-spacing:0.04em;text-transform:uppercase;">${params.label}</div>
+          <img src="/fundlog-logo.png" style="height:${logoH};width:auto;object-fit:contain;" crossorigin="anonymous">
+          <div style="font-size:${periodFs};color:${t.sub};font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">${params.label}</div>
         </div>
 
-        <!-- P&L principal -->
-        <div style="position:relative;z-index:1;text-align:center;margin:8px 0;">
-          <div style="font-size:11px;color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:10px;">P&L ${{ day:'de hoy', month:'del mes', year:'del año', all:'total' }[ShareCard._period]}</div>
-          <div style="font-size:${isStory ? '54px' : isTwitter ? '48px' : '68px'};font-weight:800;color:${pnlColor};letter-spacing:-3px;line-height:1;font-family:'JetBrains Mono',monospace;">
+        <!-- P&L -->
+        <div style="position:relative;z-index:1;text-align:center;${isTwitter ? 'margin:0;' : 'margin:6px 0;'}">
+          <div style="font-size:${pnlLblFs};color:${t.sub};text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:${isTwitter?'4px':'8px'};">P&L ${{ day:'de hoy', month:'del mes', year:'del año', all:'total' }[ShareCard._period]}</div>
+          <div style="font-size:${pnlSize};font-weight:800;color:${pnlColor};letter-spacing:-3px;line-height:1;font-family:'JetBrains Mono',monospace;">
             ${pnl >= 0 ? '+' : '−'}$${Math.abs(pnl).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0})}
           </div>
-          ${streakLabel ? `<div style="margin-top:10px;font-size:14px;color:${t.sub};font-weight:600;">${streakLabel}</div>` : ''}
+          ${streakLabel && !isTwitter ? `<div style="margin-top:8px;font-size:13px;color:${t.sub};font-weight:600;">${streakLabel}</div>` : ''}
         </div>
 
-        <!-- Stats grid -->
-        <div style="position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
-          ${[
-            { label: 'Win Rate', val: wr + '%', color: parseFloat(wr) >= 50 ? t.posColor : t.negColor },
-            { label: 'Profit Factor', val: pf, color: parseFloat(pf) > 1 ? t.posColor : t.negColor },
-            { label: 'Operaciones', val: stats.total || 0, color: t.text },
-            { label: 'Media ganancia', val: avgWin, color: t.posColor },
-            { label: 'Media pérdida', val: avgLoss, color: t.negColor },
-            { label: 'Mejor trade', val: stats.best_trade ? UI.pnlStr(stats.best_trade) : '—', color: t.posColor },
-          ].map(s => `
-            <div style="background:${t.accentBg};border:1px solid ${t.border};border-radius:10px;padding:12px 10px;text-align:center;">
-              <div style="font-size:9px;color:${t.sub};text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:6px;">${s.label}</div>
-              <div style="font-size:17px;font-weight:800;color:${s.color};font-family:'JetBrains Mono',monospace;letter-spacing:-0.5px;">${s.val}</div>
+        <!-- Stats -->
+        <div style="position:relative;z-index:1;display:grid;grid-template-columns:${statCols};gap:8px;">
+          ${statsToShow.map(s => `
+            <div style="background:${t.accentBg};border:1px solid ${t.border};border-radius:9px;padding:${statPad};text-align:center;">
+              <div style="font-size:${statLblFs};color:${t.sub};text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:5px;">${s.label}</div>
+              <div style="font-size:${statFs};font-weight:800;color:${s.color};font-family:'JetBrains Mono',monospace;letter-spacing:-0.5px;">${s.val}</div>
             </div>`).join('')}
         </div>
 
