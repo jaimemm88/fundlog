@@ -290,6 +290,31 @@ const App = {
 
     // Set today's date as default
     document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
+
+    // Screenshot upload
+    document.getElementById('trade-screenshot').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const area = document.getElementById('screenshotArea');
+      area.innerHTML = '<div class="screenshot-uploading"><i class="ti ti-loader"></i> Subiendo a Cloudinary...</div>';
+      try {
+        const url = await Cloudinary.upload(file);
+        document.getElementById('trade-screenshot-url').value = url;
+        area.innerHTML = `
+          <div id="screenshotPreview">
+            <img id="screenshotImg" src="${url}" style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;">
+            <button type="button" class="screenshot-remove" onclick="TradeModal.removeScreenshot()"><i class="ti ti-x"></i> Quitar</button>
+          </div>`;
+        UI.toast('Screenshot subido ✓', 'success');
+      } catch(err) {
+        area.innerHTML = `<div id="screenshotEmpty" onclick="document.getElementById('trade-screenshot').click()">
+          <i class="ti ti-photo-plus" style="font-size:28px;color:var(--text-secondary);display:block;margin-bottom:6px;"></i>
+          <div style="font-size:13px;color:var(--red-mid);">Error: ${err.message}</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">Toca para reintentar</div>
+        </div>`;
+        area.querySelector('input') || area.insertAdjacentHTML('beforeend', '<input type="file" id="trade-screenshot" accept="image/*" style="display:none;">');
+      }
+    });
   },
 
   // ── Filters ─────────────────────────────────────────────────────────────────
@@ -528,6 +553,21 @@ const App = {
 const TradeModal = {
   _editId: null,
 
+  removeScreenshot() {
+    document.getElementById('trade-screenshot-url').value = '';
+    document.getElementById('trade-screenshot').value = '';
+    const area = document.getElementById('screenshotArea');
+    area.innerHTML = `
+      <input type="file" id="trade-screenshot" accept="image/*" style="display:none;">
+      <div id="screenshotEmpty" onclick="document.getElementById('trade-screenshot').click()">
+        <i class="ti ti-photo-plus" style="font-size:28px;color:var(--text-secondary);display:block;margin-bottom:6px;"></i>
+        <div style="font-size:13px;color:var(--text-secondary);font-weight:500;">Subir screenshot del chart</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">PNG, JPG · Cloudinary</div>
+      </div>`;
+    // Re-attach listener
+    document.getElementById('trade-screenshot').addEventListener('change', App._screenshotHandler);
+  },
+
   open(trade = null) {
     TradeModal._editId = trade?.id || null;
     document.getElementById('tradeModalTitle').textContent = trade ? 'Editar operación' : 'Nueva operación';
@@ -557,17 +597,18 @@ const TradeModal = {
 
   async save() {
     const data = {
-      pair:        document.getElementById('trade-pair').value.trim().toUpperCase(),
-      date:        document.getElementById('trade-date').value,
-      type:        document.getElementById('trade-type').value,
-      session:     document.getElementById('trade-session').value,
-      entry_price: document.getElementById('trade-entry').value,
-      exit_price:  document.getElementById('trade-exit').value,
-      size:        document.getElementById('trade-size').value,
-      pnl:         document.getElementById('trade-pnl').value,
-      notes:       document.getElementById('trade-notes').value.trim(),
-      account_id:  document.getElementById('trade-account').value || null,
-      strategy_id: document.getElementById('trade-strategy').value || null,
+      pair:           document.getElementById('trade-pair').value.trim().toUpperCase(),
+      date:           document.getElementById('trade-date').value,
+      type:           document.getElementById('trade-type').value,
+      session:        document.getElementById('trade-session').value,
+      entry_price:    document.getElementById('trade-entry').value,
+      exit_price:     document.getElementById('trade-exit').value,
+      size:           document.getElementById('trade-size').value,
+      pnl:            document.getElementById('trade-pnl').value,
+      notes:          document.getElementById('trade-notes').value.trim(),
+      account_id:     document.getElementById('trade-account').value || null,
+      strategy_id:    document.getElementById('trade-strategy').value || null,
+      screenshot_url: document.getElementById('trade-screenshot-url')?.value || '',
     };
 
     if (!data.pair || !data.date || !data.pnl) {
@@ -594,6 +635,39 @@ const TradeModal = {
     } finally {
       btn.disabled = false;
     }
+  },
+};
+
+// ─── Cloudinary Upload ────────────────────────────────────────────────────────
+const Cloudinary = {
+  CLOUD: '', // Se lee de Render env via /api/config
+  PRESET: '',
+
+  async upload(file) {
+    if (!Cloudinary.CLOUD || !Cloudinary.PRESET) {
+      await Cloudinary._loadConfig();
+    }
+    if (!Cloudinary.CLOUD) throw new Error('Cloudinary no configurado');
+
+    const form = new FormData();
+    form.append('file', file);
+    form.append('upload_preset', Cloudinary.PRESET);
+    form.append('folder', 'fundlog-trades');
+
+    const res  = await fetch(`https://api.cloudinary.com/v1_1/${Cloudinary.CLOUD}/image/upload`, {
+      method: 'POST', body: form
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.secure_url;
+  },
+
+  async _loadConfig() {
+    try {
+      const cfg = await API.get('/api/config/cloudinary');
+      Cloudinary.CLOUD  = cfg.cloud_name  || '';
+      Cloudinary.PRESET = cfg.upload_preset || '';
+    } catch(e) {}
   },
 };
 

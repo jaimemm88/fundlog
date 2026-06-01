@@ -1142,6 +1142,22 @@
         <div class="tv-label">Notas</div>
         <textarea class="tv-input" id="trade-notes" rows="2" placeholder="Observaciones sobre la operación..."></textarea>
       </div>
+      <div class="form-row" style="margin-top:6px;">
+        <div class="tv-label">Screenshot del gráfico</div>
+        <div class="screenshot-upload-area" id="screenshotArea">
+          <input type="file" id="trade-screenshot" accept="image/*" style="display:none;">
+          <div id="screenshotPreview" style="display:none;">
+            <img id="screenshotImg" style="width:100%;max-height:160px;object-fit:contain;border-radius:8px;">
+            <button type="button" class="screenshot-remove" onclick="TradeModal.removeScreenshot()"><i class="ti ti-x"></i> Quitar</button>
+          </div>
+          <div id="screenshotEmpty" onclick="document.getElementById('trade-screenshot').click()">
+            <i class="ti ti-photo-plus" style="font-size:28px;color:var(--text-secondary);display:block;margin-bottom:6px;"></i>
+            <div style="font-size:13px;color:var(--text-secondary);font-weight:500;">Subir screenshot del chart</div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">PNG, JPG · Cloudinary</div>
+          </div>
+        </div>
+        <input type="hidden" id="trade-screenshot-url">
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" id="cancelTradeModal">Cancelar</button>

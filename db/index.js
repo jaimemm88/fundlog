@@ -139,6 +139,7 @@ const migrations = [
   ['accounts',          'metaapi_id TEXT DEFAULT ""'],
   ['accounts',          'metaapi_state TEXT DEFAULT ""'],
   ['trades',            'external_id TEXT DEFAULT ""'],
+  ['trades',            'screenshot_url TEXT DEFAULT ""'],
   ['accounts',          'profit_target REAL DEFAULT 0'],
 ];
 for (const [table, col] of migrations) {

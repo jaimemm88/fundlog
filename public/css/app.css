@@ -693,6 +693,18 @@ body.dark .session-pill { background: rgba(23,32,48,0.9); border-color: rgba(255
   border: 2px solid var(--sb-bg);
 }
 
+/* ─── SCREENSHOT UPLOAD ──────────────────────────────────────────────────── */
+.screenshot-upload-area { border:2px dashed var(--border-card);border-radius:var(--radius);overflow:hidden;transition:border-color 0.15s; }
+.screenshot-upload-area:hover { border-color:var(--accent); }
+#screenshotEmpty { padding:24px;text-align:center;cursor:pointer; }
+.screenshot-remove { display:block;width:100%;padding:6px;background:var(--red-light);color:var(--red);border:none;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px; }
+.screenshot-remove:hover { background:#F5C6C6; }
+.screenshot-uploading { display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;font-size:13px;color:var(--text-secondary); }
+
+/* Trade thumbnail in table */
+.trade-thumb { width:32px;height:24px;border-radius:4px;object-fit:cover;cursor:pointer;transition:transform 0.15s; }
+.trade-thumb:hover { transform:scale(1.1); }
+
 /* ─── SHARE CARD ─────────────────────────────────────────────────────────── */
 .btn-share { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,#152C4A,#2B72C8);color:#fff;font-family:'Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 10px rgba(55,138,221,0.3); }
 .btn-share:hover { box-shadow:0 4px 16px rgba(55,138,221,0.45);transform:translateY(-1px); }

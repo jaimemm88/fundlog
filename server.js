@@ -28,6 +28,11 @@ app.get('/login',          (req, res) => res.sendFile(path.join(__dirname, 'publ
 app.get('/reset-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'reset-password.html')));
 app.use('/api/admin',      require('./routes/admin'));
 app.get('/admin',          (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+// Config pública para el frontend (solo claves públicas)
+app.get('/api/config/cloudinary', (req, res) => res.json({
+  cloud_name:    process.env.CLOUDINARY_CLOUD_NAME || '',
+  upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET || '',
+}));
 app.get('/terminos',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'terminos.html')));
 app.get('/privacidad',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'privacidad.html')));
 app.get('/app',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
