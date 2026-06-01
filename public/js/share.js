@@ -142,7 +142,9 @@ const ShareCard = {
         background:${t.bg};
         display:flex;flex-direction:column;justify-content:space-between;
         padding:${padH} ${padW};font-family:'Sora',sans-serif;
-        transition:all 0.3s ease;
+        border-radius:14px;overflow:hidden;
+        box-shadow:0 8px 32px rgba(0,0,0,0.25);
+        transition:width 0.25s ease,height 0.25s ease;
       `;
 
       // Config por formato
