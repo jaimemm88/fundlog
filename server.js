@@ -28,6 +28,15 @@ app.get('/login',          (req, res) => res.sendFile(path.join(__dirname, 'publ
 app.get('/reset-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'reset-password.html')));
 app.use('/api/admin',      require('./routes/admin'));
 app.get('/admin',          (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+// Endpoint temporal para crear demo (solo con clave secreta)
+app.get('/api/setup-demo', async (req, res) => {
+  if (req.query.key !== 'fundlog2026') return res.status(403).json({ error: 'Forbidden' });
+  try {
+    const { seedDemo } = require('./scripts/seed-demo');
+    await seedDemo();
+    res.json({ ok: true, email: 'demo@fundlog.es', password: 'usuario' });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
 // Config pública para el frontend (solo claves públicas)
 app.get('/api/config/cloudinary', (req, res) => res.json({
   cloud_name:    process.env.CLOUDINARY_CLOUD_NAME || '',
