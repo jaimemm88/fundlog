@@ -4,15 +4,16 @@ const Dashboard = {
     const now = new Date();
     const from = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
 
-    const [summary, recent, equity, strategies, goals] = await Promise.all([
+    const [summary, recent, equity, strategies, goals, accounts] = await Promise.all([
       API.analysis.stats({ account_id: accountId || '', from }),
       API.trades.list({ account_id: accountId || '', limit: 6 }),
       API.analysis.equity({ account_id: accountId || '' }),
       API.strategies.list(),
       API.goals.list(),
+      API.accounts.list(),
     ]);
 
-    Dashboard._renderMetrics(summary);
+    Dashboard._renderMetrics(summary, accounts);
     Dashboard._renderRecentTrades(recent);
     Dashboard._renderEquityChart(equity);
     Dashboard._renderStrategies(strategies);
@@ -23,17 +24,38 @@ const Dashboard = {
     document.getElementById('resumen-sub').textContent = `FundLog · ${months[now.getMonth()]} ${now.getFullYear()}`;
   },
 
-  _renderMetrics(s) {
+  _renderMetrics(s, accounts = []) {
     const wr = s.total > 0 ? (s.wins / s.total * 100).toFixed(1) : 0;
     const pf = s.gross_loss > 0 ? (s.gross_profit / s.gross_loss).toFixed(2) : '—';
 
-    // Calcular balance: cuenta activa o suma de todas
     const totalBalance = App.activeAccount
       ? App.activeAccount.balance
       : App._accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
 
+    // Construir desglose por tipo de cuenta
+    const TYPE_LABELS = { fase1: 'Fase 1', fase2: 'Fase 2', funded: 'Funded', propio: 'Capital propio', live: 'Live', demo: 'Demo', prop: 'Prop' };
+    let balanceSubHtml = '';
+    if (!App.activeAccount && accounts.length > 0) {
+      const groups = {};
+      accounts.forEach(a => {
+        const label = TYPE_LABELS[a.type] || a.type;
+        if (!groups[label]) groups[label] = 0;
+        groups[label] += a.balance || 0;
+      });
+      const parts = Object.entries(groups).map(([label, bal]) =>
+        `<span style="white-space:nowrap;"><span style="opacity:0.6;">${label}</span> <strong style="color:var(--text-primary);">$${Math.round(bal).toLocaleString('es-ES')}</strong></span>`
+      );
+      balanceSubHtml = `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;font-size:10.5px;">${parts.join('<span style="opacity:0.3;">·</span>')}</div>`;
+    } else if (App.activeAccount) {
+      balanceSubHtml = App.activeAccount.name;
+    }
+
     document.getElementById('resumen-metrics').innerHTML = `
-      ${UI.metricCard('Balance total', '<span id="cnt-balance">$0</span>', App.activeAccount ? App.activeAccount.name : `${App._accounts.length} cuentas`, '')}
+      <div class="metric" style="grid-column:span 1;">
+        <div class="metric-label">Balance total</div>
+        <div class="metric-val mono" id="cnt-balance">$0</div>
+        ${balanceSubHtml}
+      </div>
       ${UI.metricCard('P&L este mes', '<span id="cnt-pnl">$0</span>', `↑ ${s.total} operaciones`, s.total_pnl >= 0 ? 'pos' : 'neg')}
       ${UI.metricCard('Win rate', '<span id="cnt-wr">0</span>%', s.wins + ' ganadoras', 'pos')}
       ${UI.metricCard('Profit Factor', pf, s.max_drawdown ? `DD: ${s.max_drawdown.toFixed(1)}%` : '', '')}
