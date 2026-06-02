@@ -116,14 +116,15 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { account_id, strategy_id, pair, type, entry_price, exit_price, size, pnl, date, session, notes, screenshot_url } = req.body;
+  const { account_id, strategy_id, pair, type, entry_price, exit_price, size, pnl, date, session, notes, screenshot_url, screenshots } = req.body;
   if (!pair || !type || !date) return res.status(400).json({ error: 'pair, type, date required' });
   const numPnl = parseFloat(pnl) || 0;
   const result = numPnl >= 0 ? 'win' : 'loss';
+  const screenshotsJson = JSON.stringify(Array.isArray(screenshots) ? screenshots : (screenshot_url ? [screenshot_url] : []));
   const r = db.prepare(`
-    INSERT INTO trades (account_id, strategy_id, pair, type, entry_price, exit_price, size, pnl, date, session, notes, result, screenshot_url, user_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(account_id || null, strategy_id || null, pair, type, entry_price || 0, exit_price || 0, size || 0, numPnl, date, session || '', notes || '', result, screenshot_url || '', req.user.id);
+    INSERT INTO trades (account_id, strategy_id, pair, type, entry_price, exit_price, size, pnl, date, session, notes, result, screenshot_url, screenshots, user_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(account_id || null, strategy_id || null, pair, type, entry_price || 0, exit_price || 0, size || 0, numPnl, date, session || '', notes || '', result, screenshot_url || '', screenshotsJson, req.user.id);
 
   if (account_id) db.prepare('UPDATE accounts SET balance = balance + ? WHERE id = ? AND user_id = ?').run(numPnl, account_id, req.user.id);
   res.json(db.prepare(FULL + ' WHERE t.id = ?').get(r.lastInsertRowid));

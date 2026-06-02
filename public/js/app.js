@@ -198,30 +198,55 @@ const App = {
     document.body.appendChild(overlay);
   },
 
+  _screenshots: [], // array de URLs actuales
+
+  _renderScreenshotGallery() {
+    const gallery  = document.getElementById('screenshotGallery');
+    const countEl  = document.getElementById('screenshotCount');
+    const area     = document.getElementById('screenshotArea');
+    if (!gallery) return;
+
+    gallery.innerHTML = App._screenshots.map((url, i) => `
+      <div class="screenshot-thumb-wrap">
+        <img src="${url}" onclick="window.open('${url}','_blank')" title="Ver imagen">
+        <button class="screenshot-thumb-del" onclick="App._removeScreenshot(${i})">×</button>
+      </div>`).join('');
+
+    if (countEl) countEl.textContent = `${App._screenshots.length}/5`;
+    if (area) area.style.display = App._screenshots.length >= 5 ? 'none' : 'block';
+
+    // Actualizar hidden inputs
+    const json = JSON.stringify(App._screenshots);
+    const jsonEl = document.getElementById('trade-screenshots-json');
+    const urlEl  = document.getElementById('trade-screenshot-url');
+    if (jsonEl) jsonEl.value = json;
+    if (urlEl)  urlEl.value  = App._screenshots[0] || '';
+  },
+
+  _removeScreenshot(idx) {
+    App._screenshots.splice(idx, 1);
+    App._renderScreenshotGallery();
+  },
+
   async _uploadScreenshot(file) {
-    const area = document.getElementById('screenshotArea');
-    if (!area) return;
-    area.innerHTML = '<div class="screenshot-uploading"><i class="ti ti-loader"></i> Subiendo imagen...</div>';
+    if (App._screenshots.length >= 5) { UI.toast('Máximo 5 imágenes', 'info'); return; }
+    const emptyEl = document.getElementById('screenshotEmpty');
+    if (emptyEl) emptyEl.innerHTML = '<i class="ti ti-loader"></i> Subiendo...';
     try {
       const url = await Cloudinary.upload(file);
-      document.getElementById('trade-screenshot-url').value = url;
-      area.innerHTML = `
-        <div id="screenshotPreview">
-          <img src="${url}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px;cursor:pointer;" onclick="window.open('${url}','_blank')">
-          <button type="button" class="screenshot-remove" onclick="TradeModal.removeScreenshot()"><i class="ti ti-x"></i> Quitar</button>
-        </div>`;
+      App._screenshots.push(url);
+      App._renderScreenshotGallery();
+      // Restaurar área
+      const emptyEl2 = document.getElementById('screenshotEmpty');
+      if (emptyEl2) emptyEl2.innerHTML = `
+        <i class="ti ti-photo-plus" style="font-size:24px;color:var(--text-secondary);display:block;margin-bottom:5px;"></i>
+        <div style="font-size:12.5px;color:var(--text-secondary);font-weight:500;">Añadir otra imagen</div>
+        <div style="font-size:12px;color:var(--accent);font-weight:700;margin-top:4px;">⌘V para pegar</div>`;
       UI.toast('Imagen subida ✓', 'success');
     } catch(err) {
-      area.innerHTML = `
-        <input type="file" id="trade-screenshot" accept="image/*" style="display:none;">
-        <div id="screenshotEmpty" onclick="document.getElementById('trade-screenshot').click()">
-          <i class="ti ti-photo-plus" style="font-size:28px;color:var(--red-mid);display:block;margin-bottom:6px;"></i>
-          <div style="font-size:13px;color:var(--red-mid);">Error: ${err.message}</div>
-          <div style="font-size:11px;color:var(--text-secondary);margin-top:3px;">Toca para reintentar · ⌘V para pegar</div>
-        </div>`;
-      document.getElementById('trade-screenshot')?.addEventListener('change', async (e) => {
-        if (e.target.files[0]) await App._uploadScreenshot(e.target.files[0]);
-      });
+      const emptyEl2 = document.getElementById('screenshotEmpty');
+      if (emptyEl2) emptyEl2.innerHTML = `<div style="font-size:12px;color:var(--red-mid);">Error al subir · toca para reintentar</div>`;
+      UI.toast('Error: ' + err.message, 'error');
     }
   },
 
@@ -640,6 +665,10 @@ const TradeModal = {
     document.getElementById('trade-notes').value       = trade?.notes || '';
     document.getElementById('trade-account').value     = trade?.account_id || App.activeAccountId || '';
     document.getElementById('trade-strategy').value    = trade?.strategy_id || '';
+    // Cargar screenshots existentes
+    try { App._screenshots = trade?.screenshots ? JSON.parse(trade.screenshots) : (trade?.screenshot_url ? [trade.screenshot_url] : []); }
+    catch(e) { App._screenshots = []; }
+    App._renderScreenshotGallery();
     // Limpiar auto-cálculo
     const pnlInput = document.getElementById('trade-pnl');
     if (pnlInput) { pnlInput.style.color = ''; }
@@ -670,7 +699,8 @@ const TradeModal = {
       notes:          document.getElementById('trade-notes').value.trim(),
       account_id:     document.getElementById('trade-account').value || null,
       strategy_id:    document.getElementById('trade-strategy').value || null,
-      screenshot_url: document.getElementById('trade-screenshot-url')?.value || '',
+      screenshot_url: App._screenshots[0] || '',
+      screenshots:    App._screenshots,
     };
 
     if (!data.pair || !data.date || !data.pnl) {
