@@ -38,11 +38,35 @@ router.get('/stats', (req, res) => {
   }
 
   const allDays = db.prepare(`SELECT date, SUM(pnl) as d FROM trades t ${where} GROUP BY date ORDER BY date`).all(...p);
-  let peak = 0, maxDD = 0, equity = 0;
+
+  // Obtener balance total de las cuentas para calcular DD sobre balance real
+  const accountBalance = (() => {
+    try {
+      const uid = req.user?.id;
+      if (!uid) return 0;
+      const aid = req.query.account_id;
+      if (aid) {
+        const acc = db.prepare('SELECT balance, initial_balance FROM accounts WHERE id = ? AND user_id = ?').get(aid, uid);
+        return acc ? (acc.initial_balance || acc.balance || 0) : 0;
+      }
+      const accs = db.prepare('SELECT initial_balance, balance FROM accounts WHERE user_id = ?').all(uid);
+      return accs.reduce((s, a) => s + (a.initial_balance || a.balance || 0), 0);
+    } catch(e) { return 0; }
+  })();
+
+  let maxDD = 0, cumPnl = 0, maxLoss = 0;
+  for (const day of allDays) {
+    cumPnl += day.d;
+    if (day.d < maxLoss) maxLoss = day.d; // peor día
+  }
+  // DD = mayor pérdida acumulada desde un pico, relativa al balance de cuenta
+  let peak = 0, equity = 0;
   for (const day of allDays) {
     equity += day.d;
     if (equity > peak) peak = equity;
-    const dd = peak > 0 ? (peak - equity) / peak * 100 : 0;
+    const loss = peak - equity; // pérdida en $ desde el pico
+    const base = accountBalance > 0 ? accountBalance : Math.max(Math.abs(peak), 1);
+    const dd = (loss / base) * 100;
     if (dd > maxDD) maxDD = dd;
   }
 
