@@ -608,6 +608,11 @@ body { font-family: 'Sora', sans-serif; background: var(--bg-main); color: var(-
 .acc-progress-detail strong { font-weight: 700; }
 .acc-progress-detail .neg { color: var(--red-mid); }
 
+/* ACCOUNT FILTER BUTTONS */
+.acc-filter-btn { padding:6px 16px;border-radius:20px;border:1px solid var(--border-card);background:var(--bg-card);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all 0.15s; }
+.acc-filter-btn:hover { border-color:var(--accent);color:var(--accent); }
+.acc-filter-btn.active { background:var(--accent-bg);border-color:var(--accent);color:var(--accent); }
+
 /* ACCOUNT CARDS */
 .acc-card { background: var(--bg-card); border: 0.5px solid var(--border-card); border-radius: var(--radius); padding: 18px; position: relative; transition: box-shadow 0.2s; }
 .acc-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }

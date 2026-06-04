@@ -1,9 +1,33 @@
 // ─── Cuentas ──────────────────────────────────────────────────────────────────
 const Accounts = {
+  _allAccounts: [],
+  _activeFilter: '',
+
   async load() {
     const accounts = await API.accounts.list();
-    Accounts._renderGrid(accounts);
+    Accounts._allAccounts = accounts;
+    Accounts._setupFilters();
+    Accounts._applyFilter();
     Portfolio.load(accounts);
+  },
+
+  _setupFilters() {
+    document.querySelectorAll('.acc-filter-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.acc-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        Accounts._activeFilter = btn.dataset.type;
+        Accounts._applyFilter();
+      };
+    });
+  },
+
+  _applyFilter() {
+    const f = Accounts._activeFilter;
+    const filtered = f
+      ? Accounts._allAccounts.filter(a => a.type === f)
+      : Accounts._allAccounts;
+    Accounts._renderGrid(filtered);
   },
 
   TYPE_LABELS: { fase1: 'Fase 1', fase2: 'Fase 2', funded: 'Funded', propio: 'Capital Propio', live: 'Live', demo: 'Demo', prop: 'Prop Firm' },
