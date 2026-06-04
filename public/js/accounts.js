@@ -9,12 +9,56 @@ const Accounts = {
   TYPE_LABELS: { fase1: 'Fase 1', fase2: 'Fase 2', funded: 'Funded', propio: 'Capital Propio', live: 'Live', demo: 'Demo', prop: 'Prop Firm' },
   TYPE_COLORS: { fase1: 'pending', fase2: 'active', funded: 'win', propio: 'long' },
 
+  _isPassed(a) {
+    if (!a.profit_target || a.profit_target <= 0) return false;
+    const pnl = a.balance - a.initial_balance;
+    const target = a.initial_balance * a.profit_target / 100;
+    return pnl >= target;
+  },
+
   _renderGrid(accounts) {
     const grid = document.getElementById('accounts-grid');
     if (!accounts.length) {
       grid.innerHTML = '<p class="empty-state" style="grid-column:1/-1;">No hay cuentas. Añade una abajo.</p>';
       return;
     }
+
+    // Separar activas de pasadas
+    const active = accounts.filter(a => !Accounts._isPassed(a));
+    const passed = accounts.filter(a => Accounts._isPassed(a));
+
+    // Renderizar pasadas en sección compacta
+    const passedSection = document.getElementById('accounts-passed-section');
+    const passedGrid    = document.getElementById('accounts-passed-grid');
+    if (passed.length > 0 && passedSection && passedGrid) {
+      passedSection.style.display = 'block';
+      passedGrid.innerHTML = passed.map(a => {
+        const pnl    = a.balance - a.initial_balance;
+        const target = a.initial_balance * (a.profit_target / 100);
+        const typeLabel = Accounts.TYPE_LABELS[a.type] || a.type;
+        return `
+          <div style="background:var(--bg-card);border:1px solid var(--green-light);border-left:3px solid var(--green-mid);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px;position:relative;">
+            <div style="font-size:20px;">🏆</div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                <span style="font-size:13px;font-weight:700;color:var(--text-primary);">${a.name}</span>
+                <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--green-light);color:var(--green);">${typeLabel} ✓</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-secondary);">${a.broker || ''} · ${a.currency} ${Number(a.balance).toLocaleString('es-ES',{minimumFractionDigits:2})}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:14px;font-weight:700;color:var(--green-mid);">+${a.currency} ${Number(pnl).toLocaleString('es-ES',{minimumFractionDigits:2})}</div>
+              <div style="font-size:10px;color:var(--text-secondary);">Obj: ${a.profit_target}% · ${(pnl/target*100).toFixed(0)}% completado</div>
+            </div>
+            <button class="btn-danger" style="position:absolute;top:8px;right:8px;padding:3px 7px;font-size:10px;opacity:0.5;" onclick="Accounts.delete(${a.id})" title="Eliminar"><i class="ti ti-trash"></i></button>
+          </div>`;
+      }).join('');
+    } else if (passedSection) {
+      passedSection.style.display = 'none';
+    }
+
+    // Solo mostrar activas en el grid principal
+    accounts = active;
     grid.innerHTML = accounts.map(a => {
       const typeLabel = Accounts.TYPE_LABELS[a.type] || a.type;
       const typeColor = Accounts.TYPE_COLORS[a.type] || 'inactive';
