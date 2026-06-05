@@ -616,7 +616,7 @@ body { font-family: 'Sora', sans-serif; background: var(--bg-main); color: var(-
 /* ACCOUNT CARDS */
 .acc-card { background: var(--bg-card); border: 0.5px solid var(--border-card); border-radius: var(--radius); padding: 18px; position: relative; transition: box-shadow 0.2s; }
 .acc-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
-.acc-card-actions { position: absolute; top: 14px; right: 14px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.15s; }
+.acc-card-actions { position: absolute; bottom: 14px; right: 14px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.15s; }
 .acc-card:hover .acc-card-actions { opacity: 1; }
 .acc-balance { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 14px; padding: 14px; background: var(--bg-main); border-radius: var(--radius-sm); }
 
