@@ -105,7 +105,7 @@ const Accounts = {
               <div style="font-size:14px;font-weight:700;margin-bottom:3px;">${a.name}</div>
               <div style="font-size:11px;color:var(--text-secondary);">${a.broker || '—'} · ${a.platform || '—'}</div>
             </div>
-            ${UI.pill(typeLabel, typeColor)}
+            <span class="acc-type-pill">${UI.pill(typeLabel, typeColor)}</span>
           </div>
           <div class="acc-balance">
             <div>
