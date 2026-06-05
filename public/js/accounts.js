@@ -94,6 +94,13 @@ const Accounts = {
       const remaining    = showProgress ? Math.max(0, targetAmt - pnl) : 0;
       const barColor     = pct >= 100 ? 'green' : pct >= 60 ? '' : pct >= 30 ? 'amber' : 'red';
 
+      const showLoss   = (a.type === 'fase1' || a.type === 'fase2') && a.max_loss > 0;
+      const maxLossAmt = showLoss ? (a.initial_balance * a.max_loss / 100) : 0;
+      const lossUsed   = showLoss ? Math.max(0, -pnl) : 0;  // pérdida acumulada (positivo)
+      const lossPct    = showLoss ? Math.min(100, (lossUsed / maxLossAmt) * 100) : 0;
+      const lossColor  = lossPct >= 90 ? 'red' : lossPct >= 70 ? 'amber' : 'green';
+      const lossRemain = showLoss ? Math.max(0, maxLossAmt - lossUsed) : 0;
+
       return `
         <div class="acc-card">
           <div class="acc-card-actions">
@@ -139,6 +146,27 @@ const Accounts = {
             </div>
           </div>` : ''}
 
+          ${showLoss ? `
+          <div class="acc-progress-block" style="margin-top:8px;background:${lossPct >= 70 ? 'rgba(216,90,48,0.05)' : 'transparent'};border-radius:var(--radius-sm);padding:${lossPct >= 70 ? '8px' : '0'};">
+            <div class="acc-progress-header">
+              <span class="acc-progress-title" style="color:var(--red,#D85A30);">
+                <i class="ti ti-shield-x" style="font-size:13px;"></i>
+                Límite de pérdida
+              </span>
+              <span class="acc-progress-pct ${lossPct >= 90 ? 'done' : ''}" style="color:${lossPct >= 70 ? 'var(--red,#D85A30)' : 'var(--text-secondary)'};">${lossPct.toFixed(1)}%</span>
+            </div>
+            <div class="progress-wrap" style="height:6px;margin-bottom:8px;">
+              <div class="progress-fill ${lossColor}" style="width:${lossPct.toFixed(1)}%;transition:width 0.6s ease;"></div>
+            </div>
+            <div class="acc-progress-detail">
+              <span style="color:var(--text-secondary);">Máx: <strong>${a.currency} ${Number(maxLossAmt).toLocaleString('es-ES',{minimumFractionDigits:2})}</strong> (-${a.max_loss}%)</span>
+              ${lossPct < 100
+                ? `<span style="color:var(--text-secondary);">Margen restante: <strong style="color:${lossRemain < maxLossAmt*0.3 ? 'var(--red,#D85A30)' : 'inherit'}">${a.currency} ${Number(lossRemain).toLocaleString('es-ES',{minimumFractionDigits:2})}</strong></span>`
+                : `<span style="color:var(--red,#D85A30);font-weight:700;">⚠️ Límite alcanzado</span>`
+              }
+            </div>
+          </div>` : ''}
+
           <div style="margin-top:12px;padding-top:12px;border-top:0.5px solid #EEF1F8;">
             ${UI.statRow('Balance inicial', `${a.currency} ${Number(a.initial_balance).toLocaleString('es-ES',{minimumFractionDigits:2})}`)}
             ${UI.statRow('Divisa', a.currency)}
@@ -155,12 +183,14 @@ const Accounts = {
     document.getElementById('edit-acc-platform').value = a.platform || '';
     document.getElementById('edit-acc-type').value     = a.type || 'fase1';
     document.getElementById('edit-acc-target').value   = a.profit_target || '';
+    document.getElementById('edit-acc-maxloss').value  = a.max_loss || '';
     document.getElementById('edit-acc-balance').value  = a.balance;
     document.getElementById('edit-acc-initial').value  = a.initial_balance;
     document.getElementById('edit-acc-currency').value = a.currency || 'EUR';
-    // Mostrar/ocultar campo objetivo según tipo
+    // Mostrar/ocultar campos objetivo y pérdida máxima según tipo
     const showTarget = a.type === 'fase1' || a.type === 'fase2';
     document.getElementById('edit-acc-target-row').style.display = showTarget ? '' : 'none';
+    document.getElementById('edit-acc-maxloss-row').style.display = showTarget ? '' : 'none';
     UI.openModal('accountModal');
   },
 
@@ -172,6 +202,7 @@ const Accounts = {
       platform:        document.getElementById('edit-acc-platform').value.trim(),
       type:            document.getElementById('edit-acc-type').value,
       profit_target:   parseFloat(document.getElementById('edit-acc-target').value) || 0,
+      max_loss:        parseFloat(document.getElementById('edit-acc-maxloss').value) || 0,
       balance:         parseFloat(document.getElementById('edit-acc-balance').value) || 0,
       initial_balance: parseFloat(document.getElementById('edit-acc-initial').value) || 0,
       currency:        document.getElementById('edit-acc-currency').value,
@@ -195,6 +226,7 @@ const Accounts = {
       currency:        document.getElementById('acc-currency').value,
       type:            document.getElementById('acc-type').value,
       profit_target:   parseFloat(document.getElementById('acc-target').value) || 0,
+      max_loss:        parseFloat(document.getElementById('acc-maxloss').value) || 0,
     };
     if (!data.name) { UI.toast('El nombre es obligatorio', 'error'); return; }
     try {

@@ -143,6 +143,7 @@ const migrations = [
   ['trades',            'screenshot_url TEXT DEFAULT ""'],
   ['trades',            'screenshots TEXT DEFAULT "[]"'],
   ['accounts',          'profit_target REAL DEFAULT 0'],
+  ['accounts',          'max_loss REAL DEFAULT 0'],
 ];
 for (const [table, col] of migrations) {
   try { db.exec(`ALTER TABLE ${table} ADD COLUMN ${col}`); } catch {}

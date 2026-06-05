@@ -15,7 +15,7 @@ const MarketSession = {
       name:  'Londres',
       flag:  '🇬🇧',
       color: '#378ADD',
-      start: 8,
+      start: 7,
       end:   17,
     },
     {
@@ -53,8 +53,9 @@ const MarketSession = {
     if (utcHour >= 13 && utcHour < 17) {
       return MarketSession.SESSIONS.find(s => s.id === 'overlap');
     }
-    // London (sin overlap)
-    if (utcHour >= 8 && utcHour < 13) {
+    // London (sin overlap) — abre 7 UTC en verano (BST), 8 UTC en invierno (GMT)
+    // Usamos 7 para cubrir ambos casos (en invierno Tokyo ya ha terminado a las 8)
+    if (utcHour >= 7 && utcHour < 13) {
       return MarketSession.SESSIONS.find(s => s.id === 'london');
     }
     // London tarde (17-17 no, pero London cierra a las 17)
