@@ -234,4 +234,19 @@ router.get('/email-config', require('../middleware/auth'), (req, res) => {
   });
 });
 
+// ── Cambiar contraseña ────────────────────────────────────────────────────────
+router.put('/password', require('../middleware/auth'), async (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!current_password || !new_password) return res.status(400).json({ error: 'Faltan campos' });
+  if (new_password.length < 6) return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+  const ok = await bcrypt.compare(current_password, user.password);
+  if (!ok) return res.status(401).json({ error: 'La contraseña actual no es correcta' });
+
+  const hash = await bcrypt.hash(new_password, 10);
+  db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hash, req.user.id);
+  res.json({ ok: true });
+});
+
 module.exports = router;
